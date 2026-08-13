@@ -51,12 +51,12 @@ export function SiteFooter() {
                 <span className={staticLinkClass}>Help Center</span>
               </li>
               <li>
-                <button onClick={() => navigate("/terms")} className={linkClass}>
+                <button onClick={() => navigate("/conf")} className={linkClass}>
                   Terms of Use
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate("/about")} className={linkClass}>
+                <button onClick={() => navigate("/conf")} className={linkClass}>
                   About the Archive
                 </button>
               </li>
@@ -149,7 +149,7 @@ export function SiteFooter() {
           {/* Right: Utility links  slightly inward, deliberate spacing */}
           <div className="w-full md:w-auto flex flex-wrap items-center justify-center md:justify-end gap-[14px]">
             <button
-              onClick={() => navigate("/404")}
+              onClick={() => navigate("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -161,7 +161,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/network-error")}
+              onClick={() => navigate("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -173,7 +173,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/maintenance")}
+              onClick={() => navigate("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -185,7 +185,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/error")}
+              onClick={() => navigate("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"

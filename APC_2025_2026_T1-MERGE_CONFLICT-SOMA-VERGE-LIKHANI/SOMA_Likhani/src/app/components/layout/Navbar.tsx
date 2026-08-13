@@ -288,18 +288,17 @@ export function Navbar() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const q = searchInput.trim();
-    if (q) { navigate(`/search?q=${encodeURIComponent(q)}`); closeSearch(); }
+    navigate('/conf');
+    closeSearch();
   };
 
   const handleResultClick = (id: string) => {
-    navigate(`/video/${id}`);
+    navigate('/conf');
     closeSearch();
   };
 
   const handleViewAll = () => {
-    const q = searchInput.trim();
-    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
+    navigate('/conf');
     closeSearch();
   };
 
@@ -620,7 +619,7 @@ export function Navbar() {
                   ].map(({ label, icon, path }) => (
                     <button
                       key={label}
-                      onClick={() => { setShowProfileMenu(false); navigate(path); }}
+                      onClick={() => { setShowProfileMenu(false); navigate('/conf'); }}
                       className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
                         isDark
                           ? "text-gray-300 hover:bg-white/5 hover:text-white"
@@ -637,7 +636,7 @@ export function Navbar() {
                       setShowProfileMenu(false);
                       supabase.auth.signOut();
                       clearAuthStorage();
-                      navigate("/");
+                      navigate('/conf');
                     }}
                     className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
                       isDark ? "text-red-400 hover:bg-red-500/10" : "text-red-600 hover:bg-red-50"
@@ -805,7 +804,7 @@ export function Navbar() {
                           {searchResults.tags.map(tag => (
                             <button
                               key={tag}
-                              onClick={() => { navigate(`/search?q=${encodeURIComponent(tag)}`); closeSearch(); }}
+                              onClick={() => { navigate('/conf'); closeSearch(); }}
                               className={`px-3 py-1 rounded-full font-['Poppins'] text-[11px] font-semibold transition-colors border ${
                                 isDark
                                   ? "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 hover:bg-white/5"

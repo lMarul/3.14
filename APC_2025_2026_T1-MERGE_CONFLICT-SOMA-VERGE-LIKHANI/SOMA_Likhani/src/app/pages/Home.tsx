@@ -239,11 +239,7 @@ export default function Home() {
   };
 
   const handleWatchLaterClick = () => {
-    if (isGuest) {
-      handleGuestRestriction();
-    } else {
-      toast("Bookmarked!");
-    }
+    navigate("/conf");
   };
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -708,7 +704,7 @@ export default function Home() {
             ) : (
               <div
                 className="relative aspect-video w-full overflow-hidden rounded-lg shadow-xl cursor-pointer group"
-                onClick={() => navigate(`/video/${highlightedVideo.id}`)}
+                onClick={() => navigate("/conf")}
               >
                 <img
                   src={highlightedVideo.thumbnail}
