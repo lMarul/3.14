@@ -1,0 +1,14 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+@layer utilities {
+  .animate-fizzle {
+    animation: fizzle 4s ease-in-out infinite;
+  }
+  
+  .animate-fizzle-alt {
+    animation: fizzle-alt 5s ease-in-out infinite;
+  }
+}

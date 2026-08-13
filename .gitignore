@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Production builds
+dist/
+**/dist/
+dist-ssr/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.local
+
+# Cache and logs
+.vite/
+**/vite/
+logs
+*.log
+npm-debug.log*
+
+# Internal git backups
+.git_bak
+*.git_bak
+**/.git_bak
+
+# System and IDE files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea

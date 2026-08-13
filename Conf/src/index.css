@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #F7F6F3;
+  --color-card-bg: #FFFFFF;
+  --color-crimson: #8A181A;
+  --color-crimson-light: #CD5D5D;
+  --color-crimson-hover: #721315;
+  --color-charcoal: #101828;
+  --color-body-dark: #364153;
+  --color-body-text: #4A5565;
+  --color-muted: #6A7282;
+  --color-label: #99A1AF;
+  --color-border-light: #E5E7EB;
+  --color-border-pill: #D1D5DC;
+  --color-border-divider: #F3F4F6;
+
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-handwriting: 'Dancing Script', cursive;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-charcoal);
+    font-family: var(--font-poppins);
+  }
+}
+
+/* Floating Subtly Vector Animations */
+@keyframes floatSubtle1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(30deg) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) rotate(34deg) scale(1.03);
+  }
+}
+
+@keyframes floatSubtle2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(-15deg) scale(1);
+  }
+  50% {
+    transform: translateY(-18px) rotate(-11deg) scale(1.05);
+  }
+}
+
+@keyframes floatSubtle3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(12deg) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) rotate(8deg) scale(1.02);
+  }
+}
+
+.vector-hover-1 {
+  animation: floatSubtle1 8s ease-in-out infinite;
+}
+
+.vector-hover-2 {
+  animation: floatSubtle2 10s ease-in-out infinite;
+}
+
+.vector-hover-3 {
+  animation: floatSubtle3 7s ease-in-out infinite;
+}
+
+/* Unique Sentimental Card Styling */
+.sentimental-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 
+    0px 20px 30px -8px rgba(138, 24, 26, 0.08), 
+    0px 8px 16px -4px rgba(16, 24, 40, 0.04),
+    0px 0px 0px 1px rgba(229, 231, 235, 0.9);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sentimental-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #8A181A 0%, #CD5D5D 50%, #8A181A 100%);
+}
+
+.sentimental-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0px 25px 35px -8px rgba(138, 24, 26, 0.12), 
+    0px 12px 20px -4px rgba(16, 24, 40, 0.06),
+    0px 0px 0px 1.5px rgba(138, 24, 26, 0.25);
+}
+
+/* Buttons */
+.btn-crimson {
+  background-color: #8A181A;
+  color: #FFFFFF;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  box-shadow: 0px 6px 16px rgba(138, 24, 26, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-crimson:hover {
+  background-color: #721315;
+  transform: translateY(-2px);
+  box-shadow: 0px 10px 22px rgba(138, 24, 26, 0.4);
+}
+
+.btn-crimson:active {
+  transform: translateY(0);
+}
+
+/* Pill Navigation */
+.pill-active {
+  background: #8A181A;
+  border: 1.2px solid #8A181A;
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  box-shadow: 0px 4px 10px rgba(138, 24, 26, 0.25);
+}
+
+.pill-inactive {
+  background: #FFFFFF;
+  border: 1.2px solid #D1D5DC;
+  border-radius: 9999px;
+  color: #6A7282;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.pill-inactive:hover {
+  border-color: #8A181A;
+  color: #8A181A;
+}
+
+/* Metadata Row Divider */
+.metadata-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px 0px;
+  gap: 12px;
+  border-bottom: 1.2px solid #F3F4F6;
+}
+
+.metadata-label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #99A1AF;
+}
+
+.metadata-value {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 17px;
+  color: #364153;
+}
+
+/* Leaflet Overrides */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  z-index: 10;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #101828 !important;
+  border: 1.2px solid #E5E7EB;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+}
