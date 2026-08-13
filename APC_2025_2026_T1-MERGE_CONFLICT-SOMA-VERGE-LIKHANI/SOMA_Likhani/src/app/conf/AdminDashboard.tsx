@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { AppConfig, ResponseData, Slide, QuizQuestion } from './types';
 import {
   Lock, Trash2, Save, RefreshCw, Layers, MapPin, MessageSquare, Heart, ArrowLeft, CheckCircle2,
-  XCircle, Plus, Edit3, MoveUp, MoveDown, HelpCircle, Sparkles
+  XCircle, Plus, Edit3, MoveUp, MoveDown, HelpCircle, Sparkles, BarChart3, Clock, Eye, Users, Activity
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -14,6 +14,16 @@ interface AdminDashboardProps {
   onUpdateResponse: (id: string, updatedData: Partial<ResponseData>) => Promise<void>;
   onDeleteResponse: (id: string) => Promise<void>;
   onNavigateToUserView: () => void;
+  analyticsSummary?: {
+    totalLogs: number;
+    uniqueSessions: number;
+    totalViewSeconds: number;
+    avgSessionDuration: number;
+    screenBreakdown: { key: string; count: number; totalSeconds: number; avgSeconds: number }[];
+  } | null;
+  sessionLogs?: any[];
+  onRefreshAnalytics?: () => Promise<void>;
+  onClearAnalytics?: () => Promise<void>;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -25,8 +35,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onUpdateResponse,
   onDeleteResponse,
   onNavigateToUserView,
+  analyticsSummary,
+  sessionLogs,
+  onRefreshAnalytics,
+  onClearAnalytics,
 }) => {
-  const [activeTab, setActiveTab] = useState<'RESPONSES' | 'QUIZ' | 'SLIDES' | 'CONFIG'>('RESPONSES');
+  const [activeTab, setActiveTab] = useState<'RESPONSES' | 'ANALYTICS' | 'QUIZ' | 'SLIDES' | 'CONFIG'>('RESPONSES');
   const [isSaving, setIsSaving] = useState(false);
   const [editableConfig, setEditableConfig] = useState<AppConfig>(config);
 
@@ -236,6 +250,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="flex items-center gap-1.5">
                 <Heart className="w-3.5 h-3.5" />
                 Responses ({responses.length})
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('ANALYTICS')}
+              className={activeTab === 'ANALYTICS' ? 'pill-active px-5 py-2.5 text-xs cursor-pointer' : 'pill-inactive px-4 py-2.5 text-xs cursor-pointer'}
+            >
+              <span className="flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5" />
+                View Time Telemetry
               </span>
             </button>
             <button
@@ -486,6 +509,127 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {/* TAB 1.5: VIEW TIME TELEMETRY & ANALYTICS */}
+        {activeTab === 'ANALYTICS' && (
+          <div className="space-y-6 font-poppins">
+            {/* Key Telemetry Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="sentimental-card p-5">
+                <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total Visitors / Sessions</p>
+                <p className="text-2xl font-poppins font-bold text-[#101828] mt-1">{analyticsSummary?.uniqueSessions || 0}</p>
+              </div>
+              <div className="sentimental-card p-5">
+                <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total View Time</p>
+                <p className="text-2xl font-poppins font-bold text-[#8A181A] mt-1">
+                  {Math.floor((analyticsSummary?.totalViewSeconds || 0) / 60)}m {Math.round((analyticsSummary?.totalViewSeconds || 0) % 60)}s
+                </p>
+              </div>
+              <div className="sentimental-card p-5">
+                <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Avg Session Length</p>
+                <p className="text-2xl font-poppins font-bold text-[#101828] mt-1">{analyticsSummary?.avgSessionDuration || 0}s</p>
+              </div>
+              <div className="sentimental-card p-5">
+                <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total Telemetry Events</p>
+                <p className="text-2xl font-poppins font-bold text-[#364153] mt-1">{analyticsSummary?.totalLogs || 0}</p>
+              </div>
+            </div>
+
+            {/* Screen & Slide View Duration Breakdown */}
+            <div className="sentimental-card p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-poppins font-bold text-lg text-[#101828]">Average View Duration per Page / Slide</h3>
+                  <p className="text-xs text-[#6A7282]">Real-time telemetry tracking from Loading Intro to Decision & Response</p>
+                </div>
+                {onRefreshAnalytics && (
+                  <button
+                    onClick={onRefreshAnalytics}
+                    className="p-2 rounded-xl bg-white hover:bg-[#F3F4F6] border border-[#D1D5DC] text-[#4A5565] transition-colors cursor-pointer"
+                    title="Refresh Telemetry"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {(!analyticsSummary || !analyticsSummary.screenBreakdown || analyticsSummary.screenBreakdown.length === 0) ? (
+                  <p className="text-xs text-[#6A7282] italic text-center py-6">No telemetry logs recorded yet. Visit the /conf page to generate live view time logs!</p>
+                ) : (
+                  analyticsSummary.screenBreakdown.map((item: any) => {
+                    const maxAvg = Math.max(...analyticsSummary.screenBreakdown.map((s: any) => s.avgSeconds || 1));
+                    const percentage = Math.min(100, Math.round(((item.avgSeconds || 0) / maxAvg) * 100));
+                    const formatKey = item.key.replace('_', ' ');
+                    return (
+                      <div key={item.key} className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-semibold">
+                          <span className="text-[#101828] uppercase tracking-wider font-mono">{formatKey}</span>
+                          <span className="text-[#8A181A]">{item.avgSeconds}s avg ({item.count} visits &middot; {item.totalSeconds}s total)</span>
+                        </div>
+                        <div className="w-full bg-[#E5E7EB] rounded-full h-2.5 overflow-hidden">
+                          <div
+                            className="bg-[#8A181A] h-2.5 rounded-full transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Detailed Telemetry Log Table */}
+            <div className="sentimental-card p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-poppins font-bold text-lg text-[#101828]">Visitor Telemetry Entry Log</h3>
+                  <p className="text-xs text-[#6A7282]">Recorded entry times and durations stored in Convex DB</p>
+                </div>
+                {onClearAnalytics && sessionLogs && sessionLogs.length > 0 && (
+                  <button
+                    onClick={onClearAnalytics}
+                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold border border-red-200 transition-colors cursor-pointer"
+                  >
+                    Clear Telemetry Logs
+                  </button>
+                )}
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-[#E5E7EB] text-[#6A7282] uppercase tracking-wider">
+                      <th className="py-2.5 px-3">Session ID</th>
+                      <th className="py-2.5 px-3">Screen / Slide</th>
+                      <th className="py-2.5 px-3">View Duration</th>
+                      <th className="py-2.5 px-3">Start Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E5E7EB]">
+                    {(!sessionLogs || sessionLogs.length === 0) ? (
+                      <tr>
+                        <td colSpan={4} className="py-6 text-center text-[#6A7282] italic">No telemetry logs available yet</td>
+                      </tr>
+                    ) : (
+                      sessionLogs.slice(0, 50).map((log: any) => (
+                        <tr key={log._id || log.sessionId + log.startTime} className="hover:bg-[#F9FAFB]">
+                          <td className="py-2.5 px-3 font-mono text-[#364153]">{log.sessionId.slice(0, 16)}...</td>
+                          <td className="py-2.5 px-3 font-semibold text-[#8A181A]">
+                            {log.screen} {log.slideIndex !== undefined ? `(Slide #${log.slideIndex})` : ''}
+                          </td>
+                          <td className="py-2.5 px-3 font-bold text-[#101828]">{log.durationSeconds}s</td>
+                          <td className="py-2.5 px-3 text-[#6A7282]">{new Date(log.startTime).toLocaleTimeString()}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 

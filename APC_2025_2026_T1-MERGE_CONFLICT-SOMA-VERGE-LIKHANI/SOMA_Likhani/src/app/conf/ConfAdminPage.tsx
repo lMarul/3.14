@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { AppConfig, ResponseData } from './types';
 import { defaultConfig } from './defaultConfig';
 import { AdminDashboard } from './AdminDashboard';
+import { getLocalTelemetryLogs, computeAnalyticsSummary, clearLocalTelemetryLogs } from './telemetry';
 import { useNavigate } from 'react-router-dom';
 import { KeyRound, Lock } from 'lucide-react';
 import { ConvexHttpClient } from 'convex/browser';
@@ -33,6 +34,62 @@ export const ConfAdminPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
 
+  const [analyticsSummary, setAnalyticsSummary] = useState<any>(null);
+  const [sessionLogs, setSessionLogs] = useState<any[]>([]);
+
+  // Fetch live config from Convex DB
+  const handleRefreshConfig = async () => {
+    try {
+      const remote = await convex.query(api.config.get);
+      if (remote && Array.isArray(remote.slides) && remote.slides.length > 0) {
+        const loaded: AppConfig = {
+          recipientName: remote.recipientName,
+          senderName: remote.senderName,
+          questionText: remote.questionText,
+          quizTitle: remote.quizTitle || undefined,
+          quizQuestions: remote.quizQuestions,
+          coffeeLocation: remote.coffeeLocation,
+          slides: remote.slides,
+          evasiveNoButton: remote.evasiveNoButton,
+          adminPasscode: remote.adminPasscode || '1234',
+        };
+        setConfig(loaded);
+        localStorage.setItem('conf_app_config', JSON.stringify(loaded));
+      }
+    } catch (e) {
+      console.error('Convex config fetch error:', e);
+    }
+  };
+
+  // Fetch live analytics from Convex DB with local fallback
+  const handleRefreshAnalytics = async () => {
+    try {
+      const summary = await convex.query(api.analytics.getAnalyticsSummary);
+      const logs = await convex.query(api.analytics.listSessionLogs);
+      if (summary && summary.totalLogs > 0) {
+        setAnalyticsSummary(summary);
+        setSessionLogs(logs || []);
+        return;
+      }
+    } catch (e) {
+      console.error('Convex analytics fetch note:', e);
+    }
+
+    // Fall back to local telemetry
+    const localLogs = getLocalTelemetryLogs();
+    const localSummary = computeAnalyticsSummary(localLogs);
+    setAnalyticsSummary(localSummary);
+    setSessionLogs(localLogs);
+  };
+
+  const handleClearAnalytics = async () => {
+    try {
+      await convex.mutation(api.analytics.clearAnalytics);
+    } catch (e) {}
+    clearLocalTelemetryLogs();
+    await handleRefreshAnalytics();
+  };
+
   // Fetch live responses from Convex DB
   const handleRefreshResponses = async () => {
     try {
@@ -48,7 +105,6 @@ export const ConfAdminPage: React.FC = () => {
         }));
         setResponses(formatted);
         localStorage.setItem('conf_app_responses', JSON.stringify(formatted));
-        return;
       }
     } catch (e) {
       console.error('Convex DB fetch note:', e);
@@ -63,6 +119,8 @@ export const ConfAdminPage: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       handleRefreshResponses();
+      handleRefreshConfig();
+      handleRefreshAnalytics();
     }
   }, [isAuthenticated]);
 
@@ -79,6 +137,22 @@ export const ConfAdminPage: React.FC = () => {
   const handleSaveConfig = async (updatedConfig: AppConfig) => {
     setConfig(updatedConfig);
     localStorage.setItem('conf_app_config', JSON.stringify(updatedConfig));
+    try {
+      await convex.mutation(api.config.save, {
+        recipientName: updatedConfig.recipientName,
+        senderName: updatedConfig.senderName,
+        questionText: updatedConfig.questionText,
+        quizTitle: updatedConfig.quizTitle,
+        quizQuestions: updatedConfig.quizQuestions,
+        coffeeLocation: updatedConfig.coffeeLocation,
+        slides: updatedConfig.slides,
+        evasiveNoButton: updatedConfig.evasiveNoButton,
+        adminPasscode: updatedConfig.adminPasscode,
+      });
+      await handleRefreshConfig();
+    } catch (e) {
+      console.error('Convex save config error:', e);
+    }
   };
 
   const saveResponses = (newResponses: ResponseData[]) => {
@@ -203,6 +277,10 @@ export const ConfAdminPage: React.FC = () => {
           onUpdateResponse={handleUpdateResponse}
           onDeleteResponse={handleDeleteResponse}
           onNavigateToUserView={() => navigate('/conf')}
+          analyticsSummary={analyticsSummary}
+          sessionLogs={sessionLogs}
+          onRefreshAnalytics={handleRefreshAnalytics}
+          onClearAnalytics={handleClearAnalytics}
         />
       )}
     </div>

@@ -7,6 +7,7 @@ interface QuizViewerProps {
   recipientName: string;
   quizTitle?: string;
   onCompleteQuiz: () => void;
+  onQuestionChange?: (index: number) => void;
 }
 
 export const QuizViewer: React.FC<QuizViewerProps> = ({
@@ -14,6 +15,7 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
   recipientName,
   quizTitle,
   onCompleteQuiz,
+  onQuestionChange,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -27,8 +29,10 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      const nextIdx = currentIndex + 1;
+      setCurrentIndex(nextIdx);
       setSelectedOption(null);
+      if (onQuestionChange) onQuestionChange(nextIdx);
     } else {
       onCompleteQuiz();
     }

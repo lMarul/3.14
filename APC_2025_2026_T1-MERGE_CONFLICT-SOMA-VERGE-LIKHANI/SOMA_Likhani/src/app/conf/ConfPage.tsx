@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { AppConfig, AppScreen, ResponseData } from './types';
 import { defaultConfig } from './defaultConfig';
 import { BackgroundEffects } from './BackgroundEffects';
@@ -9,6 +9,7 @@ import { SlideViewer } from './SlideViewer';
 import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
 import { MessageForm } from './MessageForm';
+import { saveLocalTelemetryLog } from './telemetry';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../convex/_generated/api';
 import './conf.css';
@@ -17,12 +18,12 @@ const convexUrl = import.meta.env.VITE_CONVEX_URL || 'https://colorless-dalmatia
 const convex = new ConvexHttpClient(convexUrl);
 
 export const ConfPage: React.FC = () => {
-  const [config] = useState<AppConfig>(() => {
+  const [config, setConfig] = useState<AppConfig>(() => {
     const saved = localStorage.getItem('conf_app_config');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.slides) && parsed.slides.length === defaultConfig.slides.length) {
+        if (parsed && Array.isArray(parsed.slides)) {
           return parsed;
         }
       } catch (e) {}
@@ -32,7 +33,134 @@ export const ConfPage: React.FC = () => {
 
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('INTRO');
   const [slideIndex, setSlideIndex] = useState(0);
+  const [quizIndex, setQuizIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  // Generate unique session ID per visitor session
+  const [sessionId] = useState<string>(() => {
+    let sid = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('conf_session_id') : null;
+    if (!sid) {
+      sid = 'sess_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('conf_session_id', sid);
+      }
+    }
+    return sid;
+  });
+
+  const screenStartTimeRef = useRef<number>(Date.now());
+
+  const getScreenLabel = (screen: AppScreen, sIndex: number, qIndex: number): string => {
+    switch (screen) {
+      case 'INTRO':
+        return 'INTRO';
+      case 'QUIZ':
+        return `QUIZ (Question ${qIndex + 1})`;
+      case 'CONGRATS':
+        return 'CONGRATS';
+      case 'SLIDES':
+        return `SLIDE ${sIndex + 1}`;
+      case 'QUESTION':
+        return 'QUESTION';
+      case 'YES_MAP':
+        return 'YES_MAP';
+      case 'NO_FORM':
+        return 'NO_FORM';
+      default:
+        return screen;
+    }
+  };
+
+  const prevScreenRef = useRef<{ screen: AppScreen; slideIndex: number; quizIndex: number; label: string }>({
+    screen: 'INTRO',
+    slideIndex: 0,
+    quizIndex: 0,
+    label: 'INTRO',
+  });
+
+  // Sync live config from Convex DB
+  useEffect(() => {
+    let isMounted = true;
+    convex.query(api.config.get)
+      .then((remote) => {
+        if (isMounted && remote && Array.isArray(remote.slides) && remote.slides.length > 0) {
+          const loaded: AppConfig = {
+            recipientName: remote.recipientName,
+            senderName: remote.senderName,
+            questionText: remote.questionText,
+            quizTitle: remote.quizTitle || undefined,
+            quizQuestions: remote.quizQuestions,
+            coffeeLocation: remote.coffeeLocation,
+            slides: remote.slides,
+            evasiveNoButton: remote.evasiveNoButton,
+            adminPasscode: remote.adminPasscode || '1234',
+          };
+          setConfig(loaded);
+          localStorage.setItem('conf_app_config', JSON.stringify(loaded));
+        }
+      })
+      .catch((e) => console.log('Convex live config fetch:', e));
+    return () => { isMounted = false; };
+  }, []);
+
+  // Telemetry: Log view duration whenever user transitions screen, slide, or quiz question
+  useEffect(() => {
+    const prev = prevScreenRef.current;
+    const now = Date.now();
+    const durationSeconds = (now - screenStartTimeRef.current) / 1000;
+    const startTime = new Date(screenStartTimeRef.current).toISOString();
+    const endTime = new Date(now).toISOString();
+
+    // Log telemetry for the previous screen/slide/question
+    if (durationSeconds >= 0.2) {
+      const payload = {
+        sessionId,
+        screen: prev.label,
+        slideIndex: prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
+        durationSeconds,
+        startTime,
+        endTime,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      };
+
+      // Always save locally immediately
+      saveLocalTelemetryLog(payload);
+
+      // Save to Convex DB
+      convex.mutation(api.analytics.logViewTime, payload).catch((e) => console.log('Telemetry DB log note:', e));
+    }
+
+    // Reset start time for current screen/slide/question
+    screenStartTimeRef.current = now;
+    const currentLabel = getScreenLabel(currentScreen, slideIndex, quizIndex);
+    prevScreenRef.current = { screen: currentScreen, slideIndex, quizIndex, label: currentLabel };
+  }, [currentScreen, slideIndex, quizIndex, sessionId]);
+
+  // Log final view time on page unload
+  useEffect(() => {
+    const handleUnload = () => {
+      const prev = prevScreenRef.current;
+      const now = Date.now();
+      const durationSeconds = (now - screenStartTimeRef.current) / 1000;
+      if (durationSeconds >= 0.2) {
+        const payload = {
+          sessionId,
+          screen: prev.label,
+          slideIndex: prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
+          durationSeconds,
+          startTime: new Date(screenStartTimeRef.current).toISOString(),
+          endTime: new Date(now).toISOString(),
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        };
+
+        saveLocalTelemetryLog(payload);
+        convex.mutation(api.analytics.logViewTime, payload).catch(() => {});
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [sessionId]);
 
   const [responses, setResponses] = useState<ResponseData[]>(() => {
     const saved = localStorage.getItem('conf_app_responses');
@@ -183,7 +311,10 @@ export const ConfPage: React.FC = () => {
           {currentScreen === 'INTRO' && (
             <LoadingIntro
               recipientName={config.recipientName}
-              onStart={() => setCurrentScreen('QUIZ')}
+              onStart={() => {
+                setQuizIndex(0);
+                setCurrentScreen('QUIZ');
+              }}
             />
           )}
 
@@ -192,6 +323,7 @@ export const ConfPage: React.FC = () => {
               questions={config.quizQuestions || []}
               recipientName={config.recipientName}
               quizTitle={config.quizTitle}
+              onQuestionChange={(idx) => setQuizIndex(idx)}
               onCompleteQuiz={() => setCurrentScreen('CONGRATS')}
             />
           )}
@@ -199,7 +331,10 @@ export const ConfPage: React.FC = () => {
           {currentScreen === 'CONGRATS' && (
             <CongratsScreen
               recipientName={config.recipientName}
-              onProceed={() => setCurrentScreen('SLIDES')}
+              onProceed={() => {
+                setSlideIndex(0);
+                setCurrentScreen('SLIDES');
+              }}
             />
           )}
 
@@ -210,7 +345,10 @@ export const ConfPage: React.FC = () => {
               onNext={handleNextSlide}
               onPrev={handlePrevSlide}
               onSelectSlide={(index) => setSlideIndex(index)}
-              onBackToQuiz={() => setCurrentScreen('QUIZ')}
+              onBackToQuiz={() => {
+                setQuizIndex(0);
+                setCurrentScreen('QUIZ');
+              }}
             />
           )}
 
