@@ -811,9 +811,9 @@ export default function Home() {
                   {/* ── BOTTOM: Action button — anchored to column base ── */}
                   <div className="mt-auto pt-6">
                     <PrimaryButton
-                      onClick={() => 
-                        highlightCategory === 'featured' 
-                          ? navigate(`/featured/${highlightedVideo.id}`) 
+                      onClick={() =>
+                        highlightCategory === 'featured'
+                          ? navigate(`/featured/${highlightedVideo.id}`)
                           : navigate(`/video/${highlightedVideo.id}`)
                       }
                       style={{ backgroundColor: primaryRed }}
