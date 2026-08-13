@@ -38,8 +38,8 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
   const isCorrect = selectedOption === currentQ.correctIndex;
   const feedbackComment = isCorrect ? currentQ.correctComment : currentQ.wrongComment;
 
-  // Determine if options are short/emoji-only to display as a 2x2 grid
-  const isGridOptions = currentQ.options.length === 4 && currentQ.options.every(opt => opt.trim().length <= 6);
+  // Enforce 2x2 grid for all 4-option questions
+  const isGridOptions = currentQ.options.length === 4;
 
   return (
     <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] font-poppins">
@@ -58,7 +58,7 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
       </div>
 
       {/* Main Sentimental Quiz Card */}
-      <div className="w-full sentimental-card p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-[#E5E7EB]">
+      <div key={currentIndex} className="w-full sentimental-card p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-[#E5E7EB] animate-slide-fade">
         {/* Progress Header */}
         <div className="flex items-center justify-between mb-6 border-b border-[#F3F4F6] pb-3">
           <div className="flex items-center gap-2">
@@ -80,17 +80,18 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
           {currentQ.question}
         </h3>
 
-        {/* Options List: 2x2 Grid for emoji/short options, standard list otherwise */}
+        {/* Options List: 2x2 Grid format for questions */}
         {isGridOptions ? (
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
             {currentQ.options.map((optionText, idx) => {
               const isSelected = selectedOption === idx;
+              const isEmojiOnly = optionText.trim().length <= 6;
 
               return (
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
-                  className={`relative p-6 rounded-2xl border transition-all cursor-pointer flex flex-col items-center justify-center min-h-[110px] ${
+                  className={`relative p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex flex-col items-center justify-center min-h-[105px] sm:min-h-[115px] text-center ${
                     isSelected
                       ? isCorrect
                         ? 'bg-[#8A181A]/10 border-[#8A181A] text-[#8A181A] shadow-lg scale-[1.02]'
@@ -98,10 +99,14 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
                       : 'bg-[#F7F6F3] border-[#D1D5DC] text-[#364153] hover:border-[#8A181A] hover:bg-white hover:scale-[1.02]'
                   }`}
                 >
-                  <span className="text-4xl sm:text-5xl select-none leading-none">{optionText}</span>
+                  {isEmojiOnly ? (
+                    <span className="text-4xl sm:text-5xl select-none leading-none">{optionText}</span>
+                  ) : (
+                    <span className="text-xs sm:text-sm font-medium font-poppins leading-snug px-1 text-center">{optionText}</span>
+                  )}
                   {isSelected && (
-                    <div className="absolute top-2.5 right-2.5">
-                      <CheckCircle2 className={`w-5 h-5 ${isCorrect ? 'text-[#8A181A]' : 'text-rose-500'}`} />
+                    <div className="absolute top-2 right-2">
+                      <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${isCorrect ? 'text-[#8A181A]' : 'text-rose-500'}`} />
                     </div>
                   )}
                 </button>

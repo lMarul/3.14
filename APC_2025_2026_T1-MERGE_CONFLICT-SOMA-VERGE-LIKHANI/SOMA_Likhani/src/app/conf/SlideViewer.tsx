@@ -100,11 +100,12 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
 
       {/* Main Unique Sentimental Card Container */}
       <div
+        key={currentIndex}
         ref={cardRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="w-full sentimental-card p-6 sm:p-10 relative overflow-hidden transition-all duration-300 shadow-2xl"
+        className="w-full sentimental-card p-6 sm:p-10 relative overflow-hidden transition-all duration-300 shadow-2xl animate-slide-fade"
       >
         {/* Background Watermark Emblem */}
         <div className="absolute -right-8 -bottom-8 opacity-5 text-[#8A181A] pointer-events-none">

@@ -34,16 +34,16 @@ export const defaultConfig: AppConfig = {
     },
     {
       id: 3,
-      question: "How many coffees is too many coffees in one day?",
+      question: "Why does she prefer drinking from bottles instead of the school's water fountain?",
       options: [
-        "Trick question: Never too many!",
-        "1 cup",
-        "2 cups",
-        "5 cups"
+        "She saw someone put their mouth directly to it when drinking 🤮",
+        "She thinks water bottle stickers look cooler 🏷️",
+        "She prefers ice-cold water from home 🧊",
+        "She heard school water tastes like pennies 🪙"
       ],
       correctIndex: 0,
-      correctComment: "You know it! ☕✨",
-      wrongComment: "It's okay! We'll stick to just 1 cozy cup for us ☕"
+      correctComment: "Eww gross! 🤮 You actually remembered that traumatizing fountain moment!",
+      wrongComment: "Nope! She literally saw someone put their mouth directly to the water fountain when drinking 🤮"
     },
     {
       id: 4,

@@ -173,3 +173,50 @@
 .conf-container .leaflet-popup-tip {
   background: #FFFFFF !important;
 }
+
+/* Slide Fade Transition Keyframes & Classes */
+@keyframes slideFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.conf-container .animate-slide-fade {
+  animation: slideFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 30px rgba(255, 200, 200, 0.4);
+  }
+}
+
+.conf-container .pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.conf-container .progress-shimmer {
+  background: linear-gradient(90deg, #8A181A 0%, #E24A4D 50%, #8A181A 100%);
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+}
+

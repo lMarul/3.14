@@ -3,6 +3,7 @@ import type { AppConfig, AppScreen, ResponseData } from './types';
 import { defaultConfig } from './defaultConfig';
 import { BackgroundEffects } from './BackgroundEffects';
 import { QuizViewer } from './QuizViewer';
+import { LoadingIntro } from './LoadingIntro';
 import { SlideViewer } from './SlideViewer';
 import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
@@ -23,7 +24,7 @@ export const ConfPage: React.FC = () => {
     return defaultConfig;
   });
 
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>('QUIZ');
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('INTRO');
   const [slideIndex, setSlideIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
@@ -171,6 +172,13 @@ export const ConfPage: React.FC = () => {
       {/* CLEAN USER EXPERIENCE — NO HEADER/NAVBAR, NO FOOTER */}
       <div className="min-h-screen w-full flex flex-col justify-center items-center relative z-10 py-6">
         <main className="w-full max-w-4xl mx-auto flex items-center justify-center flex-1 my-auto">
+          {currentScreen === 'INTRO' && (
+            <LoadingIntro
+              recipientName={config.recipientName}
+              onStart={() => setCurrentScreen('QUIZ')}
+            />
+          )}
+
           {currentScreen === 'QUIZ' && (
             <QuizViewer
               questions={config.quizQuestions || []}
