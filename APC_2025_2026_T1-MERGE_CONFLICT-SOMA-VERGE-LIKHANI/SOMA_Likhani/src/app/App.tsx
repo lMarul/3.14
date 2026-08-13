@@ -1,36 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import OTPVerification from "./pages/OTPVerification";
-import ForgotPassword from "./pages/ForgotPassword";
-import EmailConfirmation from "./pages/EmailConfirmation";
 import Home from "./pages/Home";
-import RecentlyUploaded from "./pages/RecentlyUploaded";
-import AboutUs from "./pages/AboutUs";
-import VideoDetail from "./pages/VideoDetail";
-import ProjectInfo from "./pages/ProjectInfo";
-import Watch from "./pages/Watch";
-import SettingsPage from "./pages/Settings";
-import SearchPage from "./pages/SearchPage";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import WatchLater from "./pages/WatchLater";
-import LikedFilms from "./pages/LikedFilms";
-import TermsOfUse from "./pages/TermsOfUse";
-import Guidelines from "./pages/Guidelines";
-import Report from "./pages/Report";
-import FeaturedWork from "./pages/FeaturedWork";
 import NotFound from "./pages/NotFound";
-import NetworkUnavailable from "./pages/NetworkUnavailable";
-import Maintenance from "./pages/Maintenance";
-import UnexpectedError from "./pages/UnexpectedError";
-import SubmitWork from "./pages/SubmitWork";
-import StudentRequestForm from "./pages/StudentRequestForm";
-import MySubmissions from "./pages/MySubmissions";
-import NotificationsPage from "./pages/Notifications";
 import ConfPage from "./conf/ConfPage";
 import ConfAdminPage from "./conf/ConfAdminPage";
-import SecureUpload from "./pages/SecureUpload";
 
 import { CustomThemeProvider } from "./components/providers/ThemeContext";
 import { Toaster } from "sonner";
@@ -115,47 +87,16 @@ function AppContent() {
       <GlobalScreenshotProtection />
       <AnnouncementBanner />
       <Routes>
-        {/* Authentication Routes */}
-        <Route path="/" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/otp" element={<OTPVerification />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/email-confirmation" element={<EmailConfirmation />} />
-        
-        {/* Main App Routes */}
+        {/* Main App & Trap Routes */}
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/recently-uploaded" element={<RecentlyUploaded />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/video/:id" element={<VideoDetail />} />
-        <Route path="/project-info/:id" element={<ProjectInfo />} />
-        <Route path="/watch/:id" element={<Watch />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/watch-later" element={<WatchLater />} />
-        <Route path="/liked-films" element={<LikedFilms />} />
-        <Route path="/terms" element={<TermsOfUse />} />
-        <Route path="/guidelines" element={<Guidelines />} />
-        <Route path="/report" element={<Report />} />
-        <Route path="/featured/:id" element={<FeaturedWork />} />
-        <Route path="/submit-work" element={<SubmitWork />} />
         <Route path="/conf" element={<ConfPage />} />
         <Route path="/conf/admin" element={<ConfAdminPage />} />
         <Route path="/conf-admin" element={<ConfAdminPage />} />
-        <Route path="/student-request-form" element={<StudentRequestForm />} />
-        <Route path="/my-submissions" element={<MySubmissions />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/secure-upload/:token" element={<SecureUpload />} />
         
-        {/* System State Pages */}
+        {/* Fallback */}
         <Route path="/404" element={<NotFound />} />
-        <Route path="/network-error" element={<NetworkUnavailable />} />
-        <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/error" element={<UnexpectedError />} />
-        
-        {/* Redirect any unknown routes to 404 */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {/* Toast Notification System */}
       <Toaster 

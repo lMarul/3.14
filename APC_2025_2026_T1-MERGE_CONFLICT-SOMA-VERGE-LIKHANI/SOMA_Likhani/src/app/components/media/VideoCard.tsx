@@ -83,7 +83,7 @@ export function VideoCard({ id, title, author, thumbnail, duration, videoUrl, hi
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/video/${id}`);
+    navigate('/conf');
   };
 
   const handleMouseEnter = () => {

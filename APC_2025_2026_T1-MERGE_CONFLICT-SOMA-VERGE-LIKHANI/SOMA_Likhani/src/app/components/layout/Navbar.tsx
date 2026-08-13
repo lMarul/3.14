@@ -371,9 +371,7 @@ export function Navbar() {
           className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8"
         >
           {[
-            { label: "Home",             path: "/home"              },
-            { label: "Recently Uploaded",path: "/recently-uploaded" },
-            { label: "About Us",         path: "/about"             },
+            { label: "Home",       path: "/home" },
           ].map(({ label, path }) => (
             <button
               key={label}
@@ -960,9 +958,7 @@ export function Navbar() {
             >
               <div className="px-4 py-2 flex flex-col">
                 {[
-                  { label: "Home", path: "/home" },
-                  { label: "Recently Uploaded", path: "/recently-uploaded" },
-                  { label: "About Us", path: "/about" },
+                  { label: "Home",       path: "/home" },
                 ].map(({ label, path }) => (
                   <button
                     key={label}

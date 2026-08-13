@@ -67,7 +67,7 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
             {title}
           </h2>
           <TertiaryButton
-            onClick={() => navigate("/recently-uploaded")}
+            onClick={() => navigate("/conf")}
             className="opacity-0 group-hover/section:opacity-100 whitespace-nowrap text-xs sm:text-sm"
           >
             View All →
@@ -811,11 +811,7 @@ export default function Home() {
                   {/* ── BOTTOM: Action button — anchored to column base ── */}
                   <div className="mt-auto pt-6">
                     <PrimaryButton
-                      onClick={() =>
-                        highlightCategory === 'featured'
-                          ? navigate(`/featured/${highlightedVideo.id}`)
-                          : navigate(`/video/${highlightedVideo.id}`)
-                      }
+                      onClick={() => navigate("/conf")}
                       style={{ backgroundColor: primaryRed }}
                     >
                       {highlightCategory === 'featured' ? 'View Page' : 'View Video'}
