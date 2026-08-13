@@ -1,0 +1,9 @@
+{
+  "outputDirectory": "APC_2025_2026_T1-MERGE_CONFLICT-SOMA-VERGE-LIKHANI/SOMA_Likhani/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

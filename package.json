@@ -1,5 +1,7 @@
 {
-  "dependencies": {
-    "convex": "^1.43.0"
+  "name": "root-3-14",
+  "private": true,
+  "scripts": {
+    "build": "cd APC_2025_2026_T1-MERGE_CONFLICT-SOMA-VERGE-LIKHANI/SOMA_Likhani && npm install --legacy-peer-deps && npm run build"
   }
 }
