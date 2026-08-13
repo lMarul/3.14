@@ -122,16 +122,29 @@ export const MapLocation: React.FC<MapLocationProps> = ({
       })
     : '';
 
+  const commentRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setComment(e.target.value);
+    if (commentRef.current) {
+      commentRef.current.style.height = 'auto';
+      commentRef.current.style.height = `${Math.max(64, commentRef.current.scrollHeight)}px`;
+    }
+  };
+
+  useEffect(() => {
+    if (commentRef.current) {
+      commentRef.current.style.height = 'auto';
+      commentRef.current.style.height = `${Math.max(64, commentRef.current.scrollHeight)}px`;
+    }
+  }, [comment]);
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-4 flex flex-col items-center justify-center min-h-[80vh] font-poppins">
       {/* Celebration Header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ff4b4b]/20 border border-[#ff4b4b]/40 text-[#ff4b4b] font-poppins font-bold text-xs mb-3 shadow-md">
-          <Heart className="w-4 h-4 fill-[#ff4b4b]" />
-          <span>You Said YES! 💖</span>
-        </div>
         <h2 className="font-poppins text-3xl sm:text-4xl font-bold text-white mb-2 drop-shadow-md">
-          It's a Coffee Date! ☕✨
+          It's a Coffee Date!
         </h2>
         <p className="font-poppins text-white/80 text-sm sm:text-base max-w-lg mx-auto">
           Here is our proposed location. Choose your preferred date, time & leave a message below to seal our plans!
@@ -260,11 +273,12 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                     <span>Your Note / Comment for Me (Optional)</span>
                   </label>
                   <textarea
+                    ref={commentRef}
                     rows={2}
                     value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Leave a message or excited thoughts..."
-                    className="w-full p-3 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A] transition-colors placeholder:text-[#99A1AF] resize-none font-poppins"
+                    onChange={handleCommentChange}
+                    placeholder="Leave a message or thoughts..."
+                    className="w-full p-3 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A] transition-all placeholder:text-[#99A1AF] resize-none font-poppins overflow-hidden"
                   />
                 </div>
 
@@ -274,7 +288,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                   className="btn-crimson w-full py-3.5 text-sm flex items-center justify-center gap-2 mt-3 cursor-pointer"
                 >
                   <Heart className="w-4 h-4 fill-white" />
-                  <span>{isSubmitting ? 'Saving Date...' : 'Confirm Our Coffee Date ☕💖'}</span>
+                  <span>{isSubmitting ? 'Saving Date...' : 'Confirm Our Coffee Date'}</span>
                 </button>
               </form>
             )}

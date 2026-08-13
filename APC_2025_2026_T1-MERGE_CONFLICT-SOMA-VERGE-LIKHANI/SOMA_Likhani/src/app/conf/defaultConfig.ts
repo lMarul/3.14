@@ -74,45 +74,34 @@ export const defaultConfig: AppConfig = {
     {
       id: 1,
       title: 'Hey there...',
-      subtitle: 'A small confession',
       content: 'I know its kind of sudden and this may come as a surprise to you, but yeah.',
       revealText: 'I like you...',
       iconName: 'sparkles'
     },
     {
       id: 2,
-      title: 'Holding These Feelings',
-      subtitle: 'A quiet truth',
       content: 'It\'s been a long time that we\'ve known each other, its also been a long time since I\'ve held these feelings to myself.',
       iconName: 'heart'
     },
     {
       id: 3,
-      title: 'Every Interaction',
-      subtitle: 'Cherishing moments',
       content: 'I truly appreciate every interactions we\'ve ever had, no matter how small they may seem.',
       iconName: 'smile'
     },
     {
       id: 4,
-      title: 'You Inspire Me',
-      subtitle: 'My motivation',
       content: 'You\'ve inspired me numerous times. You have been the reason for me to keep moving forward no matter how difficult it gets.',
       videoPlaceholderLabel: 'Gagawin ko ang lahat pati ang thesis mo vid',
       iconName: 'star'
     },
     {
       id: 5,
-      title: 'Trying New Things',
-      subtitle: 'New passions',
       content: 'The reason for me try new things that looks interesting.',
       videoPlaceholderLabel: 'Guitar vids',
       iconName: 'coffee'
     },
     {
       id: 6,
-      title: 'Becoming Better',
-      subtitle: 'Self-growth & effort',
       content: 'The reason for me to make efforts to be the best version of myself.',
       customEmoji: '🖐️',
       iconName: 'heart'
@@ -120,15 +109,11 @@ export const defaultConfig: AppConfig = {
     {
       id: 7,
       title: 'Behold...',
-      subtitle: 'Take a close look',
-      content: 'Something special is waiting for you...',
       iconName: 'sparkles'
     },
     {
       id: 8,
       title: 'The things that remind me of you....',
-      subtitle: 'Everywhere I look',
-      content: 'These little details around me always bring you to mind...',
       iconName: 'star',
       beholdGrid: [
         { label: 'Blue Whales', symbol: '🐋', color: 'from-blue-600/40 to-cyan-500/40 border-cyan-300/40 text-cyan-200', tag: 'Blue Whales' },

@@ -107,13 +107,15 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
         )}
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
-          {currentSlide.title}
-        </h1>
+        {currentSlide.title && (
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
+            {currentSlide.title}
+          </h1>
+        )}
 
-        {/* Content Paragraph */}
+        {/* Content Paragraph / Message */}
         {currentSlide.content && (
-          <p className="text-base sm:text-xl text-white/90 leading-relaxed max-w-2xl font-light mb-6 drop-shadow">
+          <p className={`${currentSlide.title ? 'text-base sm:text-xl font-light text-white/90 mb-6' : 'text-xl sm:text-3xl font-medium text-white/95 mb-8 leading-snug'} max-w-2xl leading-relaxed drop-shadow-md`}>
             {currentSlide.content}
           </p>
         )}
@@ -124,16 +126,14 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
             {!isRevealed ? (
               <button
                 onClick={() => setIsRevealed(true)}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500/80 to-pink-600/80 border border-white/30 backdrop-blur-md font-semibold text-lg text-white shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer animate-pulse"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500/80 to-pink-600/80 border border-white/30 backdrop-blur-md font-semibold text-lg text-white shadow-xl hover:scale-105 transition-all duration-500 cursor-pointer animate-pulse"
               >
                 <Sparkles className="w-5 h-5 text-yellow-200 group-hover:rotate-12 transition-transform" />
                 <span>Click to Reveal 💖</span>
               </button>
             ) : (
-              <div className="px-8 py-6 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/30 text-2xl sm:text-3xl font-extrabold text-rose-100 shadow-2xl animate-fade-in flex items-center justify-center gap-3">
-                <Heart className="w-8 h-8 fill-rose-400 text-rose-300 animate-bounce" />
-                <span>{currentSlide.revealText}</span>
-                <Heart className="w-8 h-8 fill-rose-400 text-rose-300 animate-bounce" />
+              <div className="px-8 py-6 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/30 text-2xl sm:text-3xl font-extrabold text-rose-100 shadow-2xl transition-all duration-700 ease-out transform animate-powerpoint-slow flex items-center justify-center">
+                <span className="tracking-wide animate-fade-in">{currentSlide.revealText}</span>
               </div>
             )}
           </div>

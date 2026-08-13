@@ -21,6 +21,7 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
 }) => {
   const [noPosition, setNoPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [hasDodged, setHasDodged] = useState(false);
+  const [dodgeCount, setDodgeCount] = useState(0);
   const [playfulPromptIndex, setPlayfulPromptIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -52,23 +53,42 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
     }, 400);
   };
 
-  const handleNoMouseEnter = () => {
+  const triggerDodge = () => {
     if (!evasiveEnabled) return;
+    if (dodgeCount >= 5) return; // Stop dodging after 5 times
 
-    if (containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const maxX = containerRect.width / 2 - 80;
-      const maxY = containerRect.height / 3;
+    const nextCount = dodgeCount + 1;
+    setDodgeCount(nextCount);
 
-      const randomX = (Math.random() - 0.5) * maxX * 1.5;
-      const randomY = (Math.random() - 0.5) * maxY * 1.5;
-
-      setNoPosition({ x: randomX, y: randomY });
-      setHasDodged(true);
+    if (nextCount >= 5) {
+      // Return to original position once 5 dodges complete so it doesn't overlap text
+      setNoPosition({ x: 0, y: 0 });
+      setHasDodged(false);
+      return;
     }
+
+    // Moves the button outside the white card while keeping it fully visible on screen
+    const maxOffsetX = Math.min(window.innerWidth / 2 - 100, 220);
+    const maxOffsetY = Math.min(window.innerHeight / 3, 130);
+
+    const randomX = (Math.random() > 0.5 ? 1 : -1) * (110 + Math.random() * Math.max(20, maxOffsetX - 110));
+    const randomY = (Math.random() - 0.5) * maxOffsetY * 2;
+
+    setNoPosition({ x: randomX, y: randomY });
+    setHasDodged(true);
   };
 
   const handleNoClick = () => {
+    if (dodgeCount < 5 && evasiveEnabled) {
+      triggerDodge();
+      return;
+    }
+
+    // Return button to default position when prompts are triggered
+    setNoPosition({ x: 0, y: 0 });
+    setHasDodged(false);
+
+    // Once dodgeCount >= 5 and clickable, cycle through playful prompts
     if (playfulPromptIndex === null) {
       setPlayfulPromptIndex(0);
     } else if (playfulPromptIndex < playfulPrompts.length - 1) {
@@ -79,10 +99,11 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh]">
+    <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] relative z-20">
       <div
         ref={containerRef}
-        className="w-full sentimental-card p-6 sm:p-10 text-center relative overflow-hidden shadow-2xl border border-[#E5E7EB]"
+        style={{ overflow: 'visible' }}
+        className="w-full sentimental-card p-6 sm:p-10 text-center relative shadow-2xl border border-[#E5E7EB] !overflow-visible"
       >
         {/* Coffee Header Icon */}
         <div className="mx-auto w-16 h-16 rounded-2xl bg-[#8A181A] flex items-center justify-center shadow-lg mb-6">
@@ -98,7 +119,7 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
           {questionText}
         </h2>
 
-        <p className="font-poppins text-[#4A5565] text-sm sm:text-base mb-8 max-w-md mx-auto">
+        <p className="font-poppins text-[#4A5565] text-sm sm:text-base mb-6 max-w-md mx-auto">
           Dear <span className="font-semibold text-[#101828]">{recipientName}</span>, I'd love to share a quiet coffee moment together. What do you say?
         </p>
 
@@ -110,25 +131,28 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="relative min-h-[100px] flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
+        <div className="relative min-h-[100px] flex flex-col sm:flex-row items-center justify-center gap-4 mt-4" style={{ overflow: 'visible' }}>
           {/* YES Button */}
           <button
             onClick={handleYesClick}
-            className="btn-crimson w-full sm:w-auto min-w-[200px] px-8 py-4 text-base font-semibold flex items-center justify-center gap-2 cursor-pointer"
+            className="btn-crimson w-full sm:w-auto min-w-[200px] px-8 py-4 text-base font-semibold flex items-center justify-center gap-2 cursor-pointer z-10"
           >
             <Heart className="w-5 h-5 fill-white text-white" />
             <span>Yes, I'd love to! ☕💖</span>
           </button>
 
-          {/* NO Button */}
+          {/* NO Button (Evasive) */}
           <button
             onClick={handleNoClick}
-            onMouseEnter={handleNoMouseEnter}
+            onMouseEnter={triggerDodge}
+            onTouchStart={triggerDodge}
             style={{
               transform: evasiveEnabled && hasDodged ? `translate(${noPosition.x}px, ${noPosition.y}px)` : 'none',
-              transition: evasiveEnabled ? 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
+              transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
-            className="pill-inactive w-full sm:w-auto min-w-[140px] px-6 py-3.5 flex items-center justify-center gap-2 text-xs cursor-pointer"
+            className={`pill-inactive w-full sm:w-auto min-w-[140px] px-6 py-3.5 flex items-center justify-center gap-2 text-xs cursor-pointer z-40 relative shadow-xl ${
+              dodgeCount >= 5 ? 'ring-2 ring-rose-400 bg-white text-[#8A181A] font-bold' : ''
+            }`}
           >
             <XCircle className="w-4 h-4 text-[#6A7282]" />
             <span>
@@ -136,7 +160,7 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
                 ? playfulPromptIndex === playfulPrompts.length - 1
                   ? "Proceed with No"
                   : "Still No..."
-                : "No, sorry... 💔"}
+                : "No, sorry..."}
             </span>
           </button>
         </div>
