@@ -107,7 +107,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
         )}
 
         {/* Title */}
-        {currentSlide.title && (
+        {currentSlide.title && !currentSlide.beholdGrid && (
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
             {currentSlide.title}
           </h1>
@@ -175,23 +175,101 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
           </div>
         )}
 
-        {/* Things That Remind Me of You Visual Grid (Screen 8) */}
+        {/* Things That Remind Me of You — Free-Floating Anti-Gravity Canvas with Centered Title (Screen 8) */}
         {currentSlide.beholdGrid && (
-          <div className="my-6 w-full max-w-2xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-              {currentSlide.beholdGrid.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`p-4 rounded-2xl bg-gradient-to-br ${item.color || 'from-white/10 to-white/5'} backdrop-blur-md border border-white/20 flex flex-col items-center justify-center gap-2 shadow-lg hover:scale-105 transition-all duration-300 cursor-default group`}
-                >
-                  <span className="text-3xl sm:text-4xl group-hover:scale-125 transition-transform duration-300">
-                    {item.symbol}
-                  </span>
-                  <span className="text-sm font-semibold text-white tracking-wide">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
+          <div className="w-full relative min-h-[440px] sm:min-h-[520px] my-2 overflow-visible select-none flex items-center justify-center">
+            {/* Centered Main Title (Behind Floating Emojis/Stickers) */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4 text-center">
+              <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)] max-w-lg">
+                {currentSlide.title || "The things that remind me of you"}
+              </h1>
+            </div>
+
+            {/* 1. Blue Whales (Top-Left) */}
+            <div
+              className="absolute top-[-2%] left-[0%] sm:left-[4%] flex flex-col items-center vector-hover-3 z-20"
+              style={{ transform: 'rotate(-10deg)' }}
+            >
+              <span className="text-6xl sm:text-8xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+                🐋
+              </span>
+              <span className="text-xs sm:text-base font-extrabold text-cyan-200 tracking-wide mt-1 drop-shadow">
+                Blue Whales
+              </span>
+            </div>
+
+            {/* 2. Kirby (Top-Right) */}
+            <div
+              className="absolute top-[-4%] right-[0%] sm:right-[4%] flex flex-col items-center vector-hover-2 z-20"
+              style={{ transform: 'rotate(12deg)' }}
+            >
+              <img
+                src="/kirby.png"
+                alt="Kirby"
+                className="w-20 h-20 sm:w-32 sm:h-32 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:scale-110 transition-transform cursor-default"
+              />
+              <span className="text-xs sm:text-base font-extrabold text-pink-200 tracking-wide mt-1 drop-shadow">
+                Kirby 💖
+              </span>
+            </div>
+
+            {/* 3. 3.14 + Arrow & Birthday Caption (Middle-Left) */}
+            <div
+              className="absolute top-[46%] left-[-2%] sm:left-[1%] flex flex-col items-start vector-hover-1 z-20"
+              style={{ transform: 'rotate(-14deg)' }}
+            >
+              <div className="flex items-center gap-1 group cursor-default">
+                <span className="text-4xl sm:text-6xl font-black font-mono text-amber-200 drop-shadow-[0_6px_16px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform">
+                  3.14
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-1 text-amber-100/90 pl-1">
+                <svg className="w-5 h-5 text-amber-300 shrink-0 transform -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                </svg>
+                <span className="text-xs sm:text-base font-bold tracking-wide italic drop-shadow font-poppins">
+                  My birthday btw
+                </span>
+              </div>
+            </div>
+
+            {/* 4. The Color Red (Middle-Right) */}
+            <div
+              className="absolute top-[48%] right-[-2%] sm:right-[1%] flex flex-col items-center vector-hover-1 z-20"
+              style={{ transform: 'rotate(15deg)' }}
+            >
+              <span className="text-6xl sm:text-8xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+                🔴
+              </span>
+              <span className="text-xs sm:text-base font-extrabold text-rose-300 tracking-wide mt-1 drop-shadow">
+                The Color Red
+              </span>
+            </div>
+
+            {/* 5. Pi Symbol (Bottom-Left / Center) */}
+            <div
+              className="absolute bottom-[-2%] left-[12%] sm:left-[18%] flex flex-col items-center vector-hover-2 z-20"
+              style={{ transform: 'rotate(8deg)' }}
+            >
+              <span className="text-6xl sm:text-8xl font-serif font-black text-purple-200 drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+                π
+              </span>
+              <span className="text-xs sm:text-base font-extrabold text-purple-200 tracking-wide mt-1 drop-shadow">
+                Pi Symbol
+              </span>
+            </div>
+
+            {/* 6. Bass Guitar (Bottom-Right / Center) */}
+            <div
+              className="absolute bottom-[-4%] right-[12%] sm:right-[18%] flex flex-col items-center vector-hover-3 z-20"
+              style={{ transform: 'rotate(-12deg)' }}
+            >
+              <span className="text-6xl sm:text-8xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+                🎸
+              </span>
+              <span className="text-xs sm:text-base font-extrabold text-indigo-200 tracking-wide mt-1 drop-shadow">
+                Bass
+              </span>
             </div>
           </div>
         )}

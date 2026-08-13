@@ -113,7 +113,7 @@ export const defaultConfig: AppConfig = {
     },
     {
       id: 8,
-      title: 'The things that remind me of you....',
+      title: 'The things that remind me of you',
       iconName: 'star',
       beholdGrid: [
         { label: 'Blue Whales', symbol: '🐋', color: 'from-blue-600/40 to-cyan-500/40 border-cyan-300/40 text-cyan-200', tag: 'Blue Whales' },
