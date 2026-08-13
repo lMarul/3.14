@@ -220,3 +220,20 @@
   animation: progressShimmer 2s linear infinite;
 }
 
+/* Slower PowerPoint Slide Breathing Transitions */
+@keyframes powerpointSlowIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.conf-container .animate-powerpoint-slow {
+  animation: powerpointSlowIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+

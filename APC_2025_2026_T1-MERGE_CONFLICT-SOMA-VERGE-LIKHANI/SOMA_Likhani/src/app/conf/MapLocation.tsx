@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import type { CoffeeLocation, ResponseData } from './types';
-import { MapPin, Calendar, Clock, Navigation, CheckCircle2, Heart, ExternalLink } from 'lucide-react';
+import { MapPin, Calendar, Clock, Navigation, CheckCircle2, Heart, ExternalLink, MessageSquare } from 'lucide-react';
 
 interface MapLocationProps {
   location: CoffeeLocation;
   recipientName: string;
   senderName: string;
-  onConfirmDate: (date: string, time: string) => Promise<void>;
+  onConfirmDate: (date: string, time: string, message?: string) => Promise<void>;
   submittedData?: ResponseData | null;
 }
 
@@ -24,6 +25,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
 
   const [selectedDate, setSelectedDate] = useState<string>(submittedData?.preferredDate || defaultDateStr);
   const [selectedTime, setSelectedTime] = useState<string>(submittedData?.preferredTime || '14:30');
+  const [comment, setComment] = useState<string>(submittedData?.message || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaved, setIsSaved] = useState(!!submittedData);
 
@@ -79,6 +81,13 @@ export const MapLocation: React.FC<MapLocationProps> = ({
       `);
 
       mapInstanceRef.current = map;
+
+      // Fix size calculation after container mounting
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 250);
     } catch (e) {
       console.error('Leaflet initialization note:', e);
     }
@@ -95,7 +104,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await onConfirmDate(selectedDate, selectedTime);
+      await onConfirmDate(selectedDate, selectedTime, comment.trim());
       setIsSaved(true);
     } catch (err) {
       console.error(err);
@@ -114,7 +123,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     : '';
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center justify-center min-h-[80vh] font-poppins">
+    <div className="w-full max-w-4xl mx-auto px-4 py-4 flex flex-col items-center justify-center min-h-[80vh] font-poppins">
       {/* Celebration Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ff4b4b]/20 border border-[#ff4b4b]/40 text-[#ff4b4b] font-poppins font-bold text-xs mb-3 shadow-md">
@@ -125,14 +134,14 @@ export const MapLocation: React.FC<MapLocationProps> = ({
           It's a Coffee Date! ☕✨
         </h2>
         <p className="font-poppins text-white/80 text-sm sm:text-base max-w-lg mx-auto">
-          Here is our proposed location. Choose your preferred date & time below to seal our plans!
+          Here is our proposed location. Choose your preferred date, time & leave a message below to seal our plans!
         </p>
       </div>
 
       {/* Grid Layout: Map Card + Date Selector */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Map Container */}
-        <div className="lg:col-span-7 sentimental-card p-4 flex flex-col h-[380px] sm:h-[420px]">
+        <div className="lg:col-span-6 sentimental-card p-4 flex flex-col h-[380px] sm:h-[440px]">
           <div className="flex items-center justify-between mb-3 px-2">
             <div className="flex items-center gap-2 text-[#101828] font-poppins font-semibold text-sm">
               <MapPin className="w-4 h-4 text-[#8A181A]" />
@@ -151,9 +160,9 @@ export const MapLocation: React.FC<MapLocationProps> = ({
             )}
           </div>
 
-          {/* Leaflet Pure Map Embed */}
+          {/* Leaflet Map Embed */}
           <div className="flex-1 w-full rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3]">
-            <div ref={mapContainerRef} className="w-full h-full min-h-[260px] z-10" />
+            <div ref={mapContainerRef} className="w-full h-full min-h-[280px] z-10" />
           </div>
 
           <div className="mt-3 px-2 text-xs text-[#6A7282] flex items-center gap-1.5 font-poppins">
@@ -162,12 +171,12 @@ export const MapLocation: React.FC<MapLocationProps> = ({
           </div>
         </div>
 
-        {/* Date Selector / Invitation Ticket */}
-        <div className="lg:col-span-5 sentimental-card p-6 flex flex-col justify-between">
+        {/* Date Selector & Comment Form / Invitation Ticket */}
+        <div className="lg:col-span-6 sentimental-card p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4 text-[#101828]">
               <Calendar className="w-5 h-5 text-[#8A181A]" />
-              <h3 className="font-poppins text-xl font-bold">Pick a Time</h3>
+              <h3 className="font-poppins text-xl font-bold">Plan Details</h3>
             </div>
 
             {isSaved ? (
@@ -198,17 +207,23 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                     <span className="metadata-label w-28 shrink-0">Location</span>
                     <span className="metadata-value font-semibold truncate">{location.name}</span>
                   </div>
+                  {comment && (
+                    <div className="metadata-row">
+                      <span className="metadata-label w-28 shrink-0">Your Note</span>
+                      <span className="metadata-value italic text-[#8A181A]">"{comment}"</span>
+                    </div>
+                  )}
                 </div>
 
                 <button
                   onClick={() => setIsSaved(false)}
                   className="mt-4 text-xs font-poppins text-[#6A7282] hover:text-[#8A181A] underline cursor-pointer"
                 >
-                  Change Date / Time
+                  Change Date / Time / Note
                 </button>
               </div>
             ) : (
-              /* Date Form */
+              /* Date Form + Comment Box */
               <form onSubmit={handleConfirm} className="space-y-4">
                 <div>
                   <label className="block text-xs font-poppins font-semibold text-[#364153] mb-1">
@@ -238,13 +253,28 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                   />
                 </div>
 
+                {/* Comment Box (YES Branch) */}
+                <div>
+                  <label className="block text-xs font-poppins font-semibold text-[#364153] mb-1 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-[#8A181A]" />
+                    <span>Your Note / Comment for Me (Optional)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Leave a message or excited thoughts..."
+                    className="w-full p-3 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A] transition-colors placeholder:text-[#99A1AF] resize-none font-poppins"
+                  />
+                </div>
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="btn-crimson w-full py-3.5 text-sm flex items-center justify-center gap-2 mt-3 cursor-pointer"
                 >
                   <Heart className="w-4 h-4 fill-white" />
-                  <span>{isSubmitting ? 'Saving Date...' : 'Confirm Our Coffee Date'}</span>
+                  <span>{isSubmitting ? 'Saving Date...' : 'Confirm Our Coffee Date ☕💖'}</span>
                 </button>
               </form>
             )}
@@ -254,3 +284,5 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     </div>
   );
 };
+
+export default MapLocation;

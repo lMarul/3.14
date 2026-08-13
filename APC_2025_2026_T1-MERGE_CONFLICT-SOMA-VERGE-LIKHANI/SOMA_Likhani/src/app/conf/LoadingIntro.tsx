@@ -44,10 +44,10 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
 
         {/* Title */}
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] mb-2 tracking-tight">
-          Confession Note
+          Private Access Check
         </h1>
         <p className="text-xs sm:text-sm text-[#4A5565] mb-6 max-w-xs font-normal">
-          Crafted with care just for <span className="font-semibold text-[#8A181A]">{recipientName}</span> 💕
+          Dedicated security verification for <span className="font-semibold text-[#8A181A]">{recipientName}</span> ✨
         </p>
 
         {/* Progress Bar Container */}
@@ -64,12 +64,12 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
             {isReady ? (
               <>
                 <Coffee className="w-3.5 h-3.5 text-[#8A181A]" />
-                <span>Ready to open</span>
+                <span>Ready for verification</span>
               </>
             ) : (
               <>
                 <Lock className="w-3.5 h-3.5 text-rose-400" />
-                <span>Preparing confession...</span>
+                <span>Initializing access check...</span>
               </>
             )}
           </span>
@@ -83,7 +83,7 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
             !isReady ? 'opacity-95' : 'hover:scale-[1.02]'
           }`}
         >
-          <span>{isReady ? 'Enter Confession Note 💕' : 'Tap to Start ✨'}</span>
+          <span>{isReady ? 'Begin Identity Check ✨' : 'Tap to Start ✨'}</span>
         </button>
       </div>
     </div>

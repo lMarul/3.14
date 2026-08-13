@@ -49,4 +49,4 @@ export interface ResponseData {
   userAgent?: string;
 }
 
-export type AppScreen = 'INTRO' | 'QUIZ' | 'SLIDES' | 'QUESTION' | 'YES_MAP' | 'NO_FORM' | 'SUBMITTED_YES' | 'SUBMITTED_NO';
+export type AppScreen = 'INTRO' | 'QUIZ' | 'CONGRATS' | 'SLIDES' | 'QUESTION' | 'YES_MAP' | 'NO_FORM' | 'SUBMITTED_YES' | 'SUBMITTED_NO';

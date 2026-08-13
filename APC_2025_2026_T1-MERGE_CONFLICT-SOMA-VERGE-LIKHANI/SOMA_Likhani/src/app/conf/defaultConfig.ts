@@ -4,7 +4,7 @@ export const defaultConfig: AppConfig = {
   recipientName: 'Pia',
   senderName: 'Me',
   questionText: 'May I take you out for a cup of coffee?',
-  quizTitle: 'Are you really Pia?',
+  quizTitle: 'Identity Verification Check',
   quizQuestions: [
     {
       id: 1,
@@ -47,7 +47,7 @@ export const defaultConfig: AppConfig = {
     },
     {
       id: 4,
-      question: "Are you ready to read this small note crafted just for you?",
+      question: "Are you ready to unlock this note?",
       options: [
         "Yes! Show me 💕",
         "100% Ready ☕",
@@ -55,8 +55,8 @@ export const defaultConfig: AppConfig = {
         "Let's Go! 🚀"
       ],
       correctIndex: 0,
-      correctComment: "Here we go! ❤️",
-      wrongComment: "It's okay! Take a deep breath, here we go 💕"
+      correctComment: "Access Granted! ❤️",
+      wrongComment: "Take a deep breath, access granted 💕"
     }
   ],
   evasiveNoButton: true,
@@ -73,7 +73,7 @@ export const defaultConfig: AppConfig = {
   slides: [
     {
       id: 1,
-      title: 'Hey there...',
+      title: 'Surprise!',
       subtitle: 'A small note crafted just for you',
       content: 'I wanted to share something that has been on my mind for a while now. Life gets wonderfully busy, but certain people always manage to stand out in the brightest way.',
       quote: '"The best things in life are even better when shared."',
@@ -81,7 +81,7 @@ export const defaultConfig: AppConfig = {
     },
     {
       id: 2,
-      title: 'Moments That Matter',
+      title: 'I think you get the idea',
       subtitle: 'Simple joys and genuine conversations',
       content: 'Every time we talk, I find myself admiring your kindness, your sense of humor, and how effortlessly comfortable it feels to be around you.',
       quote: '"A warm conversation can make an entire week feel special."',

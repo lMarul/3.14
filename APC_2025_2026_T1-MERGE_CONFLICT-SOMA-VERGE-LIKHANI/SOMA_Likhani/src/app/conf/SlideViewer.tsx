@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import type { Slide } from './types';
-import { ChevronLeft, ChevronRight, Heart, Coffee, Sparkles, Star, Smile, BookOpen, Quote } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Quote } from 'lucide-react';
 
 interface SlideViewerProps {
   slides: Slide[];
@@ -22,7 +22,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
   const currentSlide = slides[currentIndex] || slides[0];
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,150 +57,111 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
     }
   };
 
-  const renderIcon = (iconName?: string) => {
-    const props = { className: "w-5 h-5 text-[#8A181A]" };
-    switch (iconName) {
-      case 'heart':
-        return <Heart {...props} className="w-5 h-5 text-[#8A181A] fill-[#8A181A]/20" />;
-      case 'coffee':
-        return <Coffee {...props} />;
-      case 'sparkles':
-        return <Sparkles {...props} />;
-      case 'star':
-        return <Star {...props} />;
-      case 'smile':
-        return <Smile {...props} />;
-      default:
-        return <BookOpen {...props} />;
-    }
-  };
-
-  const progressPercent = ((currentIndex + 1) / slides.length) * 100;
-
   return (
-    <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh]">
-      {/* Top Pill Navigation Bar */}
-      <div className="w-full mb-6 flex items-center justify-between gap-2 overflow-x-auto pb-1">
+    <div
+      ref={containerRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="w-full max-w-3xl mx-auto px-6 py-8 flex flex-col items-center justify-between min-h-[80vh] font-poppins relative text-white"
+    >
+      {/* Top Bar: Corner Fraction & Direct Slide Dots */}
+      <div className="w-full flex items-center justify-between mb-8 relative z-10">
         <div className="flex items-center gap-2">
           {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => onSelectSlide(idx)}
-              className={idx === currentIndex ? 'pill-active px-4 py-2 text-[11px] cursor-pointer' : 'pill-inactive px-3.5 py-2 text-[11px] cursor-pointer'}
-            >
-              Slide 0{idx + 1}
-            </button>
+              className={`h-2.5 rounded-full transition-all duration-700 cursor-pointer ${
+                idx === currentIndex
+                  ? 'w-8 bg-white shadow-md'
+                  : 'w-2.5 bg-white/30 hover:bg-white/60'
+              }`}
+              title={`Slide ${idx + 1}`}
+            />
           ))}
         </div>
 
-        <span className="font-poppins text-xs font-bold text-white/80 uppercase tracking-wider shrink-0">
+        {/* Fraction in the Corner */}
+        <div className="px-4 py-1.5 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-white tracking-widest shadow-md">
           {currentIndex + 1} / {slides.length}
-        </span>
+        </div>
       </div>
 
-      {/* Main Unique Sentimental Card Container */}
+      {/* Main PowerPoint Presentation Body — Focus on Text & Message (No White Card) */}
       <div
         key={currentIndex}
-        ref={cardRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className="w-full sentimental-card p-6 sm:p-10 relative overflow-hidden transition-all duration-300 shadow-2xl animate-slide-fade"
+        className="w-full flex-1 flex flex-col items-center justify-center text-center my-auto px-2 sm:px-8 py-4 animate-powerpoint-slow relative z-10"
       >
-        {/* Background Watermark Emblem */}
-        <div className="absolute -right-8 -bottom-8 opacity-5 text-[#8A181A] pointer-events-none">
-          <Heart className="w-64 h-64" />
-        </div>
-
-        {/* Category Badge & Progress Indicator */}
-        <div className="flex items-center justify-between mb-6 relative z-10">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2.5 rounded-xl bg-[#F7F6F3] border border-[#E5E7EB] shadow-sm">
-              {renderIcon(currentSlide.iconName)}
-            </div>
-            <div>
-              <span className="block font-poppins font-bold text-[10px] tracking-[1.6px] uppercase text-[#8A181A]">
-                {currentSlide.subtitle || 'Confession Note'}
-              </span>
-              <span className="block font-poppins text-[11px] text-[#99A1AF]">
-                Personal Memory #{currentIndex + 1}
-              </span>
-            </div>
-          </div>
-
-          <div className="px-3 py-1 rounded-full bg-[#F7F6F3] border border-[#E5E7EB] text-[10px] font-poppins font-bold tracking-wider text-[#6A7282] uppercase">
-            {Math.round(progressPercent)}% Completed
-          </div>
-        </div>
+        {/* Subtitle Accent */}
+        {currentSlide.subtitle && (
+          <span className="text-xs sm:text-sm font-medium tracking-[2.5px] uppercase text-rose-200/90 mb-4 inline-block drop-shadow-sm">
+            {currentSlide.subtitle}
+          </span>
+        )}
 
         {/* Title */}
-        <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-[#101828] mb-4 leading-tight relative z-10">
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
           {currentSlide.title}
-        </h2>
+        </h1>
 
-        {/* Paragraph Message Body */}
-        <p className="font-poppins text-[#4A5565] text-sm sm:text-base leading-relaxed mb-6 font-normal relative z-10">
+        {/* Content Paragraph */}
+        <p className="text-base sm:text-xl text-white/90 leading-relaxed max-w-2xl font-light mb-8 drop-shadow">
           {currentSlide.content}
         </p>
 
-        {/* Quote Callout Box */}
+        {/* Quote Callout if present */}
         {currentSlide.quote && (
-          <div className="my-6 p-4 rounded-xl bg-[#F7F6F3] border-l-4 border-[#8A181A] flex items-start gap-3 relative z-10">
-            <Quote className="w-5 h-5 text-[#8A181A] shrink-0 mt-0.5" />
-            <p className="font-serif italic text-sm text-[#364153] leading-snug">
+          <div className="max-w-xl mx-auto my-4 px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-md border-l-4 border-rose-300 flex items-start gap-3 text-left">
+            <Quote className="w-5 h-5 text-rose-300 shrink-0 mt-1" />
+            <p className="font-serif italic text-sm sm:text-base text-white/90 leading-snug">
               {currentSlide.quote}
             </p>
           </div>
         )}
-
-        {/* Structured Details Metadata */}
-        <div className="my-6 space-y-0 border-t border-[#F3F4F6] pt-2 relative z-10">
-          <div className="metadata-row">
-            <span className="metadata-label w-28 shrink-0">Crafted With</span>
-            <span className="metadata-value">Sentimental Heart & Good Coffee</span>
-          </div>
-          <div className="metadata-row">
-            <span className="metadata-label w-28 shrink-0">Chapter</span>
-            <span className="metadata-value font-semibold">0{currentIndex + 1} of 0{slides.length}</span>
-          </div>
-        </div>
-
-        {/* Navigation Action Controls */}
-        <div className="mt-8 flex items-center justify-between gap-4 pt-2 relative z-10">
-          <button
-            onClick={onPrev}
-            disabled={currentIndex === 0}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-poppins font-semibold text-xs transition-all ${
-              currentIndex === 0
-                ? 'opacity-40 cursor-not-allowed text-[#99A1AF] bg-[#F3F4F6]'
-                : 'bg-[#F7F6F3] text-[#364153] hover:bg-[#E5E7EB] border border-[#D1D5DC] cursor-pointer'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>Previous</span>
-          </button>
-
-          <button
-            onClick={onNext}
-            className="btn-crimson flex items-center gap-2 px-6 py-3 text-sm cursor-pointer"
-          >
-            <span>{currentIndex === slides.length - 1 ? 'Go to Question' : 'Next Message'}</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
 
-      {/* Return to Verification Quiz Link */}
+      {/* Bottom Actions: Previous & Next Message Buttons */}
+      <div className="w-full flex items-center justify-between gap-4 mt-8 pt-4 border-t border-white/10 relative z-10">
+        <button
+          onClick={onPrev}
+          disabled={currentIndex === 0}
+          className={`flex items-center gap-2 px-5 py-3 rounded-xl font-poppins text-xs font-semibold transition-all duration-300 ${
+            currentIndex === 0
+              ? 'opacity-30 cursor-not-allowed text-white/40'
+              : 'bg-white/10 hover:bg-white/20 text-white cursor-pointer border border-white/20 shadow'
+          }`}
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Previous</span>
+        </button>
+
+        <button
+          onClick={onNext}
+          className="btn-crimson flex items-center gap-2 px-8 py-3.5 text-sm sm:text-base font-semibold shadow-2xl cursor-pointer hover:scale-105 border border-white/20"
+        >
+          <span>{currentIndex === slides.length - 1 ? 'Go to Question 💕' : 'Next Message'}</span>
+          {currentIndex < slides.length - 1 ? (
+            <ChevronRight className="w-5 h-5" />
+          ) : (
+            <Heart className="w-4 h-4 fill-white" />
+          )}
+        </button>
+      </div>
+
+      {/* Back to Quiz link */}
       {onBackToQuiz && (
         <div className="mt-4 text-center">
           <button
             onClick={onBackToQuiz}
-            className="text-xs text-white/80 hover:text-white underline cursor-pointer font-poppins transition-colors flex items-center justify-center gap-1 mx-auto"
+            className="text-xs text-white/60 hover:text-white underline cursor-pointer font-poppins transition-colors"
           >
-            <span>← Return to verification quiz</span>
+            ← Return to verification check
           </button>
         </div>
       )}
     </div>
   );
 };
+
+export default SlideViewer;

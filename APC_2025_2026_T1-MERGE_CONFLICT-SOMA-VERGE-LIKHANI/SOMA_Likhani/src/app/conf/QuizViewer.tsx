@@ -52,8 +52,8 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
         <h2 className="font-poppins text-3xl sm:text-4xl font-bold text-white mb-1 drop-shadow-md">
           {titleText}
         </h2>
-        <p className="font-poppins text-white/70 text-xs sm:text-sm">
-          Answer a quick question to unlock your personal note 💕
+        <p className="font-poppins text-white/70 text-xs sm:text-sm max-w-sm mx-auto">
+          Please complete this verification so that no one other than <span className="font-semibold text-white">{recipientName}</span> will be able to view this note ✨
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
               <HelpCircle className="w-5 h-5" />
             </div>
             <span className="font-poppins font-bold text-xs uppercase tracking-wider text-[#8A181A]">
-              Question 0{currentIndex + 1} of 0{questions.length}
+              Verification Question 0{currentIndex + 1} of 0{questions.length}
             </span>
           </div>
 
@@ -171,12 +171,12 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
             }`}
           >
             <span>
-              {currentIndex < questions.length - 1 ? 'Next Question' : 'Open Confession Note 💕'}
+              {currentIndex < questions.length - 1 ? 'Next Question' : 'Verify & Unlock Note ✨'}
             </span>
             {currentIndex < questions.length - 1 ? (
               <ChevronRight className="w-4 h-4" />
             ) : (
-              <Heart className="w-4 h-4 fill-white" />
+              <Sparkles className="w-4 h-4 text-rose-200" />
             )}
           </button>
         </div>

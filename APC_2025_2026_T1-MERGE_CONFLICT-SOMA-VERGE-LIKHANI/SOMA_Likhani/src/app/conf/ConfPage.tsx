@@ -4,6 +4,7 @@ import { defaultConfig } from './defaultConfig';
 import { BackgroundEffects } from './BackgroundEffects';
 import { QuizViewer } from './QuizViewer';
 import { LoadingIntro } from './LoadingIntro';
+import { CongratsScreen } from './CongratsScreen';
 import { SlideViewer } from './SlideViewer';
 import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
@@ -116,13 +117,14 @@ export const ConfPage: React.FC = () => {
     setCurrentScreen('NO_FORM');
   };
 
-  // YES Response Submission to Convex Database + localStorage
-  const handleConfirmDate = async (date: string, time: string) => {
+  // YES Response Submission to Convex Database + localStorage (including optional comment)
+  const handleConfirmDate = async (date: string, time: string, message?: string) => {
     const newResp: ResponseData = {
       id: 'resp_' + Date.now(),
       choice: 'YES',
       preferredDate: date,
       preferredTime: time,
+      message: message || undefined,
       createdAt: new Date().toISOString(),
     };
 
@@ -131,6 +133,7 @@ export const ConfPage: React.FC = () => {
         choice: 'YES',
         preferredDate: date,
         preferredTime: time,
+        message: message || null,
       });
       console.log('Successfully saved YES response to Convex DB!');
     } catch (e) {
@@ -184,7 +187,14 @@ export const ConfPage: React.FC = () => {
               questions={config.quizQuestions || []}
               recipientName={config.recipientName}
               quizTitle={config.quizTitle}
-              onCompleteQuiz={() => setCurrentScreen('SLIDES')}
+              onCompleteQuiz={() => setCurrentScreen('CONGRATS')}
+            />
+          )}
+
+          {currentScreen === 'CONGRATS' && (
+            <CongratsScreen
+              recipientName={config.recipientName}
+              onProceed={() => setCurrentScreen('SLIDES')}
             />
           )}
 
