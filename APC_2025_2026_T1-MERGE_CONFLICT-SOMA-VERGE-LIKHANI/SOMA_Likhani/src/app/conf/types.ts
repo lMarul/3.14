@@ -1,3 +1,10 @@
+export interface SlideRemindItem {
+  label: string;
+  symbol: string;
+  color?: string;
+  tag?: string;
+}
+
 export interface Slide {
   id: number;
   title: string;
@@ -6,6 +13,11 @@ export interface Slide {
   quote?: string;
   image?: string;
   iconName?: 'heart' | 'coffee' | 'sparkles' | 'smile' | 'star' | 'book';
+  revealText?: string;
+  videoPlaceholderLabel?: string;
+  videoUrl?: string;
+  customEmoji?: string;
+  beholdGrid?: SlideRemindItem[];
 }
 
 export interface QuizQuestion {

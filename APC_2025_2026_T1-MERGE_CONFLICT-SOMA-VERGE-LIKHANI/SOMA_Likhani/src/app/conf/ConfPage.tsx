@@ -20,7 +20,12 @@ export const ConfPage: React.FC = () => {
   const [config] = useState<AppConfig>(() => {
     const saved = localStorage.getItem('conf_app_config');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && Array.isArray(parsed.slides) && parsed.slides.length === defaultConfig.slides.length) {
+          return parsed;
+        }
+      } catch (e) {}
     }
     return defaultConfig;
   });

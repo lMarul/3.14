@@ -73,35 +73,71 @@ export const defaultConfig: AppConfig = {
   slides: [
     {
       id: 1,
-      title: 'Surprise!',
-      subtitle: 'A small note crafted just for you',
-      content: 'I wanted to share something that has been on my mind for a while now. Life gets wonderfully busy, but certain people always manage to stand out in the brightest way.',
-      quote: '"The best things in life are even better when shared."',
+      title: 'Hey there...',
+      subtitle: 'A small confession',
+      content: 'I know its kind of sudden and this may come as a surprise to you, but yeah.',
+      revealText: 'I like you...',
       iconName: 'sparkles'
     },
     {
       id: 2,
-      title: 'I think you get the idea',
-      subtitle: 'Simple joys and genuine conversations',
-      content: 'Every time we talk, I find myself admiring your kindness, your sense of humor, and how effortlessly comfortable it feels to be around you.',
-      quote: '"A warm conversation can make an entire week feel special."',
+      title: 'Holding These Feelings',
+      subtitle: 'A quiet truth',
+      content: 'It\'s been a long time that we\'ve known each other, its also been a long time since I\'ve held these feelings to myself.',
       iconName: 'heart'
     },
     {
       id: 3,
-      title: 'No Pressure, Just Warmth',
-      subtitle: 'A genuine invitation',
-      content: 'I cherish our connection and wanted to create a quiet, relaxed moment for us—a chance to step away from the daily rush, sip something warm, and catch up properly.',
-      quote: '"Great stories start over simple coffee."',
-      iconName: 'coffee'
+      title: 'Every Interaction',
+      subtitle: 'Cherishing moments',
+      content: 'I truly appreciate every interactions we\'ve ever had, no matter how small they may seem.',
+      iconName: 'smile'
     },
     {
       id: 4,
-      title: 'So, Here Is My Question...',
-      subtitle: 'A simple step forward',
-      content: 'I would love the opportunity to share a cozy coffee date with you. No rush, no expectations, just good coffee and great company.',
-      quote: '"Shall we create a new favorite memory?"',
+      title: 'You Inspire Me',
+      subtitle: 'My motivation',
+      content: 'You\'ve inspired me numerous times. You have been the reason for me to keep moving forward no matter how difficult it gets.',
+      videoPlaceholderLabel: 'Gagawin ko ang lahat pati ang thesis mo vid',
       iconName: 'star'
+    },
+    {
+      id: 5,
+      title: 'Trying New Things',
+      subtitle: 'New passions',
+      content: 'The reason for me try new things that looks interesting.',
+      videoPlaceholderLabel: 'Guitar vids',
+      iconName: 'coffee'
+    },
+    {
+      id: 6,
+      title: 'Becoming Better',
+      subtitle: 'Self-growth & effort',
+      content: 'The reason for me to make efforts to be the best version of myself.',
+      customEmoji: '🖐️',
+      iconName: 'heart'
+    },
+    {
+      id: 7,
+      title: 'Behold...',
+      subtitle: 'Take a close look',
+      content: 'Something special is waiting for you...',
+      iconName: 'sparkles'
+    },
+    {
+      id: 8,
+      title: 'The things that remind me of you....',
+      subtitle: 'Everywhere I look',
+      content: 'These little details around me always bring you to mind...',
+      iconName: 'star',
+      beholdGrid: [
+        { label: 'Blue Whales', symbol: '🐋', color: 'from-blue-600/40 to-cyan-500/40 border-cyan-300/40 text-cyan-200', tag: 'Blue Whales' },
+        { label: 'The Color Red', symbol: '🔴', color: 'from-red-600/40 to-rose-500/40 border-rose-300/40 text-rose-200', tag: 'Crimson Red' },
+        { label: '3.14', symbol: '🥧', color: 'from-amber-600/40 to-yellow-500/40 border-amber-300/40 text-amber-200', tag: '3.14' },
+        { label: 'Pi Symbol', symbol: 'π', color: 'from-purple-600/40 to-pink-500/40 border-purple-300/40 text-purple-200', tag: 'Pi (π)' },
+        { label: 'Bass', symbol: '🎸', color: 'from-indigo-600/40 to-blue-500/40 border-indigo-300/40 text-indigo-200', tag: 'Bass Guitar' },
+        { label: 'Kirby', symbol: '🌸', color: 'from-pink-600/40 to-rose-400/40 border-pink-300/40 text-pink-200', tag: 'Kirby 💖' }
+      ]
     }
   ]
 };
