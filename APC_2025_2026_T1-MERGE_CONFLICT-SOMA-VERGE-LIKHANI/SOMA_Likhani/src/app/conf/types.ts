@@ -46,6 +46,7 @@ export interface AppConfig {
   quizTitle?: string;
   quizQuestions: QuizQuestion[];
   coffeeLocation: CoffeeLocation;
+  coffeeSpots?: CoffeeLocation[];
   slides: Slide[];
   evasiveNoButton: boolean;
   adminPasscode: string;
@@ -57,6 +58,8 @@ export interface ResponseData {
   preferredDate?: string;
   preferredTime?: string;
   message?: string;
+  selectedLocation?: CoffeeLocation;
+  selectedLocationName?: string;
   createdAt: string;
   userAgent?: string;
 }

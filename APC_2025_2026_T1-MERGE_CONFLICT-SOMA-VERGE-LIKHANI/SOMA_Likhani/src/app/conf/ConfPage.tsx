@@ -250,14 +250,17 @@ export const ConfPage: React.FC = () => {
     setCurrentScreen('NO_FORM');
   };
 
-  // YES Response Submission to Convex Database + localStorage (including optional comment)
-  const handleConfirmDate = async (date: string, time: string, message?: string) => {
+  // YES Response Submission to Convex Database + localStorage (including optional comment & selected venue)
+  const handleConfirmDate = async (date: string, time: string, message?: string, selectedLocation?: CoffeeLocation) => {
+    const venueName = selectedLocation?.name || config.coffeeLocation?.name;
     const newResp: ResponseData = {
       id: 'resp_' + Date.now(),
       choice: 'YES',
       preferredDate: date,
       preferredTime: time,
       message: message || undefined,
+      selectedLocation: selectedLocation || config.coffeeLocation,
+      selectedLocationName: venueName,
       createdAt: new Date().toISOString(),
     };
 
@@ -266,7 +269,7 @@ export const ConfPage: React.FC = () => {
         choice: 'YES',
         preferredDate: date,
         preferredTime: time,
-        message: message || null,
+        message: message ? `[Location: ${venueName}] ${message}` : `[Location: ${venueName}]`,
       });
       console.log('Successfully saved YES response to Convex DB!');
     } catch (e) {
@@ -369,6 +372,7 @@ export const ConfPage: React.FC = () => {
           {currentScreen === 'YES_MAP' && (
             <MapLocation
               location={config.coffeeLocation}
+              coffeeSpots={config.coffeeSpots}
               recipientName={config.recipientName}
               senderName={config.senderName}
               onConfirmDate={handleConfirmDate}

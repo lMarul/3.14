@@ -485,6 +485,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <span className="text-[#8A181A] font-semibold">Preferred Time:</span>{' '}
                           <span className="font-bold text-[#101828]">{resp.preferredTime || 'Not specified'}</span>
                         </p>
+                        {resp.selectedLocationName && (
+                          <p>
+                            <span className="text-emerald-700 font-semibold">Chosen Spot:</span>{' '}
+                            <span className="font-bold text-emerald-800">{resp.selectedLocationName}</span>
+                          </p>
+                        )}
+                        {resp.message && (
+                          <p className="pt-1 text-[#4A5565] italic border-t border-[#E5E7EB] mt-1">
+                            {resp.message}
+                          </p>
+                        )}
                       </div>
                     )}
 

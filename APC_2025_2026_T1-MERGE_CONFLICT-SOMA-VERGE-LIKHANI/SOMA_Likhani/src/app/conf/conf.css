@@ -218,6 +218,25 @@
   animation: pulseGlow 2.5s ease-in-out infinite;
 }
 
+@keyframes pulseGreenPin {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.conf-container .pulse-green-pin {
+  animation: pulseGreenPin 1.8s ease-in-out infinite;
+}
+
 @keyframes progressShimmer {
   0% {
     background-position: -200% 0;

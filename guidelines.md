@@ -153,8 +153,10 @@ npx convex dev
   - Playful evasive "No" button that dodges the cursor across screen bounds before cycling through humorous prompts and allowing a final message.
   - Celebratory canvas confetti on "Yes".
 - **Stage 6: Location & Date Picker (`MapLocation.tsx` / `MessageForm.tsx`)**:
-  - Interactive Leaflet map with coffee shop coordinates and time confirmation.
-  - Submits choices directly to Convex database `responses` table with real-time updates.
+  - Interactive Leaflet map centered directly on the **Pasay / Villamor / Newport / Nichols area** with active mouse-wheel scroll zoom enabled.
+  - Highly accurate, verified cafes from Google Maps in the Villamor neighborhood (**Café MERGE**, **Cafe Prince**, **Kkopi.tea Villamor**, **Jeonbu Cafe and Tea**, **The Cozy Garage x Bean Hopper Cafe**, **Brew Bottle**, **HOLY SIP!**, **Euno Cafe**, **Saing Cafe**, **Dae Beauty Cafe**, **Pickup Coffee - Andrews Ave**, **Starbucks - Newport World Resorts**).
+  - **Dynamic Green Selection**: Selected spot turns vibrant emerald green with an animated pulse ring (`pulse-green-pin`) and auto-focuses the map.
+  - **Custom Location Suggestion**: Includes a `"Suggest Another Place"` toggle where the recipient can type any cafe name/vicinity, or simply click/tap anywhere on the map to drop a custom green marker and set their preferred venue.
 
 ### 3. Real-Time Convex Live Wiring
 - `App.tsx` wrapped in `ConvexProvider` with `ConvexReactClient`.

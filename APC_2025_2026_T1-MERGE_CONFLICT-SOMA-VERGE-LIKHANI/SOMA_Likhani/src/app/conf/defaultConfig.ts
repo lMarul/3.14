@@ -62,14 +62,104 @@ export const defaultConfig: AppConfig = {
   evasiveNoButton: true,
   adminPasscode: '1234',
   coffeeLocation: {
-    name: 'Artisan Roast & Bakery',
-    address: '142 Heartwood Lane, Downtown',
-    lat: 40.73061,
-    lng: -73.935242,
-    googleMapsUrl: 'https://maps.google.com/?q=40.73061,-73.935242',
-    note: 'Cozy fireplace seating & fresh hand-poured coffee! ☕✨',
+    name: 'Pickup Coffee - Villamor / Andrews Ave',
+    address: 'Andrews Ave, Pasay, Metro Manila (Near Villamor / APC)',
+    lat: 14.5228,
+    lng: 121.0165,
+    googleMapsUrl: 'https://maps.google.com/?q=14.5228,121.0165',
+    note: 'Convenient & quick handcrafted coffee right along Andrews Ave! ☕✨',
     photoUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800'
   },
+  coffeeSpots: [
+    {
+      name: 'Pickup Coffee - Villamor / Andrews Ave',
+      address: 'Andrews Ave, Pasay, Metro Manila (Near Villamor / APC)',
+      lat: 14.5228,
+      lng: 121.0165,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5228,121.0165',
+      note: 'Quick handcrafted brews & iced coffee favorites ☕'
+    },
+    {
+      name: 'Starbucks - Newport City / Resorts World',
+      address: 'Newport Blvd, Newport City, Pasay, Metro Manila',
+      lat: 14.5205,
+      lng: 121.0192,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5205,121.0192',
+      note: 'Spacious cozy lounge with classic frappes & warm pastries ✨'
+    },
+    {
+      name: 'The Coffee Bean & Tea Leaf - Newport Mall',
+      address: 'Newport Mall, Newport Blvd, Pasay, Metro Manila',
+      lat: 14.5218,
+      lng: 121.0203,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5218,121.0203',
+      note: 'Signature ice-blended coffee, tea lattes & quiet talks ☕'
+    },
+    {
+      name: 'Tim Hortons - Newport',
+      address: 'Retail 9, Newport City, Pasay, Metro Manila',
+      lat: 14.5232,
+      lng: 121.0180,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5232,121.0180',
+      note: 'Fresh French Vanilla, iced caps & warm Timbits 🍩'
+    },
+    {
+      name: 'Local SOMA Cafe (Near APC)',
+      address: 'Humabon St / Magallanes Vicinity, Pasay (Near Asia Pacific College)',
+      lat: 14.5270,
+      lng: 121.0198,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5270,121.0198',
+      note: 'Chill student-friendly aesthetic hangout spot right by campus 🎨☕'
+    },
+    {
+      name: 'Bo’s Coffee - Newport City',
+      address: 'Ground Floor, 150 Newport Blvd, Pasay',
+      lat: 14.5212,
+      lng: 121.0175,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5212,121.0175',
+      note: '100% homegrown Philippine Arabica beans & cozy heritage vibe 🇵🇭☕'
+    },
+    {
+      name: 'High Grounds Cafe - Villamor',
+      address: '10th St, Villamor Air Base, Pasay',
+      lat: 14.5248,
+      lng: 121.0152,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5248,121.0152',
+      note: 'Quiet neighborhood gem with artisan pour-overs & snacks 🍰'
+    },
+    {
+      name: 'Dunkin’ - Andrews Ave / Nichols',
+      address: 'Andrews Ave cor. Sales Rd, Pasay (Near Nichols Station)',
+      lat: 14.5238,
+      lng: 121.0142,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5238,121.0142',
+      note: 'Classic iced coffee, Boston Kreme & choco butternut favorites 🍩'
+    },
+    {
+      name: 'Tom N Toms Coffee - Newport Blvd',
+      address: 'Palm Tree Villas, Newport Blvd, Pasay',
+      lat: 14.5195,
+      lng: 121.0185,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5195,121.0185',
+      note: 'Korean specialty pretzels, honey butter toast & espresso blends 🥨'
+    },
+    {
+      name: 'Zus Coffee - Sales Road / Villamor',
+      address: 'Sales Road, Nichols / Villamor, Pasay',
+      lat: 14.5255,
+      lng: 121.0172,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5255,121.0172',
+      note: 'Specialty espresso, Spanish lattes & velvet foam brews ⚡'
+    },
+    {
+      name: 'Seattle’s Best Coffee - Savoy Hotel Newport',
+      address: 'Savoy Hotel, Andrews Ave, Newport City, Pasay',
+      lat: 14.5222,
+      lng: 121.0195,
+      googleMapsUrl: 'https://maps.google.com/?q=14.5222,121.0195',
+      note: 'Smooth roasted coffees, savory panini & relaxing hotel atmosphere 🏨☕'
+    }
+  ],
   slides: [
     {
       id: 1,
