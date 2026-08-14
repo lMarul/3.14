@@ -143,41 +143,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
           </div>
         )}
 
-        {/* Video Placeholder Container (Screens 4 & 5) */}
-        {currentSlide.videoPlaceholderLabel && (
-          <div className="my-6 max-w-xl mx-auto w-full">
-            {currentSlide.videoUrl ? (
-              <div className="rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
-                <video src={currentSlide.videoUrl} controls className="w-full aspect-video object-cover" />
-              </div>
-            ) : (
-              <div className="group relative rounded-3xl bg-black/40 backdrop-blur-md border-2 border-dashed border-rose-300/40 p-6 sm:p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:border-rose-300/80 shadow-2xl">
-                <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-rose-200 group-hover:scale-110 transition-transform">
-                  <Film className="w-8 h-8" />
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-300/30 text-xs font-mono font-semibold text-rose-200">
-                  <Play className="w-3 h-3 fill-rose-200" />
-                  <span>VIDEO PLACEHOLDER</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-white font-mono tracking-tight">
-                  [{currentSlide.videoPlaceholderLabel}]
-                </h3>
-                <p className="text-xs text-white/60 max-w-sm italic">
-                  (Insert your video file or link here later)
-                </p>
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* Custom Emoji Visual Spotlight (Screen 6) */}
-        {currentSlide.customEmoji && (
-          <div className="my-6 flex items-center justify-center">
-            <div className="relative p-6 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl text-6xl sm:text-7xl animate-pulse">
-              <span>{currentSlide.customEmoji}</span>
-            </div>
-          </div>
-        )}
 
         {/* Things That Remind Me of You — Free-Floating Anti-Gravity Canvas with Centered Title (Screen 8) */}
         {currentSlide.beholdGrid && (

@@ -181,19 +181,16 @@ export const defaultConfig: AppConfig = {
     {
       id: 4,
       content: 'You\'ve inspired me numerous times. You have been the reason for me to keep moving forward no matter how difficult it gets.',
-      videoPlaceholderLabel: 'Gagawin ko ang lahat pati ang thesis mo vid',
       iconName: 'star'
     },
     {
       id: 5,
       content: 'The reason for me try new things that looks interesting.',
-      videoPlaceholderLabel: 'Guitar vids',
       iconName: 'coffee'
     },
     {
       id: 6,
       content: 'The reason for me to make efforts to be the best version of myself.',
-      customEmoji: '🙌',
       iconName: 'heart'
     },
     {

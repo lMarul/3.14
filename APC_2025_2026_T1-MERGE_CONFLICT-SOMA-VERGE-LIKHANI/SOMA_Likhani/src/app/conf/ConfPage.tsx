@@ -42,7 +42,14 @@ export const ConfPage: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.slides)) return parsed;
+        if (parsed && Array.isArray(parsed.slides)) {
+          // Merge with current code defaults for slide definitions if updated
+          return {
+            ...defaultConfig,
+            ...parsed,
+            slides: defaultConfig.slides,
+          };
+        }
       } catch (e) {}
     }
     return defaultConfig;
