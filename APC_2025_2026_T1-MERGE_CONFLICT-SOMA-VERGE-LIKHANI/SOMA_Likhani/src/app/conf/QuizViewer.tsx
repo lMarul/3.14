@@ -194,13 +194,20 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
           </div>
         )}
 
-        {/* Navigation Action Control (No Skip Button) */}
-        <div className="flex items-center justify-end pt-1">
+        {/* Navigation Action Control: Only enabled when user selects the CORRECT answer */}
+        <div className="flex items-center justify-between pt-1">
+          {isAnswered && !isCorrect && (
+            <span className="text-[11px] font-semibold text-rose-300 animate-pulse flex items-center gap-1">
+              <span>⚠️</span>
+              <span>Please pick the correct answer to proceed</span>
+            </span>
+          )}
+
           <button
             onClick={handleNext}
-            disabled={!isAnswered}
-            className={`btn-crimson flex items-center justify-center gap-1.5 w-full sm:w-auto px-6 py-2.5 text-xs sm:text-sm cursor-pointer shadow-md ${
-              !isAnswered ? 'opacity-50 cursor-not-allowed' : ''
+            disabled={!isCorrect}
+            className={`btn-crimson flex items-center justify-center gap-1.5 w-full sm:w-auto px-6 py-2.5 text-xs sm:text-sm cursor-pointer shadow-md ml-auto ${
+              !isCorrect ? 'opacity-40 cursor-not-allowed grayscale pointer-events-none' : 'hover:scale-105 active:scale-95'
             }`}
           >
             <span>
