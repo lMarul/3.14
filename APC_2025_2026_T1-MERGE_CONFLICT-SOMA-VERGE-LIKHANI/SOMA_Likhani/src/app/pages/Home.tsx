@@ -357,13 +357,14 @@ export default function Home() {
     <div className={`min-h-screen transition-colors duration-300 ${isLightsOut ? 'bg-[#000000] text-white' : isDim ? 'bg-[#131622] text-white' : 'bg-[#F7F6F3] text-gray-900'}`}>
       <Navbar />
 
-      {/* Editorial Intro Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="relative w-full overflow-hidden min-h-[360px] flex items-center justify-center bg-[#8A181A]"
-        style={siteHeroBg ? { backgroundImage: `url(${siteHeroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-      >
+      {/* Editorial Intro Section (Likhani Archive Header Banner) */}
+      <TrapElement delay={0.15} rotate={-6} xDrift={-40}>
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative w-full overflow-hidden min-h-[360px] flex items-center justify-center bg-[#8A181A]"
+          style={siteHeroBg ? { backgroundImage: `url(${siteHeroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+        >
         {siteHeroBg && <div className="absolute inset-0 bg-black/40 z-0" />}
         {/* Background layer — same SVG for all themes, colors adapt */}
         {!siteHeroBg && (
@@ -514,6 +515,7 @@ export default function Home() {
           </div>
         </div>
       </motion.section>
+    </TrapElement>
 
       {/* Hero Section */}
       {loadingFeatured || !currentHero ? (
@@ -531,12 +533,13 @@ export default function Home() {
           </div>
         </section>
       ) : (
-        <section
-          className="relative h-[720px] overflow-hidden mb-[64px] group"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEndHandler}
-        >
+        <TrapElement delay={0.35} rotate={8} xDrift={60}>
+          <section
+            className="relative h-[720px] overflow-hidden mb-[64px] group"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEndHandler}
+          >
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
               key={currentHero.id}
@@ -715,6 +718,7 @@ export default function Home() {
             </>
           )}
         </section>
+      </TrapElement>
       )}
 
       {/* Main Categories - Horizontal Scrolling */}

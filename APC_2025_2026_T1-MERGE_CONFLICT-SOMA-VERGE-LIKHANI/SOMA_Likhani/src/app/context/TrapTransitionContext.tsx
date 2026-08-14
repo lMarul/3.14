@@ -1,15 +1,17 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface TrapTransitionContextType {
   triggerTrap: (target?: string) => void;
   isTrapping: boolean;
+  isFading: boolean;
 }
 
 const TrapTransitionContext = createContext<TrapTransitionContextType>({
   triggerTrap: () => {},
   isTrapping: false,
+  isFading: false,
 });
 
 export const useTrapTransition = () => useContext(TrapTransitionContext);
@@ -28,7 +30,7 @@ export const TrapElement: React.FC<{
   delay = 0,
   rotate = 8,
   xDrift = 0,
-  duration = 3.6,
+  duration = 3.4,
   className = '',
   style = {},
 }) => {
@@ -87,6 +89,7 @@ function playFallAudio() {
 export const TrapTransitionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const [isTrapping, setIsTrapping] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   // Prevent unwanted scrollbars during tumbling sequence
   useEffect(() => {
@@ -106,22 +109,42 @@ export const TrapTransitionProvider: React.FC<{ children: React.ReactNode }> = (
     setIsTrapping(true);
     playFallAudio();
 
-    // Tumbling sequence completes around 4.0s: navigate to /conf where 5-second fade-in starts smoothly
+    // Start full-screen black fade-in overlay at 2.6s as falling sequence completes
+    setTimeout(() => {
+      setIsFading(true);
+    }, 2600);
+
+    // Navigate to /conf at 3.6s behind the black fade overlay
     setTimeout(() => {
       navigate(target);
-    }, 4000);
+    }, 3600);
 
+    // Lift fade overlay at 4.4s so loading screen smoothly emerges
     setTimeout(() => {
+      setIsFading(false);
       setIsTrapping(false);
-    }, 9500);
+    }, 4400);
   }, [isTrapping, navigate]);
 
   return (
-    <TrapTransitionContext.Provider value={{ triggerTrap, isTrapping }}>
+    <TrapTransitionContext.Provider value={{ triggerTrap, isTrapping, isFading }}>
       <div className="relative w-full min-h-screen overflow-hidden bg-[#8A181A]">
         <div className="w-full min-h-screen relative z-10">
           {children}
         </div>
+
+        {/* Full-Screen Cinematic Fade-In / Fade-Out Overlay */}
+        <AnimatePresence>
+          {isFading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              className="fixed inset-0 z-[9999] bg-[#000000] pointer-events-none"
+            />
+          )}
+        </AnimatePresence>
       </div>
     </TrapTransitionContext.Provider>
   );
