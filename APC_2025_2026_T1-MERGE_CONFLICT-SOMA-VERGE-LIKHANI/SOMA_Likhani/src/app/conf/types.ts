@@ -26,7 +26,8 @@ export interface QuizQuestion {
   options: string[];
   correctIndex: number;
   correctComment: string;
-  wrongComment: string;
+  wrongComment?: string;
+  optionComments?: string[]; // Custom reaction comment for each specific option index
 }
 
 export interface CoffeeLocation {

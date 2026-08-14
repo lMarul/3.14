@@ -17,7 +17,13 @@ export const defaultConfig: AppConfig = {
       ],
       correctIndex: 0,
       correctComment: "Bingo! You got it right! 🐋💙",
-      wrongComment: "It's okay! I'll let you pass anyway 😉"
+      wrongComment: "It's okay! I'll let you pass anyway 😉",
+      optionComments: [
+        "Bingo! You got it right! 🐋💙",
+        "Close! Coffee is life, but Blue Whales have her heart 🐋💙",
+        "Very sweet guess, but her true signature is the blue whale! 🐋",
+        "Kirby vibes! But blue whale is top tier 🐋✨"
+      ]
     },
     {
       id: 2,
@@ -30,7 +36,13 @@ export const defaultConfig: AppConfig = {
       ],
       correctIndex: 0,
       correctComment: "Bingo! You know she rocks on the bass! 🎸⚡",
-      wrongComment: "It's okay! She plays the bass like a rockstar, but I'll let you pass 😉"
+      wrongComment: "It's okay! She plays the bass like a rockstar, but I'll let you pass 😉",
+      optionComments: [
+        "Bingo! You know she rocks on the bass! 🎸⚡",
+        "Drums would be energetic! But she holds down the rhythm on bass 🎸",
+        "She can definitely play the piano too! 🎹✨ But in the band, she's our bassist 🎸",
+        "She has a wonderful singing voice! 🎤✨ But she mainly rocks on the bass 🎸"
+      ]
     },
     {
       id: 3,
@@ -43,7 +55,13 @@ export const defaultConfig: AppConfig = {
       ],
       correctIndex: 0,
       correctComment: "Eww gross! 🤮 You actually remembered that traumatizing fountain moment!",
-      wrongComment: "Nope! She literally saw someone put their mouth directly to the water fountain when drinking 🤮"
+      wrongComment: "Nope! She literally saw someone put their mouth directly to the water fountain when drinking 🤮",
+      optionComments: [
+        "Eww gross! 🤮 You actually remembered that traumatizing fountain moment!",
+        "Stickers are cute, but the fountain trauma was too real! 🤮",
+        "Cold water is great, but avoiding contaminated fountains is top priority! 💧",
+        "Penny taste is bad, but someone putting their mouth on the fountain is 100x worse! 🤮"
+      ]
     },
     {
       id: 4,
@@ -56,7 +74,13 @@ export const defaultConfig: AppConfig = {
       ],
       correctIndex: 0,
       correctComment: "Access Granted! ❤️",
-      wrongComment: "Take a deep breath, access granted 💕"
+      wrongComment: "Take a deep breath, access granted 💕",
+      optionComments: [
+        "Access Granted! ❤️",
+        "Let's get this coffee date rolling! Access Granted ☕❤️",
+        "The excitement is mutual! Access Granted ✨❤️",
+        "All systems go! Access Granted 🚀❤️"
+      ]
     }
   ],
   evasiveNoButton: true,

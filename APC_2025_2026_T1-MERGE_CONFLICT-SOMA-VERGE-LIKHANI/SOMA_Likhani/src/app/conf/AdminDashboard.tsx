@@ -162,6 +162,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setEditableConfig({ ...editableConfig, quizQuestions: updatedQs });
   };
 
+  const handleUpdateQuizOptionComment = (qIndex: number, optIndex: number, newComment: string) => {
+    const updatedQs = [...(editableConfig.quizQuestions || [])];
+    const updatedComments = [...(updatedQs[qIndex].optionComments || updatedQs[qIndex].options.map(() => ''))];
+    updatedComments[optIndex] = newComment;
+    updatedQs[qIndex] = { ...updatedQs[qIndex], optionComments: updatedComments };
+    setEditableConfig({ ...editableConfig, quizQuestions: updatedQs });
+  };
+
   const handleAddQuizQuestion = () => {
     const newQ: QuizQuestion = {
       id: Date.now(),
@@ -170,6 +178,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       correctIndex: 0,
       correctComment: "Bingo! Correct answer! ✨",
       wrongComment: "It's okay! I'll let you pass anyway 😉",
+      optionComments: [
+        "Bingo! Correct answer! ✨",
+        "Reaction for Option B 😉",
+        "Reaction for Option C 😉",
+        "Reaction for Option D 😉"
+      ]
     };
     setEditableConfig({
       ...editableConfig,
@@ -710,36 +724,66 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   />
                 </div>
 
-                {/* 4 Choice Options */}
-                <div className="space-y-2.5">
-                  <label className="block text-[#364153] font-semibold">Choice Options</label>
-                  {q.options.map((opt, optIdx) => (
-                    <div key={optIdx} className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`correctChoice_${qIdx}`}
-                        checked={q.correctIndex === optIdx}
-                        onChange={() => handleUpdateQuizQuestion(qIdx, { correctIndex: optIdx })}
-                        className="w-4 h-4 accent-[#8A181A] cursor-pointer"
-                        title="Mark as correct answer"
-                      />
-                      <span className="font-mono text-xs text-[#99A1AF] w-16 shrink-0">
-                        Option {String.fromCharCode(65 + optIdx)}:
-                      </span>
-                      <input
-                        type="text"
-                        value={opt}
-                        onChange={(e) => handleUpdateQuizOption(qIdx, optIdx, e.target.value)}
-                        className="flex-1 px-3 py-2 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
-                      />
-                    </div>
-                  ))}
-                  <p className="text-[11px] text-[#99A1AF] italic">Select the radio button next to the option that is the correct answer.</p>
+                {/* 4 Choice Options with Individual Reaction Comments */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[#364153] font-semibold">Choice Options & Custom Reaction Comments</label>
+                    <span className="text-[11px] text-[#8A181A] font-semibold">Select radio to set correct answer</span>
+                  </div>
+
+                  {q.options.map((opt, optIdx) => {
+                    const isCorrect = q.correctIndex === optIdx;
+                    const optionComment = (q.optionComments && q.optionComments[optIdx]) || (isCorrect ? q.correctComment : (q.wrongComment || ''));
+
+                    return (
+                      <div key={optIdx} className="p-3 rounded-xl bg-[#F7F6F3] border border-[#E5E7EB] space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name={`correctChoice_${qIdx}`}
+                            checked={isCorrect}
+                            onChange={() => handleUpdateQuizQuestion(qIdx, { correctIndex: optIdx })}
+                            className="w-4 h-4 accent-[#8A181A] cursor-pointer"
+                            title="Mark as correct answer"
+                          />
+                          <span className="font-mono text-xs text-[#6A7282] font-bold w-16 shrink-0">
+                            Option {String.fromCharCode(65 + optIdx)}:
+                          </span>
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={(e) => handleUpdateQuizOption(qIdx, optIdx, e.target.value)}
+                            placeholder={`Choice ${String.fromCharCode(65 + optIdx)} text / emoji`}
+                            className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DC] text-[#101828] text-xs font-medium focus:border-[#8A181A] focus:outline-none"
+                          />
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${
+                            isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {isCorrect ? 'Correct Answer' : 'Wrong Choice'}
+                          </span>
+                        </div>
+
+                        {/* Dedicated reaction comment for this specific choice */}
+                        <div className="pl-6 flex items-center gap-2">
+                          <span className="text-[11px] text-[#8A181A] font-semibold shrink-0">
+                            Reaction Comment:
+                          </span>
+                          <input
+                            type="text"
+                            value={optionComment}
+                            onChange={(e) => handleUpdateQuizOptionComment(qIdx, optIdx, e.target.value)}
+                            placeholder={isCorrect ? "Bingo! Correct! ✨" : "Specific comment for this wrong choice... 😉"}
+                            className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-[#D1D5DC] text-[#364153] text-xs focus:border-[#8A181A] focus:outline-none placeholder:text-gray-400"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div>
-                    <label className="block text-[#364153] font-semibold mb-1">Correct Answer Reaction Comment</label>
+                    <label className="block text-[#364153] font-semibold mb-1">Fallback Correct Reaction</label>
                     <input
                       type="text"
                       value={q.correctComment}
@@ -749,10 +793,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block text-[#364153] font-semibold mb-1">Wrong Answer Reaction Comment</label>
+                    <label className="block text-[#364153] font-semibold mb-1">Fallback Wrong Reaction</label>
                     <input
                       type="text"
-                      value={q.wrongComment}
+                      value={q.wrongComment || ''}
                       onChange={(e) => handleUpdateQuizQuestion(qIdx, { wrongComment: e.target.value })}
                       placeholder="It's okay! I'll let you pass anyway 😉"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
