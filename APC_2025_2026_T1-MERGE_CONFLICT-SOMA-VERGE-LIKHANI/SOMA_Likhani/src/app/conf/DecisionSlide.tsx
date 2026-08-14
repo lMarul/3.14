@@ -99,7 +99,7 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] relative z-20">
+    <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] relative z-20 animate-powerpoint-slow">
       <div
         ref={containerRef}
         style={{ overflow: 'visible' }}
