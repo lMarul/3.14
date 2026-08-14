@@ -31,3 +31,9 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Raw Video Source Folder (200MB+ large files)
+Vids/
+**/Vids/
+**/public/assets/vids/slide4/
+**/public/assets/vids/slide5/

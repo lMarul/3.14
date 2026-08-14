@@ -24,11 +24,95 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Reset reveal state when slide changes
   useEffect(() => {
     setIsRevealed(false);
   }, [currentIndex]);
+
+  // Slide 4 Audio Lifecycle & Timestamp Control (00:58 - 01:38)
+  useEffect(() => {
+    // Clear any active fade intervals
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+    }
+
+    // Check if current slide is Slide 4 (index 3 or slide with id 4)
+    const isSlide4 = currentIndex === 3 || currentSlide.id === 4;
+
+    if (isSlide4) {
+      // Initialize audio starting strictly at 58s
+      const audio = new Audio('/assets/audio/ligaya.mp3');
+      audioRef.current = audio;
+      audio.volume = 1.0;
+      audio.currentTime = 58;
+
+      const handleTimeUpdate = () => {
+        // Soft 0.5s volume fade near 97.5s - 98.0s (1:38 cutoff)
+        if (audio.currentTime >= 97.5 && audio.currentTime < 98) {
+          audio.volume = Math.max(0, (98 - audio.currentTime) / 0.5);
+        }
+        if (audio.currentTime >= 98) {
+          audio.pause();
+          audio.currentTime = 58;
+        }
+      };
+
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Slide 4 audio autoplay requires user interaction:', err);
+        });
+      }
+
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        // Soft fade down volume over 300ms on slide change
+        let currentVol = audio.volume;
+        fadeIntervalRef.current = setInterval(() => {
+          currentVol -= 0.2;
+          if (currentVol <= 0 || audio.paused) {
+            if (fadeIntervalRef.current) {
+              clearInterval(fadeIntervalRef.current);
+              fadeIntervalRef.current = null;
+            }
+            audio.pause();
+            audio.currentTime = 0;
+            audioRef.current = null;
+          } else {
+            audio.volume = Math.max(0, currentVol);
+          }
+        }, 50);
+      };
+    } else {
+      // Immediately stop audio if moving to any other slide
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    }
+  }, [currentIndex, currentSlide.id]);
+
+  // Overall component unmount cleanup to avoid orphaned Audio objects
+  useEffect(() => {
+    return () => {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const handleNextWithCheck = () => {
     if (currentSlide.revealText && !isRevealed) return;
@@ -74,10 +158,10 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="w-full max-w-3xl mx-auto px-6 py-8 flex flex-col items-center justify-between min-h-[85vh] font-poppins relative text-white"
+      className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 flex flex-col items-center justify-between min-h-[85vh] font-poppins relative text-white"
     >
-      {/* Top Bar: Corner Fraction & Direct Slide Dots */}
-      <div className="w-full flex items-center justify-between mb-8 relative z-10">
+      {/* Top Bar: Direct Slide Progress Dots & Fraction */}
+      <div className="w-full flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-2">
           {slides.map((_, idx) => (
             <button
@@ -102,7 +186,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
       {/* Main PowerPoint Presentation Body */}
       <div
         key={currentIndex}
-        className="w-full flex-1 flex flex-col items-center justify-center text-center my-auto px-2 sm:px-8 py-4 animate-powerpoint-slow relative z-10"
+        className="w-full flex-1 flex flex-col items-center justify-center text-center my-auto px-2 sm:px-6 py-4 animate-powerpoint-slow relative z-10"
       >
         {/* Subtitle Accent */}
         {currentSlide.subtitle && (
@@ -111,15 +195,15 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
           </span>
         )}
 
-        {/* Title */}
+        {/* Title (Hidden on Slide 8 so the centered title behind floating elements takes center stage) */}
         {currentSlide.title && !currentSlide.beholdGrid && (
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
             {currentSlide.title}
           </h1>
         )}
 
-        {/* Content Paragraph / Message */}
-        {currentSlide.content && (
+        {/* Content Paragraph / Message (Shown on slides other than Slide 4, 5, 8 which have custom floating layouts) */}
+        {currentSlide.content && currentIndex !== 3 && currentIndex !== 4 && !currentSlide.beholdGrid && (
           <p className={`${currentSlide.title ? 'text-base sm:text-xl font-light text-white/90 mb-6' : 'text-xl sm:text-3xl font-medium text-white/95 mb-8 leading-snug'} max-w-2xl leading-relaxed drop-shadow-md`}>
             {currentSlide.content}
           </p>
@@ -143,30 +227,139 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
           </div>
         )}
 
-        {/* Video Placeholder Container (Screens 4 & 5) */}
-        {currentSlide.videoPlaceholderLabel && (
-          <div className="my-6 max-w-xl mx-auto w-full">
-            {currentSlide.videoUrl ? (
-              <div className="rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
-                <video src={currentSlide.videoUrl} controls className="w-full aspect-video object-cover" />
+        {/* Slide 4: 2 Floating Videos on Upper Left & Upper Right of the Middle Text */}
+        {(currentIndex === 3 || currentSlide.id === 4) && (
+          <div className="w-full relative min-h-[460px] sm:min-h-[520px] my-2 overflow-visible select-none flex items-center justify-center">
+            {/* Upper Left Video */}
+            <div className="absolute top-[0%] left-[0%] sm:left-[4%] flex flex-col items-center vector-hover-3 z-20 animate-burst-top-left group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s4_1.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-32 sm:w-44 md:w-52 aspect-video object-cover"
+                />
               </div>
-            ) : (
-              <div className="group relative rounded-3xl bg-black/40 backdrop-blur-md border-2 border-dashed border-rose-300/40 p-6 sm:p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:border-rose-300/80 shadow-2xl">
-                <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-rose-200 group-hover:scale-110 transition-transform">
-                  <Film className="w-8 h-8" />
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-300/30 text-xs font-mono font-semibold text-rose-200">
-                  <Play className="w-3 h-3 fill-rose-200" />
-                  <span>VIDEO PLACEHOLDER</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-white font-mono tracking-tight">
-                  [{currentSlide.videoPlaceholderLabel}]
-                </h3>
-                <p className="text-xs text-white/60 max-w-sm italic">
-                  (Insert your video file or link here later)
-                </p>
+            </div>
+
+            {/* Upper Right Video */}
+            <div className="absolute top-[0%] right-[0%] sm:right-[4%] flex flex-col items-center vector-hover-2 z-20 animate-burst-top-right group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s4_2.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-32 sm:w-44 md:w-52 aspect-video object-cover"
+                />
               </div>
-            )}
+            </div>
+
+            {/* Centered Middle Text */}
+            <div className="relative z-10 max-w-lg px-4 text-center mt-28 sm:mt-32 animate-burst-center-title">
+              <p className="text-lg sm:text-2xl font-medium text-white/95 leading-relaxed drop-shadow-md">
+                {currentSlide.content}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Slide 5: 6 Floating Videos Scattered Around Middle Text (Slide 8 Layout Pattern) */}
+        {(currentIndex === 4 || currentSlide.id === 5) && (
+          <div className="w-full relative min-h-[500px] sm:min-h-[580px] my-2 overflow-visible select-none flex items-center justify-center">
+            {/* Centered Middle Text */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4 text-center animate-burst-center-title">
+              <p className="text-xl sm:text-3xl font-bold text-white leading-relaxed drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)] max-w-sm">
+                {currentSlide.content}
+              </p>
+            </div>
+
+            {/* 1. Top-Left Video */}
+            <div className="absolute top-[-3%] left-[0%] sm:left-[2%] flex flex-col items-center vector-hover-3 z-20 animate-burst-top-left group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_1.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-26 sm:w-36 md:w-44 aspect-video object-cover"
+                />
+              </div>
+            </div>
+
+            {/* 2. Top-Right Video */}
+            <div className="absolute top-[-5%] right-[0%] sm:right-[2%] flex flex-col items-center vector-hover-2 z-20 animate-burst-top-right group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_2.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-26 sm:w-36 md:w-44 aspect-video object-cover"
+                />
+              </div>
+            </div>
+
+            {/* 3. Middle-Left Video */}
+            <div className="absolute top-[44%] left-[-2%] sm:left-[0%] flex flex-col items-start vector-hover-1 z-20 animate-burst-middle-left group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_3.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-24 sm:w-32 md:w-40 aspect-video object-cover"
+                />
+              </div>
+            </div>
+
+            {/* 4. Middle-Right Video */}
+            <div className="absolute top-[44%] right-[-2%] sm:right-[0%] flex flex-col items-center vector-hover-1 z-20 animate-burst-middle-right group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_4.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-24 sm:w-32 md:w-40 aspect-video object-cover"
+                />
+              </div>
+            </div>
+
+            {/* 5. Bottom-Left Video */}
+            <div className="absolute bottom-[-3%] left-[8%] sm:left-[14%] flex flex-col items-center vector-hover-2 z-20 animate-burst-bottom-left group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_5.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-26 sm:w-36 md:w-42 aspect-video object-cover"
+                />
+              </div>
+            </div>
+
+            {/* 6. Bottom-Right Video */}
+            <div className="absolute bottom-[-5%] right-[8%] sm:right-[14%] flex flex-col items-center vector-hover-3 z-20 animate-burst-bottom-right group">
+              <div className="rounded-2xl overflow-hidden border border-rose-500/30 bg-black/60 shadow-[0_12px_30px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all duration-300 group-hover:border-rose-400/60 group-hover:scale-105">
+                <video
+                  src="/assets/vids/vid_s5_6.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-26 sm:w-36 md:w-42 aspect-video object-cover"
+                />
+              </div>
+            </div>
           </div>
         )}
 

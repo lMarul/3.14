@@ -182,12 +182,14 @@ export const defaultConfig: AppConfig = {
       id: 4,
       content: 'You\'ve inspired me numerous times. You have been the reason for me to keep moving forward no matter how difficult it gets.',
       videoPlaceholderLabel: 'Gagawin ko ang lahat pati ang thesis mo vid',
+      videoUrl: '/assets/vids/vid_s4_1.mp4',
       iconName: 'star'
     },
     {
       id: 5,
       content: 'The reason for me try new things that looks interesting.',
       videoPlaceholderLabel: 'Guitar vids',
+      videoUrl: '/assets/vids/guitar_magbalik.mp4',
       iconName: 'coffee'
     },
     {

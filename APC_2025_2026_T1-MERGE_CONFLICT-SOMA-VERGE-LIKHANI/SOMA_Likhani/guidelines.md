@@ -143,11 +143,14 @@ npx convex dev
 - **Stage 1: Loading Intro (`LoadingIntro.tsx`)**: Minimalist, card-less security verification interface pulling dynamic recipient name from live Convex config.
 - **Stage 2: Verification Quiz (`QuizViewer.tsx`)**: Customized interactive questions validating identity.
 - **Stage 3: Congrats Screen (`CongratsScreen.tsx`)**: Smooth transition confirmation heading into the confession message deck.
-- **Stage 4: Slide Viewer (`SlideViewer.tsx`)**:
-  - **Reveal Gate (Slide 1)**: "Next Message" button, keyboard shortcuts, and swipe navigation remain locked until the user clicks "Click to Reveal" (`#8A181A` crimson button).
-  - **Slide 8 Floating Canvas & Burst Animations**: Emojis and items (Blue Whales, Kirby, 3.14, The Color Red, Pi Symbol, Bass) blossom/burst outward from the center into their free-floating anti-gravity coordinates with directional easing and hover effects.
-  - **3.14 Birthday Subtext**: Displays `3.14` with the clean subtext `(My birthday btw)`.
-  - **Clean Aesthetic**: Pins/badges and decorative emojis removed for an elegant presentation. Fixed music toggle removed.
+- **Stage 4: PowerPoint Story Presentation (`SlideViewer.tsx`)**:
+  - Fullscreen modern slide-deck view with direct jump dot indicators, interactive click-to-reveal for Slide 1, and embedded media players.
+  - **Slide 4 Audio & Video Layout**:
+    - 2 floating video cards positioned at the upper-left and upper-right corners of the centered middle text.
+    - Background audio (`ligaya.mp3`) starts strictly at `00:58` (58s) on Slide 4, smoothly fades near `01:38` (98s), and automatically pauses/resets when navigating away or unmounting.
+  - **Slide 5 Video Layout**:
+    - 6 floating video cards scattered around the centered middle text across the 6 anti-gravity coordinate positions (Slide 8 style burst/float physics).
+  - **Slide 8 Floating Canvas & Burst Animations**: Emojis and items (🐋 Blue Whales, 🌸 Kirby `kirby.png`, 3.14 `(My birthday btw)`, 🔴 The Color Red, π Pi Symbol, 🎸 Bass) blossom/burst outward from the center into their free-floating anti-gravity coordinates with directional easing and hover effects.
 - **Stage 5: Decision Slide (`DecisionSlide.tsx`)**:
   - Transitions with a smooth fade-in from Slide 8 (`animate-powerpoint-slow`).
   - Playful evasive "No" button that dodges the cursor across screen bounds before cycling through humorous prompts and allowing a final message.
