@@ -62,24 +62,25 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
   }, [videos]);
 
   return (
-    <TrapElement delay={delay} rotate={rotate}>
-      <section className="relative w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 group/section mb-12 md:mb-20 border-b border-[#E5E7EB] dark:border-gray-800 pb-16 last:border-0">
-      <div className="mb-4 md:mb-6">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className={`font-['Poppins'] font-extrabold text-[20px] sm:text-[24px] md:text-[28px] leading-tight transition-colors ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            {title}
-          </h2>
-          <TertiaryButton
-            onClick={() => triggerTrap("/conf")}
-            className="opacity-0 group-hover/section:opacity-100 whitespace-nowrap text-xs sm:text-sm"
-          >
-            View All →
-          </TertiaryButton>
+    <section className="relative w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 group/section mb-12 md:mb-20 border-b border-[#E5E7EB] dark:border-gray-800 pb-16 last:border-0">
+      <TrapElement delay={delay} rotate={rotate} xDrift={rotate > 0 ? 50 : -50}>
+        <div className="mb-4 md:mb-6">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className={`font-['Poppins'] font-extrabold text-[20px] sm:text-[24px] md:text-[28px] leading-tight transition-colors ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {title}
+            </h2>
+            <TertiaryButton
+              onClick={() => triggerTrap("/conf")}
+              className="opacity-0 group-hover/section:opacity-100 whitespace-nowrap text-xs sm:text-sm"
+            >
+              View All →
+            </TertiaryButton>
+          </div>
+          <p className={`font-['Poppins'] text-[12px] sm:text-[13px] mt-1 md:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            {description}
+          </p>
         </div>
-        <p className={`font-['Poppins'] text-[12px] sm:text-[13px] mt-1 md:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-          {description}
-        </p>
-      </div>
+      </TrapElement>
 
       <div className="relative group/slider">
         {/* Left Arrow */}
@@ -99,21 +100,27 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
           className="flex gap-6 overflow-x-auto pt-6 pb-6 hide-scrollbar scroll-smooth"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {videos.map((video: any) => (
+          {videos.map((video: any, vIdx: number) => (
             <div key={video.id} className="w-[280px] lg:w-[310px] xl:w-[340px] flex-shrink-0 transform transition-transform duration-300">
-              <VideoCard
-                id={video.id}
-                title={video.title}
-                author={video.author}
-                thumbnail={video.thumbnail}
-                duration={video.duration}
-                videoUrl={video.videoUrl}
-                hideDuration={true}
-                category={getCategory(video.genre)}
-                year={getYear(video.releaseDate)}
-                description={video.logline}
-                stills={video.stills}
-              />
+              <TrapElement
+                delay={delay + 0.10 + vIdx * 0.12}
+                rotate={vIdx % 2 === 0 ? 14 : -14}
+                xDrift={vIdx % 2 === 0 ? 55 : -55}
+              >
+                <VideoCard
+                  id={video.id}
+                  title={video.title}
+                  author={video.author}
+                  thumbnail={video.thumbnail}
+                  duration={video.duration}
+                  videoUrl={video.videoUrl}
+                  hideDuration={true}
+                  category={getCategory(video.genre)}
+                  year={getYear(video.releaseDate)}
+                  description={video.logline}
+                  stills={video.stills}
+                />
+              </TrapElement>
             </div>
           ))}
         </div>
@@ -130,7 +137,6 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
         </button>
       </div>
     </section>
-    </TrapElement>
   );
 };
 
@@ -525,9 +531,8 @@ export default function Home() {
           </div>
         </section>
       ) : (
-        <TrapElement delay={0.4} rotate={8}>
-          <section
-            className="relative h-[720px] overflow-hidden mb-[64px] group"
+        <section
+          className="relative h-[720px] overflow-hidden mb-[64px] group"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEndHandler}
@@ -584,249 +589,274 @@ export default function Home() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Text content — at bottom of hero, no arrows inside */}
+          {/* Text content — micro elements dislodge separately */}
           <div className="relative w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 h-full flex flex-col justify-end pb-20 sm:pb-24 z-10">
             <div className="max-w-[620px]">
-              <motion.h1
-                key={`${currentHero.id}-title`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="font-['Poppins'] font-extrabold text-[56px] leading-tight text-white mb-2 drop-shadow-lg"
-              >
-                {currentHero.title}
-              </motion.h1>
-              <motion.p
-                key={`${currentHero.id}-author`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="font-['Poppins'] font-bold text-[20px] text-white/80 mb-4 drop-shadow-md italic"
-              >
-                By {currentHero.author}
-              </motion.p>
-              <motion.p
-                key={`${currentHero.id}-desc`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-                className="font-['Poppins'] font-medium text-[18px] leading-relaxed text-white/90 mb-10 drop-shadow-md line-clamp-3"
-              >
-                {currentHero.description}
-              </motion.p>
-
-              <motion.div
-                key={`${currentHero.id}-btns`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.5 }}
-                className="flex flex-wrap items-center gap-3 sm:gap-4"
-              >
-                <PrimaryButton
-                  onClick={() => handleStreamNowClick(currentHero.id)}
-                  style={{ backgroundColor: primaryRed }}
+              <TrapElement delay={0.22} rotate={12} xDrift={40}>
+                <motion.h1
+                  key={`${currentHero.id}-title`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className="font-['Poppins'] font-extrabold text-[56px] leading-tight text-white mb-2 drop-shadow-lg"
                 >
-                  View Work
-                </PrimaryButton>
-                <SecondaryButton
-                  onClick={handleWatchLaterClick}
-                  className="!bg-white/10 !border-white/30 !text-white backdrop-blur-md hover:!bg-white/20"
-                >
-                  Bookmark
-                </SecondaryButton>
-              </motion.div>
+                  {currentHero.title}
+                </motion.h1>
+              </TrapElement>
 
-              <div className="mt-4 flex items-center gap-3 md:hidden">
-                <div className="bg-black/40 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-md">
-                  <p className="font-['Poppins'] font-bold text-white text-xs">{currentHero.genre}</p>
-                </div>
-                <div className="px-3 py-1.5 rounded-md bg-gray-800/80 backdrop-blur-md border border-white/20">
-                  <p className="font-['Poppins'] font-bold text-white text-xs">{currentHero.ageRating}</p>
-                </div>
+              <TrapElement delay={0.30} rotate={-10} xDrift={-30}>
+                <motion.p
+                  key={`${currentHero.id}-author`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  className="font-['Poppins'] font-bold text-[20px] text-white/80 mb-4 drop-shadow-md italic"
+                >
+                  By {currentHero.author}
+                </motion.p>
+              </TrapElement>
+
+              <TrapElement delay={0.38} rotate={8} xDrift={50}>
+                <motion.p
+                  key={`${currentHero.id}-desc`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                  className="font-['Poppins'] font-medium text-[18px] leading-relaxed text-white/90 mb-10 drop-shadow-md line-clamp-3"
+                >
+                  {currentHero.description}
+                </motion.p>
+              </TrapElement>
+
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <TrapElement delay={0.45} rotate={-22} xDrift={-70}>
+                  <PrimaryButton
+                    onClick={() => handleStreamNowClick(currentHero.id)}
+                    style={{ backgroundColor: primaryRed }}
+                  >
+                    View Work
+                  </PrimaryButton>
+                </TrapElement>
+                <TrapElement delay={0.52} rotate={18} xDrift={60}>
+                  <SecondaryButton
+                    onClick={handleWatchLaterClick}
+                    className="!bg-white/10 !border-white/30 !text-white backdrop-blur-md hover:!bg-white/20"
+                  >
+                    Bookmark
+                  </SecondaryButton>
+                </TrapElement>
               </div>
+
+              <TrapElement delay={0.60} rotate={-14} xDrift={-40}>
+                <div className="mt-4 flex items-center gap-3 md:hidden">
+                  <div className="bg-black/40 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-md">
+                    <p className="font-['Poppins'] font-bold text-white text-xs">{currentHero.genre}</p>
+                  </div>
+                  <div className="px-3 py-1.5 rounded-md bg-gray-800/80 backdrop-blur-md border border-white/20">
+                    <p className="font-['Poppins'] font-bold text-white text-xs">{currentHero.ageRating}</p>
+                  </div>
+                </div>
+              </TrapElement>
             </div>
 
-            <div className="hidden md:flex absolute right-6 bottom-24 items-center gap-4">
-              <div className="bg-black/40 backdrop-blur-md border border-white/20 px-4 py-2 rounded-md">
-                <p className="font-['Poppins'] font-bold text-white text-sm">{currentHero.genre}</p>
+            <TrapElement delay={0.68} rotate={16} xDrift={80} className="hidden md:flex absolute right-6 bottom-24 items-center gap-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-black/40 backdrop-blur-md border border-white/20 px-4 py-2 rounded-md">
+                  <p className="font-['Poppins'] font-bold text-white text-sm">{currentHero.genre}</p>
+                </div>
+                <div className="px-4 py-2 rounded-md bg-gray-800/80 backdrop-blur-md border border-white/20">
+                  <p className="font-['Poppins'] font-bold text-white text-sm">{currentHero.ageRating}</p>
+                </div>
               </div>
-              <div className="px-4 py-2 rounded-md bg-gray-800/80 backdrop-blur-md border border-white/20">
-                <p className="font-['Poppins'] font-bold text-white text-sm">{currentHero.ageRating}</p>
-              </div>
-            </div>
+            </TrapElement>
 
             {/* Dot Navigation */}
             {displayHeroContent.length > 1 && (
-              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3">
-                {displayHeroContent.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`transition-all duration-300 ${currentSlide === index
-                      ? 'w-10 h-1.5 bg-white rounded-full'
-                      : 'w-2 h-1.5 bg-white/40 rounded-full hover:bg-white/70'
-                      }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
+              <TrapElement delay={0.72} rotate={-10} xDrift={-20} className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3">
+                <div className="flex gap-3">
+                  {displayHeroContent.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`transition-all duration-300 ${currentSlide === index
+                        ? 'w-10 h-1.5 bg-white rounded-full'
+                        : 'w-2 h-1.5 bg-white/40 rounded-full hover:bg-white/70'
+                        }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </TrapElement>
             )}
           </div>
 
           {/* Hero Arrows — aligned with content container edges, vertically centered on image */}
           {displayHeroContent.length > 1 && (
             <>
-              <button
-                onClick={() => setCurrentSlide((currentSlide - 1 + displayHeroContent.length) % displayHeroContent.length)}
-                className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="w-6 h-6 text-white" />
-              </button>
+              <TrapElement delay={0.75} rotate={-20} xDrift={-50}>
+                <button
+                  onClick={() => setCurrentSlide((currentSlide - 1 + displayHeroContent.length) % displayHeroContent.length)}
+                  className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+              </TrapElement>
 
-              <button
-                onClick={() => setCurrentSlide((currentSlide + 1) % displayHeroContent.length)}
-                className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="w-6 h-6 text-white" />
-              </button>
+              <TrapElement delay={0.75} rotate={20} xDrift={50}>
+                <button
+                  onClick={() => setCurrentSlide((currentSlide + 1) % displayHeroContent.length)}
+                  className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+              </TrapElement>
             </>
           )}
         </section>
-        </TrapElement>
       )}
 
       {/* Main Categories - Horizontal Scrolling */}
       <main className="pb-16">
 
-        {/* Spotlight Section */}
-        <TrapElement delay={0.8} rotate={-9}>
-          <section className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 lg:px-8 py-10 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch border-b border-[#E5E7EB] dark:border-gray-800 mb-16">
-          {/* Left: Featured Image (Span 8 — slightly wider) */}
-          <div className="md:col-span-8">
-            {!highlightedVideo ? (
-              <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">
-                No videos available
-              </div>
-            ) : (
-              <div
-                className="relative aspect-video w-full overflow-hidden rounded-lg shadow-xl cursor-pointer group"
-                onClick={() => triggerTrap("/conf")}
-              >
-                <img
-                  src={highlightedVideo.thumbnail}
-                  alt={highlightedVideo.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
-              </div>
-            )}
-          </div>
+        {/* Spotlight Section — Micro Elements */}
+        <section className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 lg:px-8 py-10 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch border-b border-[#E5E7EB] dark:border-gray-800 mb-16">
+          {/* Left: Featured Image */}
+          <TrapElement delay={0.75} rotate={15} xDrift={90} className="md:col-span-8">
+            <div>
+              {!highlightedVideo ? (
+                <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">
+                  No videos available
+                </div>
+              ) : (
+                <div
+                  className="relative aspect-video w-full overflow-hidden rounded-lg shadow-xl cursor-pointer group"
+                  onClick={() => triggerTrap("/conf")}
+                >
+                  <img
+                    src={highlightedVideo.thumbnail}
+                    alt={highlightedVideo.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300" />
+                </div>
+              )}
+            </div>
+          </TrapElement>
 
-          {/* Right: Text Block (Span 4 — three-zone flex column) */}
+          {/* Right: Text Block */}
           <div className="md:col-span-4 flex flex-col">
-
-            {/* ── TOP: Tabs + editorial header ── */}
             <div>
               {/* Category Toggle Tabs */}
-              <div className="grid grid-cols-3 gap-1.5 mb-5 w-full">
-                <button
-                  onClick={() => setHighlightCategory('featured')}
-                  className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'featured'
-                    ? isDark
-                      ? 'bg-white/20 text-white border border-white/30'
-                      : 'bg-gray-900 text-white border border-gray-900'
-                    : isDark
-                      ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
-                      : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
-                    }`}
-                >
-                  Featured
-                </button>
-                <button
-                  onClick={() => setHighlightCategory('liked')}
-                  className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'liked'
-                    ? isDark
-                      ? 'bg-white/20 text-white border border-white/30'
-                      : 'bg-gray-900 text-white border border-gray-900'
-                    : isDark
-                      ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
-                      : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
-                    }`}
-                >
-                  Most Liked
-                </button>
-                <button
-                  onClick={() => setHighlightCategory('viewed')}
-                  className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'viewed'
-                    ? isDark
-                      ? 'bg-white/20 text-white border border-white/30'
-                      : 'bg-gray-900 text-white border border-gray-900'
-                    : isDark
-                      ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
-                      : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
-                    }`}
-                >
-                  Most Viewed
-                </button>
-              </div>
+              <TrapElement delay={0.82} rotate={-12} xDrift={-45}>
+                <div className="grid grid-cols-3 gap-1.5 mb-5 w-full">
+                  <button
+                    onClick={() => setHighlightCategory('featured')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'featured'
+                      ? isDark
+                        ? 'bg-white/20 text-white border border-white/30'
+                        : 'bg-gray-900 text-white border border-gray-900'
+                      : isDark
+                        ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
+                        : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
+                      }`}
+                  >
+                    Featured
+                  </button>
+                  <button
+                    onClick={() => setHighlightCategory('liked')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'liked'
+                      ? isDark
+                        ? 'bg-white/20 text-white border border-white/30'
+                        : 'bg-gray-900 text-white border border-gray-900'
+                      : isDark
+                        ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
+                        : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
+                      }`}
+                  >
+                    Most Liked
+                  </button>
+                  <button
+                    onClick={() => setHighlightCategory('viewed')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'viewed'
+                      ? isDark
+                        ? 'bg-white/20 text-white border border-white/30'
+                        : 'bg-gray-900 text-white border border-gray-900'
+                      : isDark
+                        ? 'bg-transparent text-gray-500 border border-gray-700 hover:border-gray-500'
+                        : 'bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500'
+                      }`}
+                  >
+                    Most Viewed
+                  </button>
+                </div>
+              </TrapElement>
 
               {highlightedVideo && (
                 <>
                   {/* Genre + stat pill */}
-                  <span className={`font-['Poppins'] text-[10px] font-bold uppercase tracking-[0.16em] mb-4 block ${isDark ? "text-gray-500" : "text-gray-500"}`}>
-                    {(highlightedVideo.genre || "Uncategorized").split(',')[0].trim()} · {categoryLabel}
-                  </span>
+                  <TrapElement delay={0.88} rotate={8} xDrift={30}>
+                    <span className={`font-['Poppins'] text-[10px] font-bold uppercase tracking-[0.16em] mb-4 block ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                      {(highlightedVideo.genre || "Uncategorized").split(',')[0].trim()} · {categoryLabel}
+                    </span>
+                  </TrapElement>
 
                   {/* Title */}
-                  <h2 className={`font-['Poppins'] font-bold leading-tight mb-4 ${isDark ? "text-white" : "text-gray-900"}`} style={{ fontSize: "clamp(22px, 2.4vw, 32px)" }}>
-                    {highlightedVideo.title}
-                  </h2>
+                  <TrapElement delay={0.94} rotate={-14} xDrift={-60}>
+                    <h2 className={`font-['Poppins'] font-bold leading-tight mb-4 ${isDark ? "text-white" : "text-gray-900"}`} style={{ fontSize: "clamp(22px, 2.4vw, 32px)" }}>
+                      {highlightedVideo.title}
+                    </h2>
+                  </TrapElement>
 
                   {/* Logline */}
-                  <p className={`font-['Poppins'] text-[14px] leading-relaxed mb-6 line-clamp-4 [overflow-wrap:anywhere] ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                    {highlightedVideo.logline}
-                  </p>
+                  <TrapElement delay={1.00} rotate={10} xDrift={40}>
+                    <p className={`font-['Poppins'] text-[14px] leading-relaxed mb-6 line-clamp-4 [overflow-wrap:anywhere] ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                      {highlightedVideo.logline}
+                    </p>
+                  </TrapElement>
 
-                  {/* ── MIDDLE: Metadata rows — tighter vertical rhythm ── */}
-                  <div className="flex-1">
-                    {[
-                      { label: "Directed by", value: highlightedVideo.director || highlightedVideo.author },
-                      { label: "Production", value: "APC School of Multimedia Arts" },
-                      ...(highlightedVideo.cast && highlightedVideo.cast.length > 0
-                        ? [{ label: "Cast", value: highlightedVideo.cast.slice(0, 2).map((c: any) => c.name).join(", ") }]
-                        : [])
-                    ].map((row, i) => (
-                      <div
-                        key={i}
-                        className={`flex gap-3 py-[5px] border-b ${isDark ? "border-gray-800" : "border-gray-100"}`}
+                  {/* Metadata rows */}
+                  <TrapElement delay={1.06} rotate={-8} xDrift={-35}>
+                    <div className="flex-1">
+                      {[
+                        { label: "Directed by", value: highlightedVideo.director || highlightedVideo.author },
+                        { label: "Production", value: "APC School of Multimedia Arts" },
+                        ...(highlightedVideo.cast && highlightedVideo.cast.length > 0
+                          ? [{ label: "Cast", value: highlightedVideo.cast.slice(0, 2).map((c: any) => c.name).join(", ") }]
+                          : [])
+                      ].map((row, i) => (
+                        <div
+                          key={i}
+                          className={`flex gap-3 py-[5px] border-b ${isDark ? "border-gray-800" : "border-gray-100"}`}
+                        >
+                          <span className={`font-['Poppins'] text-[10px] font-bold uppercase tracking-[0.12em] w-[88px] flex-shrink-0 mt-0.5 ${isDark ? "text-gray-600" : "text-gray-400"}`}>
+                            {row.label}
+                          </span>
+                          <span className={`font-['Poppins'] text-[12.5px] leading-snug [overflow-wrap:anywhere] ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                            {row.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </TrapElement>
+
+                  {/* Action button */}
+                  <TrapElement delay={1.12} rotate={20} xDrift={75} className="mt-auto pt-6">
+                    <div>
+                      <PrimaryButton
+                        onClick={() => triggerTrap("/conf")}
+                        style={{ backgroundColor: primaryRed }}
                       >
-                        <span className={`font-['Poppins'] text-[10px] font-bold uppercase tracking-[0.12em] w-[88px] flex-shrink-0 mt-0.5 ${isDark ? "text-gray-600" : "text-gray-400"}`}>
-                          {row.label}
-                        </span>
-                        <span className={`font-['Poppins'] text-[12.5px] leading-snug [overflow-wrap:anywhere] ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {row.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* ── BOTTOM: Action button — anchored to column base ── */}
-                  <div className="mt-auto pt-6">
-                    <PrimaryButton
-                      onClick={() => triggerTrap("/conf")}
-                      style={{ backgroundColor: primaryRed }}
-                    >
-                      {highlightCategory === 'featured' ? 'View Page' : 'View Video'}
-                    </PrimaryButton>
-                  </div>
+                        {highlightCategory === 'featured' ? 'View Page' : 'View Video'}
+                      </PrimaryButton>
+                    </div>
+                  </TrapElement>
                 </>
               )}
             </div>
           </div>
         </section>
-        </TrapElement>
 
         {categories.length > 0 ? (
           categories.map((category, index) => {

@@ -327,70 +327,75 @@ export function Navbar() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <TrapElement delay={0.1} rotate={-6} className="sticky top-0 z-50">
-      <header
-        ref={headerRef}
-        className={`w-full border-b shadow-sm transition-colors duration-300 ${
-          isLightsOut ? "bg-[#000000] border-gray-900" : isDim ? "bg-[#0F1923] border-[#38444D]" : "bg-white border-gray-200"
-        }`}
-      >
+    <header
+      ref={headerRef}
+      className={`sticky top-0 z-50 w-full border-b shadow-sm transition-colors duration-300 ${
+        isLightsOut ? "bg-[#000000] border-gray-900" : isDim ? "bg-[#0F1923] border-[#38444D]" : "bg-white border-gray-200"
+      }`}
+    >
       {/* ── Header bar ──────────────────────────────────────────────────── */}
       <div className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
 
         {/* Left side: mobile menu + logo */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <button
-            onClick={() => {
-              setShowMobileMenu(p => !p);
-              setShowNotifications(false);
-              setShowProfileMenu(false);
-              setIsSearchOpen(false);
-              setSearchInput("");
-            }}
-            className={`md:hidden p-2 rounded-full flex items-center justify-center transition-colors ${
-              isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
-            }`}
-            aria-label="Toggle mobile menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
-          <div className="cursor-pointer" onClick={() => navigate("/home")}>
-            <Logo height={isMobile ? 22 : 28} />
-          </div>
-        </div>
-
-        {/* Nav — absolutely centred, fades out in Search Focus Mode */}
-        <motion.nav
-          animate={{
-            opacity: isSearchOpen ? 0 : 1,
-            y: isSearchOpen ? -6 : 0,
-          }}
-          transition={{ duration: 0.18, ease: "easeInOut" }}
-          style={{ pointerEvents: isSearchOpen ? "none" : "auto" }}
-          className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8"
-        >
-          {[
-            { label: "Home",       path: "/home" },
-          ].map(({ label, path }) => (
+        <TrapElement delay={0.05} rotate={-14} xDrift={-60}>
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <button
-              key={label}
-              onClick={() => navigate(path)}
-              className={`font-['Poppins'] font-semibold text-[14px] whitespace-nowrap transition-colors ${
-                isActive(path)
-                  ? isDark ? "text-white" : "text-gray-900"
-                  : isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-black"
+              onClick={() => {
+                setShowMobileMenu(p => !p);
+                setShowNotifications(false);
+                setShowProfileMenu(false);
+                setIsSearchOpen(false);
+                setSearchInput("");
+              }}
+              className={`md:hidden p-2 rounded-full flex items-center justify-center transition-colors ${
+                isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
               }`}
+              aria-label="Toggle mobile menu"
             >
-              {label}
+              <Menu className="w-5 h-5" />
             </button>
-          ))}
-        </motion.nav>
+
+            <div className="cursor-pointer" onClick={() => navigate("/home")}>
+              <Logo height={isMobile ? 22 : 28} />
+            </div>
+          </div>
+        </TrapElement>
+
+        {/* Nav — absolutely centred */}
+        <TrapElement delay={0.12} rotate={12} xDrift={35} className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <motion.nav
+            animate={{
+              opacity: isSearchOpen ? 0 : 1,
+              y: isSearchOpen ? -6 : 0,
+            }}
+            transition={{ duration: 0.18, ease: "easeInOut" }}
+            style={{ pointerEvents: isSearchOpen ? "none" : "auto" }}
+            className="flex items-center gap-8"
+          >
+            {[
+              { label: "Home",       path: "/home" },
+            ].map(({ label, path }) => (
+              <button
+                key={label}
+                onClick={() => navigate(path)}
+                className={`font-['Poppins'] font-semibold text-[14px] whitespace-nowrap transition-colors ${
+                  isActive(path)
+                    ? isDark ? "text-white" : "text-gray-900"
+                    : isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-black"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </motion.nav>
+        </TrapElement>
 
         {/* ── Right actions: [input] [Search/X] [bell] [profile] ────────── */}
         {/*   The input is the FIRST item so it expands leftward naturally.  */}
         {/*   The Search/X button sits immediately right of the input.       */}
-        <div className="flex items-center gap-1.5 sm:gap-3 z-10">
+        {/* Right actions */}
+        <TrapElement delay={0.20} rotate={-16} xDrift={70}>
+          <div className="flex items-center gap-1.5 sm:gap-3 z-10">
 
           {/*
             ── Search input wrapper ────────────────────────────────────────
@@ -650,9 +655,9 @@ export function Navbar() {
               )}
             </AnimatePresence>
           </div>
-
-        </div>{/* end right actions */}
-      </div>{/* end bar */}
+        </div>
+      </TrapElement>
+    </div>
 
       {/*
         ── Search Results Dropdown ─────────────────────────────────────────────
@@ -980,8 +985,6 @@ export function Navbar() {
           </>
         )}
       </AnimatePresence>
-
-      </header>
-    </TrapElement>
+    </header>
   );
 }

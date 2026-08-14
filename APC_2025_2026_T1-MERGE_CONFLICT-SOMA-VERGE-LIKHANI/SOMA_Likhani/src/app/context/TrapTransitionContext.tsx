@@ -14,29 +14,44 @@ const TrapTransitionContext = createContext<TrapTransitionContextType>({
 
 export const useTrapTransition = () => useContext(TrapTransitionContext);
 
-// Dynamic TrapElement helper to animate individual UI/UX components falling/tumbling off-screen
+// Dynamic TrapElement helper for granular micro-element chaotic breakdown
 export const TrapElement: React.FC<{
   children: React.ReactNode;
   delay?: number;
   rotate?: number;
+  xDrift?: number;
+  duration?: number;
   className?: string;
   style?: React.CSSProperties;
-}> = ({ children, delay = 0, rotate = 6, className = '', style = {} }) => {
+}> = ({
+  children,
+  delay = 0,
+  rotate = 8,
+  xDrift = 0,
+  duration = 3.6,
+  className = '',
+  style = {},
+}) => {
   const { isTrapping } = useTrapTransition();
+
+  // Compute horizontal drift if not explicitly specified
+  const calcXDrift = xDrift !== 0 ? xDrift : (rotate > 0 ? 55 : -55);
+
   return (
     <motion.div
       animate={isTrapping ? {
-        y: [0, 80, 1400],
-        rotateZ: [0, rotate > 0 ? 3 : -3, rotate],
-        scale: [1, 0.98, 0.88],
+        x: [0, calcXDrift * 0.25, calcXDrift],
+        y: [0, 90, 1600],
+        rotateZ: [0, rotate > 0 ? 4 : -4, rotate],
+        scale: [1, 0.98, 0.85],
         opacity: [1, 1, 0],
-      } : { y: 0, rotateZ: 0, scale: 1, opacity: 1 }}
+      } : { x: 0, y: 0, rotateZ: 0, scale: 1, opacity: 1 }}
       transition={{
-        duration: 3.6, // Calibrated tumbling duration per element
+        duration: duration,
         delay: isTrapping ? delay : 0,
         ease: [0.45, 0.05, 0.55, 0.95], // Physical gravity acceleration curve
       }}
-      style={{ transformOrigin: 'top center', ...style }}
+      style={{ transformOrigin: 'center center', ...style }}
       className={className}
     >
       {children}
@@ -56,16 +71,16 @@ function playFallAudio() {
     
     osc.type = 'sine';
     osc.frequency.setValueAtTime(220, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 2.5);
+    osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 2.8);
     
     gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.8);
     
     osc.connect(gain);
     gain.connect(ctx.destination);
     
     osc.start();
-    osc.stop(ctx.currentTime + 2.5);
+    osc.stop(ctx.currentTime + 2.8);
   } catch (e) {}
 }
 
@@ -91,14 +106,14 @@ export const TrapTransitionProvider: React.FC<{ children: React.ReactNode }> = (
     setIsTrapping(true);
     playFallAudio();
 
-    // Tumbling sequence completes around 3.9s: navigate to /conf where 5-second fade-in starts smoothly
+    // Tumbling sequence completes around 4.0s: navigate to /conf where 5-second fade-in starts smoothly
     setTimeout(() => {
       navigate(target);
-    }, 3900);
+    }, 4000);
 
     setTimeout(() => {
       setIsTrapping(false);
-    }, 9000);
+    }, 9500);
   }, [isTrapping, navigate]);
 
   return (
