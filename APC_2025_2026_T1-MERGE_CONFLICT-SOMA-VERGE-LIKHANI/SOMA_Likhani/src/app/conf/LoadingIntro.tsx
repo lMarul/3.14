@@ -42,7 +42,7 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
         Private Access Check
       </h1>
       <p className="text-sm sm:text-base text-rose-100/90 mb-10 max-w-sm font-normal leading-relaxed">
-        Dedicated security verification for <span className="font-semibold text-white underline decoration-rose-300 underline-offset-4">{recipientName}</span> ✨
+        Dedicated security verification for <span className="font-semibold text-white underline decoration-rose-300 underline-offset-4">{recipientName}</span>
       </p>
 
       {/* Full-width Glass Progress Bar */}
@@ -78,7 +78,7 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
           !isReady ? 'opacity-90' : 'hover:scale-[1.03] active:scale-[0.98]'
         }`}
       >
-        <span>{isReady ? 'Begin Identity Check ✨' : 'Tap to Start ✨'}</span>
+        <span>{isReady ? 'Begin Identity Check' : 'Tap to Start'}</span>
       </button>
     </div>
   );

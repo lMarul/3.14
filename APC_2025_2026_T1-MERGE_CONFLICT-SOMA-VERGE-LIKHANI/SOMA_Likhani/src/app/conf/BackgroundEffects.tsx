@@ -107,27 +107,6 @@ export const BackgroundEffects: React.FC<BackgroundEffectsProps> = ({
         </div>
       ))}
 
-      {/* Audio Music Toggle Control */}
-      <div className="pointer-events-auto fixed bottom-5 right-5 z-50">
-        <button
-          onClick={onToggleAudio}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white hover:bg-white/25 text-xs font-semibold shadow-xl transition-all cursor-pointer"
-          title={isPlayingAudio ? 'Mute ambient music' : 'Play ambient music'}
-          aria-label="Toggle audio"
-        >
-          {isPlayingAudio ? (
-            <>
-              <Volume2 className="w-4 h-4 text-white animate-pulse" />
-              <span className="font-poppins">Music On</span>
-            </>
-          ) : (
-            <>
-              <VolumeX className="w-4 h-4 text-white/70" />
-              <span className="font-poppins">Music Off</span>
-            </>
-          )}
-        </button>
-      </div>
     </div>
   );
 };

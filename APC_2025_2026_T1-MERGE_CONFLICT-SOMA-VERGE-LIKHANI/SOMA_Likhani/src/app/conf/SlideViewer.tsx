@@ -30,11 +30,16 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
     setIsRevealed(false);
   }, [currentIndex]);
 
+  const handleNextWithCheck = () => {
+    if (currentSlide.revealText && !isRevealed) return;
+    onNext();
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === 'Space') {
         e.preventDefault();
-        onNext();
+        handleNextWithCheck();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         onPrev();
@@ -42,7 +47,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onNext, onPrev]);
+  }, [onNext, onPrev, isRevealed, currentSlide.revealText]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -57,7 +62,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
     if (distance > 50) {
-      onNext();
+      handleNextWithCheck();
     } else if (distance < -50) {
       onPrev();
     }
@@ -126,10 +131,9 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
             {!isRevealed ? (
               <button
                 onClick={() => setIsRevealed(true)}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500/80 to-pink-600/80 border border-white/30 backdrop-blur-md font-semibold text-lg text-white shadow-xl hover:scale-105 transition-all duration-500 cursor-pointer animate-pulse"
+                className="px-8 py-4 rounded-2xl bg-[#8A181A] hover:bg-[#731416] border border-white/20 font-semibold text-lg text-white shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer"
               >
-                <Sparkles className="w-5 h-5 text-yellow-200 group-hover:rotate-12 transition-transform" />
-                <span>Click to Reveal 💖</span>
+                <span>Click to Reveal</span>
               </button>
             ) : (
               <div className="px-8 py-6 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/30 text-2xl sm:text-3xl font-extrabold text-rose-100 shadow-2xl transition-all duration-700 ease-out transform animate-powerpoint-slow flex items-center justify-center">
@@ -300,17 +304,19 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
           <span>Previous</span>
         </button>
 
-        <button
-          onClick={onNext}
-          className="btn-crimson flex items-center gap-2 px-8 py-3.5 text-sm sm:text-base font-semibold shadow-2xl cursor-pointer hover:scale-105 border border-white/20"
-        >
-          <span>{currentIndex === slides.length - 1 ? 'Go to Question 💕' : 'Next Message'}</span>
-          {currentIndex < slides.length - 1 ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
-            <Heart className="w-4 h-4 fill-white" />
-          )}
-        </button>
+        {(!currentSlide.revealText || isRevealed) && (
+          <button
+            onClick={handleNextWithCheck}
+            className="btn-crimson flex items-center gap-2 px-8 py-3.5 text-sm sm:text-base font-semibold shadow-2xl cursor-pointer hover:scale-105 border border-white/20 ml-auto"
+          >
+            <span>{currentIndex === slides.length - 1 ? 'Go to Question 💕' : 'Next Message'}</span>
+            {currentIndex < slides.length - 1 ? (
+              <ChevronRight className="w-5 h-5" />
+            ) : (
+              <Heart className="w-4 h-4 fill-white" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Back to Quiz link */}

@@ -110,10 +110,6 @@ export const DecisionSlide: React.FC<DecisionSlideProps> = ({
           <Coffee className="w-8 h-8 text-white" />
         </div>
 
-        <span className="font-poppins font-bold text-[10px] tracking-[1.6px] uppercase text-[#8A181A] bg-[#8A181A]/10 px-3 py-1 rounded-full mb-4 inline-block">
-          The Heart of the Matter
-        </span>
-
         {/* Question Heading */}
         <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-[#101828] mb-4 leading-tight">
           {questionText}

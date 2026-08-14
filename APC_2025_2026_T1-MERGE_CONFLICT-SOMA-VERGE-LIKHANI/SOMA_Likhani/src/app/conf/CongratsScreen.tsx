@@ -80,21 +80,12 @@ export const CongratsScreen: React.FC<CongratsScreenProps> = ({ recipientName, o
 
         {/* Heading */}
         <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-lg">
-          Yey! It’s actually you! 🎉✨
+          Yey! It’s actually you!
         </h1>
 
-        <p className="text-sm sm:text-base text-white/90 max-w-md mb-8 leading-relaxed font-light drop-shadow">
+        <p className="text-sm sm:text-base text-white/90 max-w-md leading-relaxed font-light drop-shadow">
           Identity verified for <span className="font-bold text-white underline underline-offset-4">{recipientName}</span>. Everything is unlocked just for you.
         </p>
-
-        {/* Action Button */}
-        <button
-          onClick={handleProceed}
-          className="btn-crimson py-4 px-8 text-base flex items-center gap-3 rounded-2xl shadow-2xl hover:scale-105 cursor-pointer border border-white/20"
-        >
-          <span>Continue to Message</span>
-          <ArrowRight className="w-5 h-5" />
-        </button>
       </div>
     </div>
   );

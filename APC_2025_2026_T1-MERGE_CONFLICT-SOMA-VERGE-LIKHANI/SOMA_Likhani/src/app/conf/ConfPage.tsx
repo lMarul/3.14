@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import type { AppConfig, AppScreen, ResponseData } from './types';
 import { defaultConfig } from './defaultConfig';
 import { BackgroundEffects } from './BackgroundEffects';
@@ -10,6 +10,7 @@ import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
 import { MessageForm } from './MessageForm';
 import { saveLocalTelemetryLog } from './telemetry';
+import { useQuery } from 'convex/react';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../convex/_generated/api';
 import './conf.css';
@@ -18,18 +19,41 @@ const convexUrl = import.meta.env.VITE_CONVEX_URL || 'https://colorless-dalmatia
 const convex = new ConvexHttpClient(convexUrl);
 
 export const ConfPage: React.FC = () => {
-  const [config, setConfig] = useState<AppConfig>(() => {
+  // --- Live Convex config via useQuery (real-time subscription) ---
+  const remoteConfig = useQuery(api.config.get);
+
+  // Derive the active config: prefer live DB config, fall back to defaultConfig
+  const config: AppConfig = useMemo(() => {
+    if (remoteConfig && Array.isArray(remoteConfig.slides) && remoteConfig.slides.length > 0) {
+      return {
+        recipientName: remoteConfig.recipientName,
+        senderName: remoteConfig.senderName,
+        questionText: remoteConfig.questionText,
+        quizTitle: remoteConfig.quizTitle || undefined,
+        quizQuestions: remoteConfig.quizQuestions,
+        coffeeLocation: remoteConfig.coffeeLocation,
+        slides: remoteConfig.slides,
+        evasiveNoButton: remoteConfig.evasiveNoButton,
+        adminPasscode: remoteConfig.adminPasscode || '1234',
+      };
+    }
+    // Fallback: use cached localStorage config or static defaultConfig
     const saved = localStorage.getItem('conf_app_config');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.slides)) {
-          return parsed;
-        }
+        if (parsed && Array.isArray(parsed.slides)) return parsed;
       } catch (e) {}
     }
     return defaultConfig;
-  });
+  }, [remoteConfig]);
+
+  // Sync config to localStorage cache whenever it changes from DB
+  useEffect(() => {
+    if (remoteConfig && Array.isArray(remoteConfig.slides) && remoteConfig.slides.length > 0) {
+      localStorage.setItem('conf_app_config', JSON.stringify(config));
+    }
+  }, [remoteConfig, config]);
 
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('INTRO');
   const [slideIndex, setSlideIndex] = useState(0);
@@ -78,30 +102,6 @@ export const ConfPage: React.FC = () => {
     label: 'INTRO',
   });
 
-  // Sync live config from Convex DB
-  useEffect(() => {
-    let isMounted = true;
-    convex.query(api.config.get)
-      .then((remote) => {
-        if (isMounted && remote && Array.isArray(remote.slides) && remote.slides.length > 0) {
-          const loaded: AppConfig = {
-            recipientName: remote.recipientName,
-            senderName: remote.senderName,
-            questionText: remote.questionText,
-            quizTitle: remote.quizTitle || undefined,
-            quizQuestions: remote.quizQuestions,
-            coffeeLocation: remote.coffeeLocation,
-            slides: remote.slides,
-            evasiveNoButton: remote.evasiveNoButton,
-            adminPasscode: remote.adminPasscode || '1234',
-          };
-          setConfig(loaded);
-          localStorage.setItem('conf_app_config', JSON.stringify(loaded));
-        }
-      })
-      .catch((e) => console.log('Convex live config fetch:', e));
-    return () => { isMounted = false; };
-  }, []);
 
   // Telemetry: Log view duration whenever user transitions screen, slide, or quiz question
   useEffect(() => {

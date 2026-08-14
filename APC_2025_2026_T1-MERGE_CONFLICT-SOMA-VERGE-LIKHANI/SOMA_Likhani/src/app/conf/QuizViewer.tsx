@@ -49,15 +49,11 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
     <div className="w-full max-w-xl mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] font-poppins">
       {/* Top Header Identity Title */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white font-poppins font-bold text-xs mb-3 shadow-md">
-          <Sparkles className="w-4 h-4 text-rose-300" />
-          <span>Quick Verification Quiz</span>
-        </div>
         <h2 className="font-poppins text-3xl sm:text-4xl font-bold text-white mb-1 drop-shadow-md">
           {titleText}
         </h2>
         <p className="font-poppins text-white/70 text-xs sm:text-sm max-w-sm mx-auto">
-          Please complete this verification so that no one other than <span className="font-semibold text-white">{recipientName}</span> will be able to view this note ✨
+          Please complete this verification so that no one other than <span className="font-semibold text-white">{recipientName}</span> will be able to view this note
         </p>
       </div>
 
@@ -175,7 +171,7 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
             }`}
           >
             <span>
-              {currentIndex < questions.length - 1 ? 'Next Question' : 'Verify & Unlock Note ✨'}
+              {currentIndex < questions.length - 1 ? 'Next Question' : 'Verify & Unlock Note'}
             </span>
             {currentIndex < questions.length - 1 ? (
               <ChevronRight className="w-4 h-4" />

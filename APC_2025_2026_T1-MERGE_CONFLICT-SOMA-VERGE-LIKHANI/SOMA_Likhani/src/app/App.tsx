@@ -13,6 +13,11 @@ import { clearAuthStorage, setAuthedStorage, setGuestStorage } from "./lib/authS
 import { ensureAppUser } from "./lib/appUser";
 import GlobalScreenshotProtection from "./components/common/GlobalScreenshotProtection";
 import { AnnouncementBanner } from "./components/common/AnnouncementBanner";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+
+const convexClient = new ConvexReactClient(
+  import.meta.env.VITE_CONVEX_URL || "https://colorless-dalmatian-736.convex.cloud"
+);
 
 function AppContent() {
   // Suppress VideoJS error console logs in production
@@ -150,11 +155,13 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <Router>
-      <TrapTransitionProvider>
-        <ScrollToTop />
-        <AppContent />
-      </TrapTransitionProvider>
-    </Router>
+    <ConvexProvider client={convexClient}>
+      <Router>
+        <TrapTransitionProvider>
+          <ScrollToTop />
+          <AppContent />
+        </TrapTransitionProvider>
+      </Router>
+    </ConvexProvider>
   );
 }

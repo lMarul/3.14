@@ -70,9 +70,6 @@ export const MessageForm: React.FC<MessageFormProps> = ({
           /* Form Screen */
           <div>
             <div className="text-center mb-6">
-              <span className="font-poppins font-bold text-[10px] tracking-[1.6px] uppercase text-[#8A181A] bg-[#8A181A]/10 px-3 py-1 rounded-full mb-2 inline-block">
-                Graceful Pathway
-              </span>
               <h3 className="font-poppins text-2xl sm:text-3xl font-bold text-[#101828] mb-2">
                 Thank You for Being Honest
               </h3>

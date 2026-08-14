@@ -103,7 +103,7 @@ export const defaultConfig: AppConfig = {
     {
       id: 6,
       content: 'The reason for me to make efforts to be the best version of myself.',
-      customEmoji: '🖐️',
+      customEmoji: '🙌',
       iconName: 'heart'
     },
     {

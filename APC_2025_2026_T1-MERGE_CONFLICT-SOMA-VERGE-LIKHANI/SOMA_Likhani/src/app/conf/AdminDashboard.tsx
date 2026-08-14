@@ -4,6 +4,7 @@ import {
   Lock, Trash2, Save, RefreshCw, Layers, MapPin, MessageSquare, Heart, ArrowLeft, CheckCircle2,
   XCircle, Plus, Edit3, MoveUp, MoveDown, HelpCircle, Sparkles, BarChart3, Clock, Eye, Users, Activity
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AdminDashboardProps {
   config: AppConfig;
@@ -62,9 +63,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setIsSaving(true);
     try {
       await onSaveConfig(editableConfig);
-      alert('Configuration saved successfully!');
+      toast.success('Configuration saved successfully!', {
+        description: 'All changes have been synced to the database.',
+      });
     } catch (err) {
-      alert('Failed to save configuration.');
+      toast.error('Failed to save configuration.', {
+        description: 'Please check your connection and try again.',
+      });
     } finally {
       setIsSaving(false);
     }
