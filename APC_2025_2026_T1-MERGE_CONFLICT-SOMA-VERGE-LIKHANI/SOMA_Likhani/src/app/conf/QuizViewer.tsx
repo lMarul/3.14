@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import confetti from 'canvas-confetti';
 import type { QuizQuestion } from './types';
-import { HelpCircle, CheckCircle2, ChevronRight, Heart, Sparkles } from 'lucide-react';
+import { HelpCircle, CheckCircle2, XCircle, ChevronRight, Heart, Sparkles } from 'lucide-react';
 
 interface QuizViewerProps {
   questions: QuizQuestion[];
@@ -23,8 +24,20 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
   const currentQ = questions[currentIndex] || questions[0];
   const titleText = quizTitle || `Are you really ${recipientName}?`;
 
+  const triggerOptionConfetti = () => {
+    confetti({
+      particleCount: 50,
+      spread: 65,
+      origin: { y: 0.65 },
+      colors: ['#10B981', '#34D399', '#8A181A', '#FDE047', '#38BDF8']
+    });
+  };
+
   const handleSelectOption = (idx: number) => {
     setSelectedOption(idx);
+    if (idx === currentQ.correctIndex) {
+      triggerOptionConfetti();
+    }
   };
 
   const handleNext = () => {
@@ -92,16 +105,17 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
             {currentQ.options.map((optionText, idx) => {
               const isSelected = selectedOption === idx;
               const isEmojiOnly = optionText.trim().length <= 6;
+              const isThisCorrect = idx === currentQ.correctIndex;
 
               return (
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
-                  className={`relative p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer flex flex-col items-center justify-center min-h-[65px] sm:min-h-[75px] text-center ${
+                  className={`relative p-2.5 sm:p-3 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[65px] sm:min-h-[75px] text-center ${
                     isSelected
-                      ? isCorrect
-                        ? 'bg-[#8A181A]/10 border-[#8A181A] text-[#8A181A] shadow-md scale-[1.01]'
-                        : 'bg-rose-50 border-rose-300 text-rose-900 shadow-md scale-[1.01]'
+                      ? isThisCorrect
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-md scale-[1.02]'
+                        : 'bg-rose-50 border-rose-500 text-rose-900 shadow-md scale-[1.02]'
                       : 'bg-[#F7F6F3] border-[#D1D5DC] text-[#364153] hover:border-[#8A181A] hover:bg-white hover:scale-[1.01]'
                   }`}
                 >
@@ -111,8 +125,12 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
                     <span className="text-xs sm:text-[13px] font-medium font-poppins leading-snug px-1 text-center">{optionText}</span>
                   )}
                   {isSelected && (
-                    <div className="absolute top-1.5 right-1.5">
-                      <CheckCircle2 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isCorrect ? 'text-[#8A181A]' : 'text-rose-500'}`} />
+                    <div className="absolute top-1.5 right-1.5 animate-bounce-short">
+                      {isThisCorrect ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-rose-600 fill-rose-100" />
+                      )}
                     </div>
                   )}
                 </button>
@@ -123,22 +141,29 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
           <div className="space-y-2 mb-3">
             {currentQ.options.map((optionText, idx) => {
               const isSelected = selectedOption === idx;
+              const isThisCorrect = idx === currentQ.correctIndex;
 
               return (
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-xl border font-poppins text-xs sm:text-sm font-medium transition-all cursor-pointer flex items-center justify-between ${
+                  className={`w-full text-left px-3.5 py-2.5 rounded-xl border-2 font-poppins text-xs sm:text-sm font-medium transition-all cursor-pointer flex items-center justify-between ${
                     isSelected
-                      ? isCorrect
-                        ? 'bg-[#8A181A]/10 border-[#8A181A] text-[#8A181A] shadow font-semibold'
-                        : 'bg-rose-50 border-rose-300 text-rose-900 shadow font-semibold'
+                      ? isThisCorrect
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-md font-semibold'
+                        : 'bg-rose-50 border-rose-500 text-rose-900 shadow-md font-semibold'
                       : 'bg-[#F7F6F3] border-[#D1D5DC] text-[#364153] hover:border-[#8A181A] hover:bg-white'
                   }`}
                 >
                   <span>{optionText}</span>
                   {isSelected && (
-                    <CheckCircle2 className={`w-4 h-4 shrink-0 ${isCorrect ? 'text-[#8A181A]' : 'text-rose-500'}`} />
+                    <div>
+                      {isThisCorrect ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-rose-600 fill-rose-100" />
+                      )}
+                    </div>
                   )}
                 </button>
               );
@@ -148,19 +173,21 @@ export const QuizViewer: React.FC<QuizViewerProps> = ({
 
         {/* Feedback Comment Box when Option is Selected */}
         {isAnswered && (
-          <div className="mb-3 p-2.5 sm:p-3 rounded-xl bg-[#F7F6F3] border border-[#E5E7EB] animate-fade-in text-[11px] sm:text-xs font-poppins flex items-start gap-2.5">
-            <div className="p-1.5 rounded-lg bg-white shadow-sm shrink-0">
+          <div className={`mb-3 p-2.5 sm:p-3 rounded-xl border animate-fade-in text-[11px] sm:text-xs font-poppins flex items-start gap-2.5 ${
+            isCorrect ? 'bg-emerald-50/80 border-emerald-200' : 'bg-rose-50/80 border-rose-200'
+          }`}>
+            <div className={`p-1.5 rounded-lg shadow-sm shrink-0 ${isCorrect ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
               {isCorrect ? (
                 <span className="text-sm">🎉</span>
               ) : (
-                <span className="text-sm">😉</span>
+                <span className="text-sm">❌</span>
               )}
             </div>
             <div>
-              <p className="font-bold text-[#101828] text-xs mb-0.5">
-                {isCorrect ? 'Bingo!' : 'Close enough!'}
+              <p className={`font-bold text-xs mb-0.5 ${isCorrect ? 'text-emerald-950' : 'text-rose-950'}`}>
+                {isCorrect ? 'Bingo!' : 'Oops, close!'}
               </p>
-              <p className="text-[#4A5565] leading-snug">
+              <p className={`leading-snug ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}`}>
                 {feedbackComment}
               </p>
             </div>
