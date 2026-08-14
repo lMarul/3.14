@@ -156,81 +156,81 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
             </div>
 
             {/* 1. Top-Center / Top-Left Vertex: Blue Whales (300°) */}
-            <div
-              className="absolute top-[2%] left-[16%] sm:left-[22%] flex flex-col items-center vector-hover-1 z-20 animate-burst-top-left"
-            >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
-                🐋
-              </span>
-              <span className="text-[11px] sm:text-xs font-extrabold text-cyan-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
-                Blue Whales
-              </span>
+            <div className="absolute top-[2%] left-[16%] sm:left-[22%] z-20 animate-burst-top-left">
+              <div className="flex flex-col items-center vector-hover-1">
+                <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
+                  🐋
+                </span>
+                <span className="text-[11px] sm:text-xs font-extrabold text-cyan-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
+                  Blue Whales
+                </span>
+              </div>
             </div>
 
             {/* 2. Top-Center / Top-Right Vertex: Kirby (60°) */}
-            <div
-              className="absolute top-[0%] right-[16%] sm:right-[22%] flex flex-col items-center vector-hover-2 z-20 animate-burst-top-right"
-            >
-              <img
-                src="/kirby.png"
-                alt="Kirby"
-                className="w-16 h-16 sm:w-24 sm:h-24 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:scale-125 transition-transform cursor-default"
-              />
-              <span className="text-[11px] sm:text-xs font-extrabold text-pink-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
-                Kirby 💖
-              </span>
+            <div className="absolute top-[0%] right-[16%] sm:right-[22%] z-20 animate-burst-top-right">
+              <div className="flex flex-col items-center vector-hover-2">
+                <img
+                  src="/kirby.png"
+                  alt="Kirby"
+                  className="w-16 h-16 sm:w-24 sm:h-24 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:scale-125 transition-transform cursor-default"
+                />
+                <span className="text-[11px] sm:text-xs font-extrabold text-pink-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
+                  Kirby 💖
+                </span>
+              </div>
             </div>
 
             {/* 3. Direct Far Left Vertex: 3.14 (180°) */}
-            <div
-              className="absolute top-[44%] left-[-2%] sm:left-[2%] flex flex-col items-start vector-hover-3 z-20 animate-burst-middle-left"
-            >
-              <div className="flex items-center gap-1 group cursor-default">
-                <span className="text-3xl sm:text-5xl font-black font-mono text-amber-200 drop-shadow-[0_6px_16px_rgba(0,0,0,0.5)] group-hover:scale-125 transition-transform">
-                  3.14
-                </span>
-              </div>
-              <div className="mt-0.5 text-amber-100/90 pl-0.5">
-                <span className="text-[10px] sm:text-xs font-bold tracking-wide italic drop-shadow font-poppins whitespace-nowrap">
-                  (My birthday btw)
-                </span>
+            <div className="absolute top-[44%] left-[-2%] sm:left-[2%] z-20 animate-burst-middle-left">
+              <div className="flex flex-col items-start vector-hover-3">
+                <div className="flex items-center gap-1 group cursor-default">
+                  <span className="text-3xl sm:text-5xl font-black font-mono text-amber-200 drop-shadow-[0_6px_16px_rgba(0,0,0,0.5)] group-hover:scale-125 transition-transform">
+                    3.14
+                  </span>
+                </div>
+                <div className="mt-0.5 text-amber-100/90 pl-0.5">
+                  <span className="text-[10px] sm:text-xs font-bold tracking-wide italic drop-shadow font-poppins whitespace-nowrap">
+                    (My birthday btw)
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* 4. Direct Far Right Vertex: The Color Red (0°) */}
-            <div
-              className="absolute top-[44%] right-[-2%] sm:right-[2%] flex flex-col items-center vector-hover-1 z-20 animate-burst-middle-right"
-            >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
-                🔴
-              </span>
-              <span className="text-[11px] sm:text-xs font-extrabold text-rose-300 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
-                The Color Red
-              </span>
+            <div className="absolute top-[44%] right-[-2%] sm:right-[2%] z-20 animate-burst-middle-right">
+              <div className="flex flex-col items-center vector-hover-1">
+                <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
+                  🔴
+                </span>
+                <span className="text-[11px] sm:text-xs font-extrabold text-rose-300 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
+                  The Color Red
+                </span>
+              </div>
             </div>
 
             {/* 5. Bottom-Center / Bottom-Left Vertex: Pi Symbol (240°) */}
-            <div
-              className="absolute bottom-[2%] left-[18%] sm:left-[24%] flex flex-col items-center vector-hover-2 z-20 animate-burst-bottom-left"
-            >
-              <span className="text-5xl sm:text-7xl font-serif font-black text-purple-200 drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
-                π
-              </span>
-              <span className="text-[11px] sm:text-xs font-extrabold text-purple-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
-                Pi Symbol
-              </span>
+            <div className="absolute bottom-[2%] left-[18%] sm:left-[24%] z-20 animate-burst-bottom-left">
+              <div className="flex flex-col items-center vector-hover-2">
+                <span className="text-5xl sm:text-7xl font-serif font-black text-purple-200 drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
+                  π
+                </span>
+                <span className="text-[11px] sm:text-xs font-extrabold text-purple-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
+                  Pi Symbol
+                </span>
+              </div>
             </div>
 
             {/* 6. Bottom-Center / Bottom-Right Vertex: Bass Guitar (120°) */}
-            <div
-              className="absolute bottom-[0%] right-[18%] sm:right-[24%] flex flex-col items-center vector-hover-3 z-20 animate-burst-bottom-right"
-            >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
-                🎸
-              </span>
-              <span className="text-[11px] sm:text-xs font-extrabold text-indigo-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
-                Bass
-              </span>
+            <div className="absolute bottom-[0%] right-[18%] sm:right-[24%] z-20 animate-burst-bottom-right">
+              <div className="flex flex-col items-center vector-hover-3">
+                <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
+                  🎸
+                </span>
+                <span className="text-[11px] sm:text-xs font-extrabold text-indigo-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
+                  Bass
+                </span>
+              </div>
             </div>
           </div>
         )}

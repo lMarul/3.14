@@ -1,50 +1,41 @@
-/* Conf Project Styles — Pronounced Anti-Gravity Floating Emojis */
+/* Conf Project Styles — Smooth Subtle Anti-Gravity Floating */
 @keyframes floatSubtle1 {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(18deg) scale(1);
+    transform: translateY(0px) translateX(0px) rotate(12deg) scale(1);
   }
-  33% {
-    transform: translateY(-28px) translateX(10px) rotate(24deg) scale(1.08);
-  }
-  66% {
-    transform: translateY(14px) translateX(-8px) rotate(14deg) scale(0.96);
+  50% {
+    transform: translateY(-12px) translateX(5px) rotate(15deg) scale(1.03);
   }
 }
 
 @keyframes floatSubtle2 {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(-14deg) scale(1);
+    transform: translateY(0px) translateX(0px) rotate(-10deg) scale(1);
   }
-  33% {
-    transform: translateY(-34px) translateX(-12px) rotate(-8deg) scale(1.1);
-  }
-  66% {
-    transform: translateY(16px) translateX(10px) rotate(-18deg) scale(0.95);
+  50% {
+    transform: translateY(-14px) translateX(-6px) rotate(-7deg) scale(1.03);
   }
 }
 
 @keyframes floatSubtle3 {
   0%, 100% {
-    transform: translateY(0px) translateX(0px) rotate(8deg) scale(1);
+    transform: translateY(0px) translateX(0px) rotate(6deg) scale(1);
   }
-  33% {
-    transform: translateY(-26px) translateX(-8px) rotate(16deg) scale(1.07);
-  }
-  66% {
-    transform: translateY(18px) translateX(8px) rotate(2deg) scale(0.97);
+  50% {
+    transform: translateY(-10px) translateX(4px) rotate(9deg) scale(1.02);
   }
 }
 
 .conf-container .vector-hover-1 {
-  animation: floatSubtle1 4.5s ease-in-out infinite;
+  animation: floatSubtle1 5.5s ease-in-out infinite;
 }
 
 .conf-container .vector-hover-2 {
-  animation: floatSubtle2 5s ease-in-out infinite;
+  animation: floatSubtle2 6.5s ease-in-out infinite;
 }
 
 .conf-container .vector-hover-3 {
-  animation: floatSubtle3 4.2s ease-in-out infinite;
+  animation: floatSubtle3 5s ease-in-out infinite;
 }
 
 /* Unique Sentimental Card Styling */
