@@ -145,90 +145,90 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
 
 
 
-        {/* Things That Remind Me of You — Free-Floating Anti-Gravity Canvas with Centered Title (Screen 8) */}
+        {/* Things That Remind Me of You — Hexagonal Floating Anti-Gravity Canvas with Centered Title (Screen 8) */}
         {currentSlide.beholdGrid && (
-          <div className="w-full relative min-h-[480px] sm:min-h-[560px] my-2 overflow-visible select-none flex items-center justify-center">
-            {/* Centered Main Title (Behind Floating Emojis/Stickers) */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-8 text-center animate-burst-center-title">
-              <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)] max-w-sm sm:max-w-md">
+          <div className="w-full relative min-h-[460px] sm:min-h-[520px] my-1 overflow-visible select-none flex items-center justify-center">
+            {/* Centered Main Title (Hexagon Core) */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-6 text-center animate-burst-center-title">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)] max-w-xs sm:max-w-md">
                 {currentSlide.title || "The things that remind me of you"}
               </h1>
             </div>
 
-            {/* 1. Blue Whales (Far Top-Left) */}
+            {/* 1. Top-Center / Top-Left Vertex: Blue Whales (300°) */}
             <div
-              className="absolute top-[-6%] left-[-2%] sm:left-[2%] flex flex-col items-center vector-hover-3 z-20 animate-burst-top-left"
+              className="absolute top-[2%] left-[16%] sm:left-[22%] flex flex-col items-center vector-hover-1 z-20 animate-burst-top-left"
             >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
                 🐋
               </span>
-              <span className="text-xs sm:text-sm font-extrabold text-cyan-200 tracking-wide mt-1 drop-shadow">
+              <span className="text-[11px] sm:text-xs font-extrabold text-cyan-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
                 Blue Whales
               </span>
             </div>
 
-            {/* 2. Kirby (Far Top-Right) */}
+            {/* 2. Top-Center / Top-Right Vertex: Kirby (60°) */}
             <div
-              className="absolute top-[-8%] right-[-2%] sm:right-[2%] flex flex-col items-center vector-hover-2 z-20 animate-burst-top-right"
+              className="absolute top-[0%] right-[16%] sm:right-[22%] flex flex-col items-center vector-hover-2 z-20 animate-burst-top-right"
             >
               <img
                 src="/kirby.png"
                 alt="Kirby"
-                className="w-18 h-18 sm:w-28 sm:h-28 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:scale-110 transition-transform cursor-default"
+                className="w-16 h-16 sm:w-24 sm:h-24 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:scale-125 transition-transform cursor-default"
               />
-              <span className="text-xs sm:text-sm font-extrabold text-pink-200 tracking-wide mt-1 drop-shadow">
+              <span className="text-[11px] sm:text-xs font-extrabold text-pink-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
                 Kirby 💖
               </span>
             </div>
 
-            {/* 3. 3.14 with (My birthday btw) (Far Middle-Left) */}
+            {/* 3. Direct Far Left Vertex: 3.14 (180°) */}
             <div
-              className="absolute top-[48%] left-[-4%] sm:left-[-1%] flex flex-col items-start vector-hover-1 z-20 animate-burst-middle-left"
+              className="absolute top-[44%] left-[-2%] sm:left-[2%] flex flex-col items-start vector-hover-3 z-20 animate-burst-middle-left"
             >
               <div className="flex items-center gap-1 group cursor-default">
-                <span className="text-3xl sm:text-5xl font-black font-mono text-amber-200 drop-shadow-[0_6px_16px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform">
+                <span className="text-3xl sm:text-5xl font-black font-mono text-amber-200 drop-shadow-[0_6px_16px_rgba(0,0,0,0.5)] group-hover:scale-125 transition-transform">
                   3.14
                 </span>
               </div>
               <div className="mt-0.5 text-amber-100/90 pl-0.5">
-                <span className="text-[11px] sm:text-sm font-bold tracking-wide italic drop-shadow font-poppins whitespace-nowrap">
+                <span className="text-[10px] sm:text-xs font-bold tracking-wide italic drop-shadow font-poppins whitespace-nowrap">
                   (My birthday btw)
                 </span>
               </div>
             </div>
 
-            {/* 4. The Color Red (Far Middle-Right) */}
+            {/* 4. Direct Far Right Vertex: The Color Red (0°) */}
             <div
-              className="absolute top-[48%] right-[-4%] sm:right-[-1%] flex flex-col items-center vector-hover-1 z-20 animate-burst-middle-right"
+              className="absolute top-[44%] right-[-2%] sm:right-[2%] flex flex-col items-center vector-hover-1 z-20 animate-burst-middle-right"
             >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
                 🔴
               </span>
-              <span className="text-xs sm:text-sm font-extrabold text-rose-300 tracking-wide mt-1 drop-shadow">
+              <span className="text-[11px] sm:text-xs font-extrabold text-rose-300 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
                 The Color Red
               </span>
             </div>
 
-            {/* 5. Pi Symbol (Far Bottom-Left) */}
+            {/* 5. Bottom-Center / Bottom-Left Vertex: Pi Symbol (240°) */}
             <div
-              className="absolute bottom-[-6%] left-[6%] sm:left-[12%] flex flex-col items-center vector-hover-2 z-20 animate-burst-bottom-left"
+              className="absolute bottom-[2%] left-[18%] sm:left-[24%] flex flex-col items-center vector-hover-2 z-20 animate-burst-bottom-left"
             >
-              <span className="text-5xl sm:text-7xl font-serif font-black text-purple-200 drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+              <span className="text-5xl sm:text-7xl font-serif font-black text-purple-200 drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
                 π
               </span>
-              <span className="text-xs sm:text-sm font-extrabold text-purple-200 tracking-wide mt-1 drop-shadow">
+              <span className="text-[11px] sm:text-xs font-extrabold text-purple-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
                 Pi Symbol
               </span>
             </div>
 
-            {/* 6. Bass Guitar (Far Bottom-Right) */}
+            {/* 6. Bottom-Center / Bottom-Right Vertex: Bass Guitar (120°) */}
             <div
-              className="absolute bottom-[-8%] right-[6%] sm:right-[12%] flex flex-col items-center vector-hover-3 z-20 animate-burst-bottom-right"
+              className="absolute bottom-[0%] right-[18%] sm:right-[24%] flex flex-col items-center vector-hover-3 z-20 animate-burst-bottom-right"
             >
-              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-110 transition-transform cursor-default">
+              <span className="text-5xl sm:text-7xl drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] hover:scale-125 transition-transform cursor-default">
                 🎸
               </span>
-              <span className="text-xs sm:text-sm font-extrabold text-indigo-200 tracking-wide mt-1 drop-shadow">
+              <span className="text-[11px] sm:text-xs font-extrabold text-indigo-200 tracking-wide mt-0.5 drop-shadow whitespace-nowrap">
                 Bass
               </span>
             </div>
