@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Play, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCustomTheme } from "../providers/ThemeContext";
+import { useTrapTransition } from "../../context/TrapTransitionContext";
 import { motion } from "motion/react";
 
 interface VideoCardProps {
@@ -53,6 +54,7 @@ function isGoogleDriveUrl(url: string | null | undefined): boolean {
 
 export function VideoCard({ id, title, author, thumbnail, duration, videoUrl, hideDuration = false, category, year, description, stills = [] }: VideoCardProps) {
   const navigate = useNavigate();
+  const { triggerTrap } = useTrapTransition();
   const { theme, resolvedTheme } = useCustomTheme();
   const [mounted, setMounted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -83,7 +85,7 @@ export function VideoCard({ id, title, author, thumbnail, duration, videoUrl, hi
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate('/conf');
+    triggerTrap('/conf');
   };
 
   const handleMouseEnter = () => {

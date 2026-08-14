@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useCustomTheme } from "../providers/ThemeContext";
+import { useTrapTransition, TrapElement } from "../../context/TrapTransitionContext";
 
 export function SiteFooter() {
   const navigate = useNavigate();
+  const { triggerTrap } = useTrapTransition();
   const { theme, resolvedTheme } = useCustomTheme();
   const currentTheme = theme === "system" ? resolvedTheme : theme;
   const isDim = currentTheme === 'dim';
@@ -23,7 +25,8 @@ export function SiteFooter() {
   }`;
 
   return (
-    <footer
+    <TrapElement delay={1.6} rotate={-5}>
+      <footer
       className={`border-t transition-colors ${isLightsOut ? "bg-[#000000] border-gray-900" : isDim ? "bg-[#0F1923] border-[#38444D]" : "bg-white border-[#E5E7EB]"}`}
     >
       <div className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 pt-8 sm:pt-12 md:pt-[72px]">
@@ -51,12 +54,12 @@ export function SiteFooter() {
                 <span className={staticLinkClass}>Help Center</span>
               </li>
               <li>
-                <button onClick={() => navigate("/conf")} className={linkClass}>
+                <button onClick={() => triggerTrap("/conf")} className={linkClass}>
                   Terms of Use
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate("/conf")} className={linkClass}>
+                <button onClick={() => triggerTrap("/conf")} className={linkClass}>
                   About the Archive
                 </button>
               </li>
@@ -149,7 +152,7 @@ export function SiteFooter() {
           {/* Right: Utility links  slightly inward, deliberate spacing */}
           <div className="w-full md:w-auto flex flex-wrap items-center justify-center md:justify-end gap-[14px]">
             <button
-              onClick={() => navigate("/conf")}
+              onClick={() => triggerTrap("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -161,7 +164,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/conf")}
+              onClick={() => triggerTrap("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -173,7 +176,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/conf")}
+              onClick={() => triggerTrap("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -185,7 +188,7 @@ export function SiteFooter() {
             </button>
             <span className={`font-['Inter'] text-[11px] leading-[16px] ${isDark ? "text-gray-700" : "text-[#D1D5DC]"}`}>·</span>
             <button
-              onClick={() => navigate("/conf")}
+              onClick={() => triggerTrap("/conf")}
               className={`font-['Poppins'] font-medium text-[11.5px] leading-[18px] transition-colors ${
                 isDark
                   ? "text-gray-500 hover:text-gray-300"
@@ -199,7 +202,8 @@ export function SiteFooter() {
         </div>
 
       </div>
-    </footer>
+      </footer>
+    </TrapElement>
   );
 }
 

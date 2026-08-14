@@ -301,7 +301,7 @@ export const ConfPage: React.FC = () => {
   };
 
   return (
-    <div className="conf-container min-h-screen flex flex-col justify-center relative bg-[#8A181A] text-[#101828] font-poppins overflow-x-hidden selection:bg-[#8A181A] selection:text-white">
+    <div className="conf-container min-h-screen flex flex-col justify-center relative bg-[#8A181A] text-[#101828] font-poppins overflow-x-hidden selection:bg-[#8A181A] selection:text-white animate-slow-fade-in">
       {/* Background Layer with Likhani Editorial Banner SVG */}
       <BackgroundEffects isPlayingAudio={isPlayingAudio} onToggleAudio={toggleAudio} />
 

@@ -26,66 +26,60 @@ export const LoadingIntro: React.FC<LoadingIntroProps> = ({ recipientName = 'Pia
   }, []);
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 flex flex-col items-center justify-center min-h-[75vh] font-poppins animate-slide-fade">
-      {/* Sentimental Glass Card */}
-      <div className="w-full bg-white/95 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-2xl border border-white/40 text-center relative overflow-hidden flex flex-col items-center">
-        {/* Decorative Top Accent Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#8A181A] via-rose-400 to-[#8A181A]" />
-
-        {/* Floating Heart Icon Container */}
-        <div className="relative mb-6">
-          <div className="w-20 h-20 rounded-full bg-rose-50 border-2 border-rose-200 flex items-center justify-center shadow-inner pulse-glow">
-            <Heart className="w-10 h-10 text-[#8A181A] fill-[#8A181A]" />
-          </div>
-          <div className="absolute -top-1 -right-1 p-1.5 rounded-full bg-[#8A181A] text-white shadow-md">
-            <Sparkles className="w-4 h-4" />
-          </div>
+    <div className="w-full max-w-lg mx-auto px-4 flex flex-col items-center justify-center min-h-[80vh] font-poppins text-center py-8 animate-slow-fade-in">
+      {/* Floating Heart Icon Container (Clean, no card box) */}
+      <div className="relative mb-8">
+        <div className="w-24 h-24 rounded-full bg-white/10 border border-white/25 flex items-center justify-center backdrop-blur-md shadow-[0_0_40px_rgba(255,255,255,0.15)] pulse-glow">
+          <Heart className="w-12 h-12 text-rose-200 fill-rose-100" />
         </div>
-
-        {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] mb-2 tracking-tight">
-          Private Access Check
-        </h1>
-        <p className="text-xs sm:text-sm text-[#4A5565] mb-6 max-w-xs font-normal">
-          Dedicated security verification for <span className="font-semibold text-[#8A181A]">{recipientName}</span> ✨
-        </p>
-
-        {/* Progress Bar Container */}
-        <div className="w-full bg-[#F3F4F6] rounded-full h-3 mb-3 overflow-hidden p-0.5 border border-[#E5E7EB]">
-          <div
-            className="h-full rounded-full progress-shimmer transition-all duration-200 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="absolute -top-1 -right-1 p-2 rounded-full bg-white text-[#8A181A] shadow-lg">
+          <Sparkles className="w-4 h-4" />
         </div>
-
-        {/* Status Text */}
-        <div className="flex items-center justify-between w-full text-[11px] font-mono text-[#6A7282] mb-8 px-1">
-          <span className="flex items-center gap-1">
-            {isReady ? (
-              <>
-                <Coffee className="w-3.5 h-3.5 text-[#8A181A]" />
-                <span>Ready for verification</span>
-              </>
-            ) : (
-              <>
-                <Lock className="w-3.5 h-3.5 text-rose-400" />
-                <span>Initializing access check...</span>
-              </>
-            )}
-          </span>
-          <span className="font-bold text-[#8A181A]">{progress}%</span>
-        </div>
-
-        {/* Action Start Button */}
-        <button
-          onClick={onStart}
-          className={`w-full py-4 px-6 btn-crimson text-sm sm:text-base flex items-center justify-center gap-2 rounded-2xl shadow-xl transition-all cursor-pointer ${
-            !isReady ? 'opacity-95' : 'hover:scale-[1.02]'
-          }`}
-        >
-          <span>{isReady ? 'Begin Identity Check ✨' : 'Tap to Start ✨'}</span>
-        </button>
       </div>
+
+      {/* Title */}
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">
+        Private Access Check
+      </h1>
+      <p className="text-sm sm:text-base text-rose-100/90 mb-10 max-w-sm font-normal leading-relaxed">
+        Dedicated security verification for <span className="font-semibold text-white underline decoration-rose-300 underline-offset-4">{recipientName}</span> ✨
+      </p>
+
+      {/* Full-width Glass Progress Bar */}
+      <div className="w-full max-w-sm bg-black/25 backdrop-blur-sm rounded-full h-3.5 mb-3 overflow-hidden p-0.5 border border-white/20 shadow-inner">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-rose-400 via-rose-300 to-white transition-all duration-200 ease-out shadow-[0_0_12px_rgba(255,255,255,0.6)]"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Status Text */}
+      <div className="flex items-center justify-between w-full max-w-sm text-xs font-mono text-rose-200/80 mb-10 px-1">
+        <span className="flex items-center gap-1.5">
+          {isReady ? (
+            <>
+              <Coffee className="w-4 h-4 text-white" />
+              <span className="font-semibold text-white">Ready for verification</span>
+            </>
+          ) : (
+            <>
+              <Lock className="w-4 h-4 text-rose-300" />
+              <span>Initializing access check...</span>
+            </>
+          )}
+        </span>
+        <span className="font-bold text-white">{progress}%</span>
+      </div>
+
+      {/* Action Start Button */}
+      <button
+        onClick={onStart}
+        className={`w-full max-w-sm py-4 px-8 bg-white text-[#8A181A] hover:bg-rose-50 font-bold text-base flex items-center justify-center gap-2 rounded-2xl shadow-2xl transition-all cursor-pointer ${
+          !isReady ? 'opacity-90' : 'hover:scale-[1.03] active:scale-[0.98]'
+        }`}
+      >
+        <span>{isReady ? 'Begin Identity Check ✨' : 'Tap to Start ✨'}</span>
+      </button>
     </div>
   );
 };

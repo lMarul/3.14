@@ -12,9 +12,11 @@ import { PrimaryButton, SecondaryButton, TertiaryButton } from "../components/co
 import { videoData } from "../data/videos";
 import svgPaths from "../../generated/svg-cq2lewbljb";
 import { useSiteConfig, useFeaturedWorks, usePublishedMedia, useCategories } from "../hooks/useLikhaniData";
+import { useTrapTransition, TrapElement } from "../context/TrapTransitionContext";
 
 // Horizontal Section Component for Cinematic Scrolling
-const HorizontalSection = ({ title, description, videos, isDark, primaryRed, navigate }: any) => {
+const HorizontalSection = ({ title, description, videos, isDark, primaryRed, navigate, delay = 1.2, rotate = 7 }: any) => {
+  const { triggerTrap } = useTrapTransition();
   const { theme, resolvedTheme } = useCustomTheme();
   const currentTheme = theme === 'system' ? resolvedTheme : theme;
   const isDim = currentTheme === 'dim';
@@ -60,14 +62,15 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
   }, [videos]);
 
   return (
-    <section className="relative w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 group/section mb-12 md:mb-20 border-b border-[#E5E7EB] dark:border-gray-800 pb-16 last:border-0">
+    <TrapElement delay={delay} rotate={rotate}>
+      <section className="relative w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 group/section mb-12 md:mb-20 border-b border-[#E5E7EB] dark:border-gray-800 pb-16 last:border-0">
       <div className="mb-4 md:mb-6">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className={`font-['Poppins'] font-extrabold text-[20px] sm:text-[24px] md:text-[28px] leading-tight transition-colors ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {title}
           </h2>
           <TertiaryButton
-            onClick={() => navigate("/conf")}
+            onClick={() => triggerTrap("/conf")}
             className="opacity-0 group-hover/section:opacity-100 whitespace-nowrap text-xs sm:text-sm"
           >
             View All →
@@ -127,11 +130,13 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
         </button>
       </div>
     </section>
+    </TrapElement>
   );
 };
 
 export default function Home() {
   const navigate = useNavigate();
+  const { triggerTrap } = useTrapTransition();
   const { theme, resolvedTheme } = useCustomTheme();
 
   const currentTheme = theme === 'system' ? resolvedTheme : theme;
@@ -235,11 +240,11 @@ export default function Home() {
 
 
   const handleStreamNowClick = (id: string) => {
-    navigate("/conf");
+    triggerTrap("/conf");
   };
 
   const handleWatchLaterClick = () => {
-    navigate("/conf");
+    triggerTrap("/conf");
   };
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -520,8 +525,9 @@ export default function Home() {
           </div>
         </section>
       ) : (
-        <section
-          className="relative h-[720px] overflow-hidden mb-[64px] group"
+        <TrapElement delay={0.4} rotate={8}>
+          <section
+            className="relative h-[720px] overflow-hidden mb-[64px] group"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEndHandler}
@@ -688,13 +694,15 @@ export default function Home() {
             </>
           )}
         </section>
+        </TrapElement>
       )}
 
       {/* Main Categories - Horizontal Scrolling */}
       <main className="pb-16">
 
         {/* Spotlight Section */}
-        <section className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 lg:px-8 py-10 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch border-b border-[#E5E7EB] dark:border-gray-800 mb-16">
+        <TrapElement delay={0.8} rotate={-9}>
+          <section className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 lg:px-8 py-10 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch border-b border-[#E5E7EB] dark:border-gray-800 mb-16">
           {/* Left: Featured Image (Span 8 — slightly wider) */}
           <div className="md:col-span-8">
             {!highlightedVideo ? (
@@ -704,7 +712,7 @@ export default function Home() {
             ) : (
               <div
                 className="relative aspect-video w-full overflow-hidden rounded-lg shadow-xl cursor-pointer group"
-                onClick={() => navigate("/conf")}
+                onClick={() => triggerTrap("/conf")}
               >
                 <img
                   src={highlightedVideo.thumbnail}
@@ -807,7 +815,7 @@ export default function Home() {
                   {/* ── BOTTOM: Action button — anchored to column base ── */}
                   <div className="mt-auto pt-6">
                     <PrimaryButton
-                      onClick={() => navigate("/conf")}
+                      onClick={() => triggerTrap("/conf")}
                       style={{ backgroundColor: primaryRed }}
                     >
                       {highlightCategory === 'featured' ? 'View Page' : 'View Video'}
@@ -818,9 +826,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </TrapElement>
 
         {categories.length > 0 ? (
-          categories.map((category) => {
+          categories.map((category, index) => {
             const categoryVideos = publishedMedia
               .filter((v) => {
                 const genre = (v.genre || "").toLowerCase();
@@ -845,6 +854,8 @@ export default function Home() {
                 isDark={isDark}
                 primaryRed={primaryRed}
                 navigate={navigate}
+                delay={1.1 + index * 0.25}
+                rotate={index % 2 === 0 ? 8 : -8}
               />
             );
           })
@@ -857,6 +868,8 @@ export default function Home() {
               isDark={isDark}
               primaryRed={primaryRed}
               navigate={navigate}
+              delay={1.1}
+              rotate={8}
             />
 
             <HorizontalSection
@@ -869,6 +882,8 @@ export default function Home() {
               isDark={isDark}
               primaryRed={primaryRed}
               navigate={navigate}
+              delay={1.35}
+              rotate={-7}
             />
 
             <HorizontalSection
@@ -878,6 +893,8 @@ export default function Home() {
               isDark={isDark}
               primaryRed={primaryRed}
               navigate={navigate}
+              delay={1.55}
+              rotate={10}
             />
           </>
         )}

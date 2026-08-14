@@ -5,6 +5,7 @@ import ConfPage from "./conf/ConfPage";
 import ConfAdminPage from "./conf/ConfAdminPage";
 
 import { CustomThemeProvider } from "./components/providers/ThemeContext";
+import { TrapTransitionProvider } from "./context/TrapTransitionContext";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
 import { isSupabaseConfigured, supabase } from "./lib/supabase";
@@ -150,8 +151,10 @@ function ScrollToTop() {
 export default function App() {
   return (
     <Router>
-      <ScrollToTop />
-      <AppContent />
+      <TrapTransitionProvider>
+        <ScrollToTop />
+        <AppContent />
+      </TrapTransitionProvider>
     </Router>
   );
 }

@@ -8,6 +8,7 @@ import {
   Search, Settings, LogOut, User, Bookmark, Heart, X, ArrowUpRight, Menu, Clock3, CheckCheck,
 } from "lucide-react";
 import { useCustomTheme } from "../providers/ThemeContext";
+import { useTrapTransition, TrapElement } from "../../context/TrapTransitionContext";
 import { motion, AnimatePresence } from "motion/react";
 import { BellIcon } from "../common/BellIcon";
 import { getAllVideos, videoData } from "../../data/videos";
@@ -72,6 +73,7 @@ function Highlight({ text, query, color }: { text: string; query: string; color:
 export function Navbar() {
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { triggerTrap } = useTrapTransition();
   const { theme, resolvedTheme } = useCustomTheme();
   const currentTheme = theme === "system" ? resolvedTheme : theme;
   const isDim = currentTheme === 'dim';
@@ -288,17 +290,17 @@ export function Navbar() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/conf');
+    triggerTrap('/conf');
     closeSearch();
   };
 
   const handleResultClick = (id: string) => {
-    navigate('/conf');
+    triggerTrap('/conf');
     closeSearch();
   };
 
   const handleViewAll = () => {
-    navigate('/conf');
+    triggerTrap('/conf');
     closeSearch();
   };
 
@@ -325,14 +327,13 @@ export function Navbar() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <header
-      ref={headerRef}
-      className={`sticky top-0 z-50 border-b shadow-sm transition-colors duration-300 ${
-        isLightsOut ? "bg-[#000000] border-gray-900" : isDim ? "bg-[#0F1923] border-[#38444D]" : "bg-white border-gray-200"
-      }`}
-      // relative is implicit for sticky; stated explicitly for absolute children
-      style={{ position: "sticky" }}
-    >
+    <TrapElement delay={0.1} rotate={-6} className="sticky top-0 z-50">
+      <header
+        ref={headerRef}
+        className={`w-full border-b shadow-sm transition-colors duration-300 ${
+          isLightsOut ? "bg-[#000000] border-gray-900" : isDim ? "bg-[#0F1923] border-[#38444D]" : "bg-white border-gray-200"
+        }`}
+      >
       {/* ── Header bar ──────────────────────────────────────────────────── */}
       <div className="w-full max-w-[min(1200px,calc(100vw-48px))] mx-auto px-4 sm:px-5 md:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
 
@@ -619,7 +620,7 @@ export function Navbar() {
                   ].map(({ label, icon, path }) => (
                     <button
                       key={label}
-                      onClick={() => { setShowProfileMenu(false); navigate('/conf'); }}
+                      onClick={() => { setShowProfileMenu(false); triggerTrap('/conf'); }}
                       className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
                         isDark
                           ? "text-gray-300 hover:bg-white/5 hover:text-white"
@@ -636,7 +637,7 @@ export function Navbar() {
                       setShowProfileMenu(false);
                       supabase.auth.signOut();
                       clearAuthStorage();
-                      navigate('/conf');
+                      triggerTrap('/conf');
                     }}
                     className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
                       isDark ? "text-red-400 hover:bg-red-500/10" : "text-red-600 hover:bg-red-50"
@@ -804,7 +805,7 @@ export function Navbar() {
                           {searchResults.tags.map(tag => (
                             <button
                               key={tag}
-                              onClick={() => { navigate('/conf'); closeSearch(); }}
+                              onClick={() => { triggerTrap('/conf'); closeSearch(); }}
                               className={`px-3 py-1 rounded-full font-['Poppins'] text-[11px] font-semibold transition-colors border ${
                                 isDark
                                   ? "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 hover:bg-white/5"
@@ -980,6 +981,7 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-    </header>
+      </header>
+    </TrapElement>
   );
 }
