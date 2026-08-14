@@ -74,19 +74,19 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="w-full max-w-3xl mx-auto px-6 py-8 flex flex-col items-center justify-between min-h-[85vh] font-poppins relative text-white"
+      className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-2 sm:py-4 flex flex-col items-center justify-between h-full max-h-[92vh] font-poppins relative text-white"
     >
       {/* Top Bar: Corner Fraction & Direct Slide Dots */}
-      <div className="w-full flex items-center justify-between mb-8 relative z-10">
+      <div className="w-full flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-2">
           {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => onSelectSlide(idx)}
-              className={`h-2.5 rounded-full transition-all duration-700 cursor-pointer ${
+              className={`h-2 rounded-full transition-all duration-700 cursor-pointer ${
                 idx === currentIndex
-                  ? 'w-8 bg-white shadow-md'
-                  : 'w-2.5 bg-white/30 hover:bg-white/60'
+                  ? 'w-7 bg-white shadow-md'
+                  : 'w-2 bg-white/30 hover:bg-white/60'
               }`}
               title={`Slide ${idx + 1}`}
             />
@@ -94,7 +94,7 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
         </div>
 
         {/* Fraction in the Corner */}
-        <div className="px-4 py-1.5 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-white tracking-widest shadow-md">
+        <div className="px-3 py-1 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-white tracking-widest shadow-md">
           {currentIndex + 1} / {slides.length}
         </div>
       </div>
@@ -102,18 +102,18 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
       {/* Main PowerPoint Presentation Body */}
       <div
         key={currentIndex}
-        className="w-full flex-1 flex flex-col items-center justify-center text-center my-auto px-2 sm:px-8 py-4 animate-powerpoint-slow relative z-10"
+        className="w-full flex-1 flex flex-col items-center justify-center text-center my-auto px-2 sm:px-6 py-2 animate-powerpoint-slow relative z-10"
       >
         {/* Subtitle Accent */}
         {currentSlide.subtitle && (
-          <span className="text-xs sm:text-sm font-medium tracking-[2.5px] uppercase text-rose-200/90 mb-3 inline-block drop-shadow-sm">
+          <span className="text-xs font-medium tracking-[2.5px] uppercase text-rose-200/90 mb-2 inline-block drop-shadow-sm">
             {currentSlide.subtitle}
           </span>
         )}
 
         {/* Title */}
         {currentSlide.title && !currentSlide.beholdGrid && (
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight drop-shadow-lg max-w-2xl">
             {currentSlide.title}
           </h1>
         )}
@@ -247,11 +247,11 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
       </div>
 
       {/* Bottom Actions: Previous & Next Message Buttons */}
-      <div className="w-full flex items-center justify-between gap-4 mt-8 pt-4 border-t border-white/10 relative z-10">
+      <div className="w-full flex items-center justify-between gap-4 mt-4 pt-3 border-t border-white/10 relative z-10">
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className={`flex items-center gap-2 px-5 py-3 rounded-xl font-poppins text-xs font-semibold transition-all duration-300 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-poppins text-xs font-semibold transition-all duration-300 ${
             currentIndex === 0
               ? 'opacity-30 cursor-not-allowed text-white/40'
               : 'bg-white/10 hover:bg-white/20 text-white cursor-pointer border border-white/20 shadow'
@@ -264,11 +264,11 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
         {(!currentSlide.revealText || isRevealed) && (
           <button
             onClick={handleNextWithCheck}
-            className="btn-crimson flex items-center gap-2 px-8 py-3.5 text-sm sm:text-base font-semibold shadow-2xl cursor-pointer hover:scale-105 border border-white/20 ml-auto"
+            className="btn-crimson flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-semibold shadow-xl cursor-pointer hover:scale-105 border border-white/20 ml-auto"
           >
             <span>{currentIndex === slides.length - 1 ? 'Go to Question 💕' : 'Next Message'}</span>
             {currentIndex < slides.length - 1 ? (
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             ) : (
               <Heart className="w-4 h-4 fill-white" />
             )}
@@ -278,10 +278,10 @@ export const SlideViewer: React.FC<SlideViewerProps> = ({
 
       {/* Back to Quiz link */}
       {onBackToQuiz && (
-        <div className="mt-4 text-center">
+        <div className="mt-2 text-center">
           <button
             onClick={onBackToQuiz}
-            className="text-xs text-white/60 hover:text-white underline cursor-pointer font-poppins transition-colors"
+            className="text-[11px] text-white/50 hover:text-white underline cursor-pointer font-poppins transition-colors"
           >
             ← Return to verification check
           </button>

@@ -303,12 +303,15 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     }
   };
 
-  // Map Click Listener to let user click ANY spot on the map
+  // Map Click Listener: Only allows dropping a custom pin when user has activated "Suggest Another Place" (isCustomMode === true)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
 
     const onMapClick = (e: L.LeafletMouseEvent) => {
+      // Only drop custom pin if user explicitly clicked "Suggest Another Place"
+      if (!isCustomMode) return;
+
       const { lat, lng } = e.latlng;
       const customLocation: CoffeeLocation = {
         name: customSpotName.trim() || 'My Suggested Place 📍',
@@ -341,14 +344,13 @@ export const MapLocation: React.FC<MapLocationProps> = ({
 
       customMarkerRef.current = newMarker;
       setActiveSpot(customLocation);
-      setIsCustomMode(true);
     };
 
     map.on('click', onMapClick);
     return () => {
       map.off('click', onMapClick);
     };
-  }, [customSpotName, customSpotAddress]);
+  }, [isCustomMode, customSpotName, customSpotAddress]);
 
   const handleApplyCustomSpot = (e: React.FormEvent) => {
     e.preventDefault();
@@ -423,24 +425,24 @@ export const MapLocation: React.FC<MapLocationProps> = ({
   }, [comment]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-4 flex flex-col items-center justify-center min-h-[85vh] font-poppins">
+    <div className="w-full max-w-6xl mx-auto px-4 py-2 flex flex-col items-center justify-center h-full max-h-[92vh] font-poppins overflow-hidden">
       {/* Celebration Header */}
-      <div className="text-center mb-6">
-        <h2 className="font-poppins text-3xl sm:text-4xl font-bold text-white mb-2 drop-shadow-md">
+      <div className="text-center mb-3">
+        <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-md">
           It's a Coffee Date!
         </h2>
-        <p className="font-poppins text-white/80 text-sm sm:text-base max-w-xl mx-auto">
+        <p className="font-poppins text-white/80 text-xs sm:text-sm max-w-lg mx-auto">
           Here is our proposed location. Choose your preferred date, time & leave a message below to seal our plans!
         </p>
       </div>
 
       {/* Grid Layout: Map Card (Wider Crosswise) + Date Selector */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-start overflow-hidden">
         {/* Map Container - Crosswise Elongated Layout */}
-        <div className="lg:col-span-8 sentimental-card p-5 sm:p-6 flex flex-col">
-          <div className="flex items-center justify-between mb-3 px-1">
-            <div className="flex items-center gap-2 text-[#101828] font-poppins font-semibold text-sm sm:text-base truncate">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <div className="lg:col-span-7 sentimental-card p-4 flex flex-col">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <div className="flex items-center gap-2 text-[#101828] font-poppins font-semibold text-xs sm:text-sm truncate">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span className="truncate font-bold text-emerald-700">{activeSpot.name}</span>
             </div>
             {activeSpot.googleMapsUrl && (
@@ -451,18 +453,18 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                 className="flex items-center gap-1.5 text-xs text-[#8A181A] hover:underline transition-colors font-poppins font-semibold shrink-0 ml-2"
               >
                 <span>Directions</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <ExternalLink className="w-3 h-3" />
               </a>
             )}
           </div>
 
           {/* Leaflet Map Embed - Crosswise Wide Landscape Viewport */}
-          <div className="w-full h-[280px] sm:h-[320px] md:h-[340px] rounded-2xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3]">
+          <div className="w-full h-[220px] sm:h-[250px] md:h-[270px] rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3]">
             <div ref={mapContainerRef} className="w-full h-full z-10" />
           </div>
 
           {/* Spot Selector Chips below Map - Multi-layer Responsive Wrap Grid */}
-          <div className="mt-3 pt-2.5 border-t border-[#F3F4F6] space-y-2 font-poppins">
+          <div className="mt-2.5 pt-2 border-t border-[#F3F4F6] space-y-1.5 font-poppins">
             <div className="flex items-center justify-between text-[11px] text-[#6A7282] px-1 font-semibold">
               <span className="flex items-center gap-1.5 truncate">
                 <Coffee className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -482,40 +484,40 @@ export const MapLocation: React.FC<MapLocationProps> = ({
 
             {/* If user clicks 'Suggest Another Place', show quick custom entry form */}
             {isCustomMode ? (
-              <form onSubmit={handleApplyCustomSpot} className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-2 animate-fade-in text-xs font-poppins">
-                <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-[11px]">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <form onSubmit={handleApplyCustomSpot} className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200 space-y-1.5 animate-fade-in text-xs font-poppins">
+                <div className="flex items-center gap-1.5 text-emerald-800 font-bold text-[10px]">
+                  <Sparkles className="w-3 h-3 text-emerald-600" />
                   <span>Suggest your favorite coffee spot / cafe:</span>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-1.5">
                   <input
                     type="text"
-                    placeholder="Cafe / Place Name (e.g. My Favorite Cafe)"
+                    placeholder="Cafe / Place Name"
                     value={customSpotName}
                     onChange={(e) => setCustomSpotName(e.target.value)}
-                    className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-[#101828] text-xs focus:outline-none focus:border-emerald-600"
+                    className="flex-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-[#101828] text-xs focus:outline-none focus:border-emerald-600"
                   />
                   <input
                     type="text"
-                    placeholder="Location / Vicinity (Optional)"
+                    placeholder="Vicinity (Optional)"
                     value={customSpotAddress}
                     onChange={(e) => setCustomSpotAddress(e.target.value)}
-                    className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-emerald-300 text-[#101828] text-xs focus:outline-none focus:border-emerald-600"
+                    className="flex-1 px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-[#101828] text-xs focus:outline-none focus:border-emerald-600"
                   />
                   <button
                     type="submit"
-                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 cursor-pointer shadow-sm"
+                    className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 cursor-pointer shadow-sm"
                   >
                     Set Spot
                   </button>
                 </div>
-                <p className="text-[10px] text-emerald-700/90 italic">
+                <p className="text-[9.5px] text-emerald-700/90 italic">
                   💡 Tip: You can also tap anywhere on the map above to drop a custom green pin!
                 </p>
               </form>
             ) : (
               /* Multi-Row / Multi-Layer Wrapped Chip Cloud */
-              <div className="flex flex-wrap items-center gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+              <div className="flex flex-wrap items-center gap-1 max-h-[90px] overflow-y-auto pr-1">
                 {allSpots.map((spot) => {
                   const isSelected = spot.name === activeSpot.name;
                   return (
@@ -523,14 +525,14 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                       key={spot.name}
                       type="button"
                       onClick={() => handleSelectSpot(spot)}
-                      className={`px-2.5 py-1.5 rounded-xl text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5 border ${
+                      className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer flex items-center gap-1 border ${
                         isSelected
-                          ? 'bg-emerald-600 text-white border-emerald-700 shadow-md scale-105 font-bold'
+                          ? 'bg-emerald-600 text-white border-emerald-700 shadow scale-105 font-bold'
                           : 'bg-[#F7F6F3] hover:bg-[#E5E7EB] text-[#364153] border-[#D1D5DC]'
                       }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSelected ? 'bg-white' : 'bg-[#8A181A]'}`} />
-                      <span className="truncate max-w-[170px]">{spot.name.split('-')[0].trim()}</span>
+                      <span className="truncate max-w-[140px]">{spot.name.split('-')[0].trim()}</span>
                     </button>
                   );
                 })}
@@ -540,128 +542,129 @@ export const MapLocation: React.FC<MapLocationProps> = ({
         </div>
 
         {/* Date Selector & Comment Form / Invitation Ticket */}
-        <div className="lg:col-span-4 sentimental-card p-6 flex flex-col justify-between">
+        <div className="lg:col-span-5 sentimental-card p-4 sm:p-5 flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 mb-4 text-[#101828]">
-              <Calendar className="w-5 h-5 text-[#8A181A]" />
-              <h3 className="font-poppins text-xl font-bold">Plan Details</h3>
+            <div className="flex items-center gap-2 mb-3 text-[#101828]">
+              <Calendar className="w-4 h-4 text-[#8A181A]" />
+              <h3 className="font-poppins text-lg font-bold">Plan Details</h3>
             </div>
 
             {isSaved ? (
               /* Invitation Ticket View */
-              <div className="p-5 rounded-2xl bg-[#F7F6F3] border border-[#E5E7EB] text-center animate-fade-in my-2">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
-                <h4 className="font-poppins font-bold text-lg text-[#101828] mb-1">Date Confirmed!</h4>
-                <p className="text-xs text-[#6A7282] mb-4">I'm so looking forward to seeing you.</p>
+              <div className="p-4 rounded-xl bg-[#F7F6F3] border border-[#E5E7EB] text-center animate-fade-in my-1">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-1" />
+                <h4 className="font-poppins font-bold text-base text-[#101828] mb-0.5">Date Confirmed!</h4>
+                <p className="text-[11px] text-[#6A7282] mb-3">I'm so looking forward to seeing you.</p>
 
-                <div className="space-y-0 border-t border-[#E5E7EB] pt-2 text-left">
+                <div className="space-y-0 border-t border-[#E5E7EB] pt-1 text-left text-xs">
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Invitation From</span>
+                    <span className="metadata-label w-24 shrink-0">From</span>
                     <span className="metadata-value font-semibold">{senderName}</span>
                   </div>
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Recipient</span>
+                    <span className="metadata-label w-24 shrink-0">To</span>
                     <span className="metadata-value font-semibold">{recipientName}</span>
                   </div>
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Date</span>
+                    <span className="metadata-label w-24 shrink-0">Date</span>
                     <span className="metadata-value font-semibold text-[#8A181A]">{formattedDateDisplay}</span>
                   </div>
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Time</span>
+                    <span className="metadata-label w-24 shrink-0">Time</span>
                     <span className="metadata-value font-semibold text-[#8A181A]">{selectedTime}</span>
                   </div>
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Location</span>
+                    <span className="metadata-label w-24 shrink-0">Location</span>
                     <span className="metadata-value font-semibold text-emerald-700 truncate">{activeSpot.name}</span>
                   </div>
                   <div className="metadata-row">
-                    <span className="metadata-label w-28 shrink-0">Address</span>
-                    <span className="metadata-value text-xs text-[#4A5565] truncate">{activeSpot.address}</span>
+                    <span className="metadata-label w-24 shrink-0">Address</span>
+                    <span className="metadata-value text-[11px] text-[#4A5565] truncate">{activeSpot.address}</span>
                   </div>
                   {comment && (
                     <div className="metadata-row">
-                      <span className="metadata-label w-28 shrink-0">Your Note</span>
-                      <span className="metadata-value italic text-[#8A181A]">"{comment}"</span>
+                      <span className="metadata-label w-24 shrink-0">Your Note</span>
+                      <span className="metadata-value italic text-[#8A181A] text-xs">"{comment}"</span>
                     </div>
                   )}
                 </div>
 
                 <button
                   onClick={() => setIsSaved(false)}
-                  className="mt-4 text-xs font-poppins text-[#6A7282] hover:text-[#8A181A] underline cursor-pointer"
+                  className="mt-3 text-xs font-poppins text-[#6A7282] hover:text-[#8A181A] underline cursor-pointer"
                 >
                   Change Date / Time / Spot / Note
                 </button>
               </div>
             ) : (
               /* Date Form + Comment Box */
-              <form onSubmit={handleConfirm} className="space-y-4">
+              <form onSubmit={handleConfirm} className="space-y-2.5">
                 {/* Active Venue Banner */}
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
                   <div className="flex items-center gap-2 truncate">
-                    <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <div className="truncate">
-                      <p className="font-bold text-emerald-950 truncate">{activeSpot.name}</p>
-                      <p className="text-[11px] text-emerald-700 truncate">{activeSpot.address}</p>
+                      <p className="font-bold text-emerald-950 text-xs truncate">{activeSpot.name}</p>
+                      <p className="text-[10px] text-emerald-700 truncate">{activeSpot.address}</p>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] uppercase shrink-0 ml-2">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[9px] uppercase shrink-0 ml-2">
                     Selected
                   </span>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-poppins font-semibold text-[#364153] mb-1">
-                    Preferred Date
-                  </label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A]"
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1">
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1 flex items-center justify-between">
+                      <span>Preferred Time</span>
+                      <Clock className="w-3 h-3 text-[#8A181A]" />
+                    </label>
+                    <input
+                      type="time"
+                      value={selectedTime}
+                      onChange={(e) => setSelectedTime(e.target.value)}
+                      required
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A]"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-poppins font-semibold text-[#364153] mb-1 flex items-center justify-between">
-                    <span>Preferred Time</span>
-                    <Clock className="w-3.5 h-3.5 text-[#8A181A]" />
-                  </label>
-                  <input
-                    type="time"
-                    value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
-                    required
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A]"
-                  />
-                </div>
-
-                {/* Comment Box (YES Branch) */}
-                <div>
-                  <label className="block text-xs font-poppins font-semibold text-[#364153] mb-1 flex items-center gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5 text-[#8A181A]" />
+                  <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1 flex items-center gap-1">
+                    <MessageSquare className="w-3 h-3 text-[#8A181A]" />
                     <span>Your Note / Comment for Me (Optional)</span>
                   </label>
                   <textarea
                     ref={commentRef}
-                    rows={2}
                     value={comment}
                     onChange={handleCommentChange}
+                    rows={2}
                     placeholder="Leave a message or thoughts..."
-                    className="w-full p-3 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-sm focus:outline-none focus:border-[#8A181A] transition-all placeholder:text-[#99A1AF] resize-none font-poppins overflow-hidden"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A] resize-none font-poppins transition-colors placeholder:text-[#99A1AF]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn-crimson w-full py-3.5 text-sm flex items-center justify-center gap-2 mt-3 cursor-pointer"
+                  className="w-full btn-crimson py-2.5 px-4 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
-                  <Heart className="w-4 h-4 fill-white" />
-                  <span>{isSubmitting ? 'Saving Date...' : 'Confirm Our Coffee Date'}</span>
+                  <Heart className="w-3.5 h-3.5 fill-white" />
+                  <span>{isSubmitting ? 'Confirming...' : 'Confirm Our Coffee Date'}</span>
                 </button>
               </form>
             )}

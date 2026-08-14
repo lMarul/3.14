@@ -311,13 +311,13 @@ export const ConfPage: React.FC = () => {
   };
 
   return (
-    <div className="conf-container min-h-screen flex flex-col justify-center relative bg-[#8A181A] text-[#101828] font-poppins overflow-x-hidden selection:bg-[#8A181A] selection:text-white animate-slow-fade-in">
+    <div className="conf-container h-screen max-h-screen w-full flex flex-col justify-center relative bg-[#8A181A] text-[#101828] font-poppins overflow-hidden selection:bg-[#8A181A] selection:text-white animate-slow-fade-in">
       {/* Background Layer with Likhani Editorial Banner SVG */}
       <BackgroundEffects isPlayingAudio={isPlayingAudio} onToggleAudio={toggleAudio} />
 
-      {/* CLEAN USER EXPERIENCE — NO HEADER/NAVBAR, NO FOOTER */}
-      <div className="min-h-screen w-full flex flex-col justify-center items-center relative z-10 py-6">
-        <main className="w-full max-w-4xl mx-auto flex items-center justify-center flex-1 my-auto">
+      {/* CLEAN USER EXPERIENCE — NO SCROLLBAR, FITS VIEWPORT PERFECTLY */}
+      <div className="h-full w-full flex flex-col justify-center items-center relative z-10 p-2 sm:p-4 overflow-hidden">
+        <main className="w-full max-w-5xl mx-auto flex items-center justify-center flex-1 my-auto overflow-hidden">
           {currentScreen === 'INTRO' && (
             <LoadingIntro
               recipientName={config.recipientName}
