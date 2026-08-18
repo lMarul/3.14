@@ -325,7 +325,7 @@ export const ConfPage: React.FC = () => {
 
       {/* CLEAN USER EXPERIENCE — NO SCROLLBAR, FITS VIEWPORT PERFECTLY */}
       <div className="h-full w-full flex flex-col justify-center items-center relative z-10 p-2 sm:p-4 overflow-hidden">
-        <main className="w-full max-w-5xl mx-auto flex items-center justify-center flex-1 my-auto overflow-hidden">
+        <main className={`w-full ${currentScreen === 'YES_MAP' ? 'max-w-6xl' : 'max-w-5xl'} mx-auto flex items-center justify-center flex-1 my-auto overflow-hidden transition-all duration-300`}>
           {currentScreen === 'INTRO' && (
             <LoadingIntro
               recipientName={config.recipientName}

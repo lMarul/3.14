@@ -484,12 +484,23 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     }
   }, [comment]);
 
-  const isActiveDefaultSuggestion = activeSpot.name.toLowerCase() === defaultSuggestionName.toLowerCase();
+  const [isExpandedMap, setIsExpandedMap] = useState(false);
+  const isActiveDefaultSuggestion = (activeSpot?.name || '').toLowerCase() === (defaultSuggestionName || '').toLowerCase();
+
+  // Invalidate map size on layout changes or expansion
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [showSuggestions, isExpandedMap]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-2 flex flex-col items-center justify-center h-full max-h-[94vh] font-poppins overflow-hidden">
+    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-1 flex flex-col items-center justify-center h-full max-h-[96vh] font-poppins overflow-hidden">
       {/* Celebration Header */}
-      <div className="text-center mb-2.5">
+      <div className="text-center mb-2">
         <h2 className="font-poppins text-xl sm:text-2xl md:text-3xl font-bold text-white mb-0.5 drop-shadow-md">
           It's a Coffee Date! ☕💖
         </h2>
@@ -498,15 +509,15 @@ export const MapLocation: React.FC<MapLocationProps> = ({
         </p>
       </div>
 
-      {/* Grid Layout: Map Card + Plan Details Card */}
+      {/* Grid Layout: Map Card (Wider & Taller) + Plan Details Card */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start overflow-hidden">
-        {/* Left Column: Map Container & Spot Details */}
-        <div className="lg:col-span-6 sentimental-card p-3 sm:p-4 flex flex-col">
+        {/* Left Column: Map Container & Spot Details (7 cols wide for big map view) */}
+        <div className="lg:col-span-7 sentimental-card p-3 sm:p-4 flex flex-col transition-all duration-300">
           {/* Active Spot Header Banner */}
           <div className="flex items-center justify-between mb-2 px-1">
             <div className="flex items-center gap-1.5 text-[#101828] font-poppins font-semibold text-xs sm:text-sm truncate">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate font-bold text-emerald-700">{activeSpot.name}</span>
+              <span className="truncate font-bold text-emerald-700 text-sm">{activeSpot.name}</span>
               {isActiveDefaultSuggestion && (
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold shrink-0 border border-amber-300">
                   <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
@@ -514,26 +525,46 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                 </span>
               )}
             </div>
-            {activeSpot.googleMapsUrl && (
-              <a
-                href={activeSpot.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-[#8A181A] hover:underline transition-colors font-poppins font-semibold shrink-0 ml-2"
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (mapInstanceRef.current) {
+                    mapInstanceRef.current.flyTo([activeSpot.lat, activeSpot.lng], 16, { duration: 0.8 });
+                  }
+                }}
+                className="text-[11px] text-[#4A5565] hover:text-[#101828] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#F3F4F6] hover:bg-[#E5E7EB] transition-colors cursor-pointer"
+                title="Center on active spot"
               >
-                <span>Directions</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            )}
+                <span>Re-center</span>
+              </button>
+              {activeSpot.googleMapsUrl && (
+                <a
+                  href={activeSpot.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[11px] text-[#8A181A] hover:underline transition-colors font-poppins font-semibold"
+                >
+                  <span>Directions</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
           </div>
 
-          {/* Leaflet Map Embed */}
-          <div className="w-full h-[200px] sm:h-[220px] md:h-[240px] rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3]">
+          {/* Leaflet Map Embed - Substantially Enlarged Viewport */}
+          <div
+            className={`w-full ${
+              showSuggestions
+                ? 'h-[260px] sm:h-[290px] md:h-[320px]'
+                : 'h-[330px] sm:h-[370px] md:h-[410px] lg:h-[430px]'
+            } rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3] transition-all duration-300`}
+          >
             <div ref={mapContainerRef} className="w-full h-full z-10" />
           </div>
 
           {/* Suggestion Toggle Bar (Chips hidden by default) */}
-          <div className="mt-2.5 pt-2 border-t border-[#F3F4F6] space-y-2 font-poppins">
+          <div className="mt-2 pt-2 border-t border-[#F3F4F6] space-y-2 font-poppins">
             <div className="flex items-center justify-between text-[11px] text-[#6A7282] px-1 font-semibold">
               <div className="flex items-center gap-1.5 truncate">
                 <Coffee className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -624,7 +655,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
         </div>
 
         {/* Right Column: Plan Details Form & Itinerary Confirmation */}
-        <div className="lg:col-span-6 sentimental-card p-3.5 sm:p-4 flex flex-col justify-between max-h-[85vh] overflow-y-auto">
+        <div className="lg:col-span-5 sentimental-card p-3.5 sm:p-4 flex flex-col justify-between max-h-[90vh] overflow-y-auto">
           <div>
             <div className="flex items-center gap-2 mb-2 text-[#101828]">
               <Calendar className="w-4 h-4 text-[#8A181A]" />
