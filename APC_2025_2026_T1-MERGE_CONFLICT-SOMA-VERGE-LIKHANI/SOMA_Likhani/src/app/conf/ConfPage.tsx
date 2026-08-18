@@ -257,8 +257,14 @@ export const ConfPage: React.FC = () => {
     setCurrentScreen('NO_FORM');
   };
 
-  // YES Response Submission to Convex Database + localStorage (including optional comment & selected venue)
-  const handleConfirmDate = async (date: string, time: string, message?: string, selectedLocation?: CoffeeLocation) => {
+  // YES Response Submission to Convex Database + localStorage (including optional comment, venue & outfit color)
+  const handleConfirmDate = async (
+    date: string,
+    time: string,
+    message?: string,
+    selectedLocation?: CoffeeLocation,
+    colorToWear?: string
+  ) => {
     const venueName = selectedLocation?.name || config.coffeeLocation?.name;
     const newResp: ResponseData = {
       id: 'resp_' + Date.now(),
@@ -268,15 +274,17 @@ export const ConfPage: React.FC = () => {
       message: message || undefined,
       selectedLocation: selectedLocation || config.coffeeLocation,
       selectedLocationName: venueName,
+      colorToWear: colorToWear || undefined,
       createdAt: new Date().toISOString(),
     };
 
     try {
+      const metaTags = `[Location: ${venueName}]${colorToWear ? ` [Color to wear: ${colorToWear}]` : ''}`;
       await convex.mutation(api.responses.add, {
         choice: 'YES',
         preferredDate: date,
         preferredTime: time,
-        message: message ? `[Location: ${venueName}] ${message}` : `[Location: ${venueName}]`,
+        message: message ? `${metaTags} ${message}` : metaTags,
       });
       console.log('Successfully saved YES response to Convex DB!');
     } catch (e) {

@@ -52,6 +52,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     choice: 'YES' as 'YES' | 'NO',
     preferredDate: '',
     preferredTime: '',
+    colorToWear: '',
     message: '',
   });
 
@@ -82,6 +83,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         choice: responseForm.choice,
         preferredDate: responseForm.preferredDate || undefined,
         preferredTime: responseForm.preferredTime || undefined,
+        colorToWear: responseForm.colorToWear || undefined,
         message: responseForm.message || undefined,
       });
       setEditingResponse(null);
@@ -90,11 +92,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         choice: responseForm.choice,
         preferredDate: responseForm.preferredDate || undefined,
         preferredTime: responseForm.preferredTime || undefined,
+        colorToWear: responseForm.colorToWear || undefined,
         message: responseForm.message || undefined,
       });
       setIsAddingResponse(false);
     }
-    setResponseForm({ choice: 'YES', preferredDate: '', preferredTime: '', message: '' });
+    setResponseForm({ choice: 'YES', preferredDate: '', preferredTime: '', colorToWear: '', message: '' });
   };
 
   const openEditResponse = (resp: ResponseData) => {
@@ -103,6 +106,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       choice: resp.choice,
       preferredDate: resp.preferredDate || '',
       preferredTime: resp.preferredTime || '',
+      colorToWear: resp.colorToWear || '',
       message: resp.message || '',
     });
   };
@@ -408,22 +412,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
 
                   {responseForm.choice === 'YES' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[#364153] font-semibold mb-1">Preferred Date</label>
-                        <input
-                          type="date"
-                          value={responseForm.preferredDate}
-                          onChange={(e) => setResponseForm({ ...responseForm, preferredDate: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
-                        />
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[#364153] font-semibold mb-1">Preferred Date</label>
+                          <input
+                            type="date"
+                            value={responseForm.preferredDate}
+                            onChange={(e) => setResponseForm({ ...responseForm, preferredDate: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[#364153] font-semibold mb-1">Preferred Time</label>
+                          <input
+                            type="time"
+                            value={responseForm.preferredTime}
+                            onChange={(e) => setResponseForm({ ...responseForm, preferredTime: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
+                          />
+                        </div>
                       </div>
+
                       <div>
-                        <label className="block text-[#364153] font-semibold mb-1">Preferred Time</label>
+                        <label className="block text-[#364153] font-semibold mb-1">Color to Wear</label>
                         <input
-                          type="time"
-                          value={responseForm.preferredTime}
-                          onChange={(e) => setResponseForm({ ...responseForm, preferredTime: e.target.value })}
+                          type="text"
+                          value={responseForm.colorToWear}
+                          onChange={(e) => setResponseForm({ ...responseForm, colorToWear: e.target.value })}
+                          placeholder="e.g. Crimson / Maroon, Matcha Green, Warm Cream..."
                           className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828]"
                         />
                       </div>
@@ -499,6 +516,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <span className="text-[#8A181A] font-semibold">Preferred Time:</span>{' '}
                           <span className="font-bold text-[#101828]">{resp.preferredTime || 'Not specified'}</span>
                         </p>
+                        {resp.colorToWear && (
+                          <p>
+                            <span className="text-[#8A181A] font-semibold">Color to Wear:</span>{' '}
+                            <span className="font-bold text-[#8A181A]">{resp.colorToWear}</span>
+                          </p>
+                        )}
                         {resp.selectedLocationName && (
                           <p>
                             <span className="text-emerald-700 font-semibold">Chosen Spot:</span>{' '}

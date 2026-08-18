@@ -61,6 +61,7 @@ export interface ResponseData {
   message?: string;
   selectedLocation?: CoffeeLocation;
   selectedLocationName?: string;
+  colorToWear?: string;
   createdAt: string;
   userAgent?: string;
 }
