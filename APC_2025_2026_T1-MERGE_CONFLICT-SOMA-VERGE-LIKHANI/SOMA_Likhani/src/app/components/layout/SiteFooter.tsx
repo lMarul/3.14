@@ -53,7 +53,9 @@ export function SiteFooter() {
               <h3 className={colHeadingClass}>Resources</h3>
               <ul className="space-y-[13px]">
                 <li>
-                  <span className={staticLinkClass}>Help Center</span>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Help Center
+                  </button>
                 </li>
                 <li>
                   <button onClick={() => triggerTrap("/conf")} className={linkClass}>
@@ -75,40 +77,47 @@ export function SiteFooter() {
               <h3 className={colHeadingClass}>Legal</h3>
               <ul className="space-y-[13px]">
                 <li>
-                  <span className={staticLinkClass}>Notices</span>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Notices
+                  </button>
                 </li>
                 <li>
-                  <span className={staticLinkClass}>Privacy Policy</span>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Privacy Policy
+                  </button>
                 </li>
                 <li>
-                  <span className={staticLinkClass}>Copyright</span>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Copyright
+                  </button>
                 </li>
               </ul>
             </div>
           </TrapElement>
 
           {/* Connect */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2">
-            <h3 className={colHeadingClass}>Connect</h3>
-            <ul className="space-y-[13px]">
-              <li>
-                <a
-                  href="https://www.facebook.com/profile.php?id=61587556703784"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={staticLinkClass}
-                >
-                  Facebook
-                </a>
-              </li>
-              <li>
-                <span className={staticLinkClass}>Instagram</span>
-              </li>
-              <li>
-                <span className={staticLinkClass}>APC Official Site</span>
-              </li>
-            </ul>
-          </div>
+          <TrapElement delay={2.0} rotate={10} xDrift={50} className="col-span-1 md:col-span-2 lg:col-span-2">
+            <div>
+              <h3 className={colHeadingClass}>Connect</h3>
+              <ul className="space-y-[13px]">
+                <li>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Facebook
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    Instagram
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => triggerTrap("/conf")} className={linkClass}>
+                    APC Official Site
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </TrapElement>
         </div>
 
         {/* Divider — slightly stronger presence */}
@@ -125,7 +134,7 @@ export function SiteFooter() {
           <TrapElement delay={2.05} rotate={12} xDrift={45}>
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-5 text-center md:text-left">
               {/* APC SOMA lockup mark */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 cursor-pointer" onClick={() => triggerTrap("/conf")}>
                 <img
                   src="https://res.cloudinary.com/dv0rckb29/image/upload/v1770619179/Group_626_fvxz3m.png"
                   alt="APC SOMA"

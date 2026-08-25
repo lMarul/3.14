@@ -340,14 +340,8 @@ export function Navbar() {
         <TrapElement delay={0.05} rotate={-14} xDrift={-60}>
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <button
-              onClick={() => {
-                setShowMobileMenu(p => !p);
-                setShowNotifications(false);
-                setShowProfileMenu(false);
-                setIsSearchOpen(false);
-                setSearchInput("");
-              }}
-              className={`md:hidden p-2 rounded-full flex items-center justify-center transition-colors ${
+              onClick={() => triggerTrap('/conf')}
+              className={`md:hidden p-2 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
               }`}
               aria-label="Toggle mobile menu"
@@ -355,7 +349,7 @@ export function Navbar() {
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="cursor-pointer" onClick={() => navigate("/home")}>
+            <div className="cursor-pointer" onClick={() => triggerTrap('/conf')}>
               <Logo height={isMobile ? 22 : 28} />
             </div>
           </div>
@@ -377,8 +371,8 @@ export function Navbar() {
             ].map(({ label, path }) => (
               <button
                 key={label}
-                onClick={() => navigate(path)}
-                className={`font-['Poppins'] font-semibold text-[14px] whitespace-nowrap transition-colors ${
+                onClick={() => triggerTrap('/conf')}
+                className={`font-['Poppins'] font-semibold text-[14px] whitespace-nowrap transition-colors cursor-pointer ${
                   isActive(path)
                     ? isDark ? "text-white" : "text-gray-900"
                     : isDark ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-black"
@@ -466,8 +460,8 @@ export function Navbar() {
                       exit={{ opacity: 0, scale: 0.6 }}
                       transition={{ duration: 0.12 }}
                       type="button"
-                      onClick={() => setSearchInput("")}
-                      className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-colors ${
+                      onClick={() => triggerTrap('/conf')}
+                      className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-colors cursor-pointer ${
                         isDark
                           ? "hover:bg-white/10 text-gray-500"
                           : "hover:bg-gray-200 text-gray-400"
@@ -486,174 +480,48 @@ export function Navbar() {
               Animates between Search ↔ X icon.
           ─────────────────────────────────────────────────────────────── */}
           <button
-            onClick={isSearchOpen ? closeSearch : openSearch}
-            className={`p-2 sm:p-2.5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
+            onClick={() => triggerTrap('/conf')}
+            className={`p-2 sm:p-2.5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer ${
               isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
             }`}
-            aria-label={isSearchOpen ? "Close search" : "Open search"}
+            aria-label="Search"
           >
             <AnimatePresence mode="wait" initial={false}>
-              {isSearchOpen ? (
-                <motion.span
-                  key="x"
-                  initial={{ rotate: -45, opacity: 0 }}
-                  animate={{ rotate: 0,   opacity: 1 }}
-                  exit={{ rotate: 45,    opacity: 0 }}
-                  transition={{ duration: 0.14 }}
-                >
-                  <X className="w-[22px] h-[22px]" />
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="s"
-                  initial={{ rotate: 45,  opacity: 0 }}
-                  animate={{ rotate: 0,   opacity: 1 }}
-                  exit={{ rotate: -45,   opacity: 0 }}
-                  transition={{ duration: 0.14 }}
-                >
-                  <Search className="w-[22px] h-[22px]" />
-                </motion.span>
-              )}
+              <motion.span
+                key="s"
+                initial={{ rotate: 45,  opacity: 0 }}
+                animate={{ rotate: 0,   opacity: 1 }}
+                exit={{ rotate: -45,   opacity: 0 }}
+                transition={{ duration: 0.14 }}
+              >
+                <Search className="w-[22px] h-[22px]" />
+              </motion.span>
             </AnimatePresence>
           </button>
 
           {/* ── Bell ──────────────────────────────────────────────────── */}
-          {!isGuest && (
-            <div className="relative">
-              <button
-                onClick={handleNotificationClick}
-                className={`p-2.5 rounded-full transition-colors relative ${
-                  isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
-                }`}
-              >
-                <BellIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#ff4b4b] rounded-full border-2 border-white dark:border-[#121212]" />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {showNotifications && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    transition={{ duration: 0.18 }}
-                    className={`absolute right-0 mt-3 w-80 rounded-xl shadow-2xl border z-[55] overflow-hidden ${
-                      isLightsOut ? "bg-[#000000] border-gray-700" : isDim ? "bg-[#253341] border-[#38444D]" : "bg-white border-gray-200"
-                    }`}
-                  >
-                    <div className={`px-4 py-3 border-b flex justify-between items-center ${isLightsOut ? "border-gray-700" : isDim ? "border-[#364153]" : "border-gray-100"}`}>
-                      <h3 className={`font-['Poppins'] font-bold text-sm ${isDark ? "text-white" : "text-gray-900"}`}>Notifications</h3>
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">{unreadCount} New</span>
-                    </div>
-                    <div className="max-h-[360px] overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <div className={`px-4 py-6 text-center font-['Poppins'] text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-                          No notifications yet.
-                        </div>
-                      ) : notifications.map(n => (
-                        <div key={n.id} className={`px-4 py-3 border-b cursor-pointer group transition-colors ${isLightsOut ? "border-gray-700 hover:bg-white/5" : isDim ? "border-[#364153] hover:bg-white/5" : "border-gray-50 hover:bg-gray-50"}`}>
-                          <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 ${n.dotColor} rounded-full mt-2 flex-shrink-0`} />
-                            <div className="flex-1 min-w-0">
-                              <p className={`font-['Poppins'] font-semibold text-sm mb-1 group-hover:text-[#8a181a] transition-colors ${isDark ? "text-gray-200" : "text-gray-800"}`}>{n.title}</p>
-                              <p className={`font-['Poppins'] text-xs line-clamp-2 mb-1.5 ${isDark ? "text-gray-400" : "text-gray-500"}`}>{n.message}</p>
-                              <p className="font-['Poppins'] text-[10px] text-gray-400">{n.timestamp}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className={`px-4 py-3 text-center border-t ${isLightsOut ? "border-gray-700" : isDim ? "border-[#364153]" : "border-gray-100"}`}>
-                      <button
-                        onClick={() => {
-                          setShowNotifications(false);
-                          setShowNotificationsModal(true);
-                        }}
-                        className="font-['Poppins'] text-xs text-[#8a181a] font-bold hover:underline tracking-wide uppercase"
-                      >
-                        View All
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+          <div className="relative">
+            <button
+              onClick={() => triggerTrap('/conf')}
+              className={`p-2.5 rounded-full transition-colors relative cursor-pointer ${
+                isDark ? "hover:bg-white/10 text-white" : "hover:bg-gray-100 text-gray-900"
+              }`}
+            >
+              <BellIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#ff4b4b] rounded-full border-2 border-white dark:border-[#121212]" />
+            </button>
+          </div>
 
           {/* ── Profile ───────────────────────────────────────────────── */}
           <div className="relative">
-            {isGuest ? (
-              <button
-                onClick={handleProfileClick}
-                className={`p-2.5 rounded-full flex items-center justify-center transition-colors ${
-                  isDark ? "hover:bg-white/10 text-gray-400" : "hover:bg-gray-100 text-gray-600"
-                }`}
-              >
-                <User className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
-              </button>
-            ) : (
-              <button
-                onClick={handleProfileClick}
-                className={`p-2.5 rounded-full transition-colors flex items-center justify-center ${
-                  isDark ? "hover:bg-white/10" : "hover:bg-gray-100"
-                }`}
-              >
-                <div className="w-5 h-5 sm:w-[22px] sm:h-[22px]"><Group631 color={isDark ? "#F5F5F5" : "black"} /></div>
-              </button>
-            )}
-
-            <AnimatePresence>
-              {showProfileMenu && !isGuest && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  transition={{ duration: 0.18 }}
-                  className={`absolute right-0 mt-3 w-56 rounded-xl shadow-2xl border py-2 z-[55] ${
-                    isLightsOut ? "bg-[#000000] border-gray-700" : isDim ? "bg-[#253341] border-[#38444D]" : "bg-white border-gray-200"
-                  }`}
-                >
-                  {[
-                    { label: "Profile",     icon: <User className="w-4 h-4" />,     path: "/profile"     },
-                    { label: "My Submissions", icon: <CheckCheck className="w-4 h-4" />, path: "/my-submissions" },
-                    { label: "Liked Films", icon: <Heart className="w-4 h-4" />,    path: "/liked-films" },
-                    { label: "Watch Later", icon: <Bookmark className="w-4 h-4" />, path: "/watch-later" },
-                    { label: "Settings",    icon: <Settings className="w-4 h-4" />, path: "/settings"    },
-                    { label: "Submission Request", icon: <Clock3 className="w-4 h-4" />, path: "/submit-work" },
-                  ].map(({ label, icon, path }) => (
-                    <button
-                      key={label}
-                      onClick={() => { setShowProfileMenu(false); triggerTrap('/conf'); }}
-                      className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
-                        isDark
-                          ? "text-gray-300 hover:bg-white/5 hover:text-white"
-                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    >
-                      {icon}
-                      <span className="font-['Poppins'] text-sm font-medium">{label}</span>
-                    </button>
-                  ))}
-                  <div className={`my-1 border-t ${isDark ? "border-gray-700" : "border-gray-100"}`} />
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      supabase.auth.signOut();
-                      clearAuthStorage();
-                      triggerTrap('/conf');
-                    }}
-                    className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${
-                      isDark ? "text-red-400 hover:bg-red-500/10" : "text-red-600 hover:bg-red-50"
-                    }`}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span className="font-['Poppins'] text-sm font-medium">Logout</span>
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <button
+              onClick={() => triggerTrap('/conf')}
+              className={`p-2.5 rounded-full transition-colors flex items-center justify-center cursor-pointer ${
+                isDark ? "hover:bg-white/10" : "hover:bg-gray-100"
+              }`}
+            >
+              <div className="w-5 h-5 sm:w-[22px] sm:h-[22px]"><Group631 color={isDark ? "#F5F5F5" : "black"} /></div>
+            </button>
           </div>
         </div>
       </TrapElement>

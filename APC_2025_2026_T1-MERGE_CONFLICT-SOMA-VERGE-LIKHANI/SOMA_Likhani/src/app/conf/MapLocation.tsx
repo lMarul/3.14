@@ -47,6 +47,14 @@ export const COLOR_FEELING_OPTIONS = [
   { id: 'black', name: 'Black', hex: '#1F242D', textHex: '#FFFFFF', vibe: 'Black 🖤' },
 ];
 
+export const TIME_PRESETS = [
+  { id: 'morning', label: '10:30 AM', time: '10:30', tag: 'Morning ☕' },
+  { id: 'lunch', label: '12:30 PM', time: '12:30', tag: 'Lunch 🥐' },
+  { id: 'afternoon', label: '02:30 PM', time: '14:30', tag: 'Afternoon ✨' },
+  { id: 'sunset', label: '04:30 PM', time: '16:30', tag: 'Sunset 🌅' },
+  { id: 'evening', label: '06:30 PM', time: '18:30', tag: 'Evening 🌙' },
+];
+
 const DEFAULT_VILLAMOR_SPOTS: CoffeeLocation[] = [
   {
     name: 'Pickup Coffee - Andrews Ave',
@@ -189,8 +197,8 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     const shadowColor = isSelected
       ? 'rgba(22, 163, 74, 0.6)'
       : isDefaultSuggestion
-      ? 'rgba(138, 24, 26, 0.5)'
-      : 'rgba(75, 85, 99, 0.4)';
+        ? 'rgba(138, 24, 26, 0.5)'
+        : 'rgba(75, 85, 99, 0.4)';
 
     const pulseRingHtml = isSelected
       ? `<div style="
@@ -447,6 +455,12 @@ export const MapLocation: React.FC<MapLocationProps> = ({
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!comment.trim()) {
+      if (commentRef.current) {
+        commentRef.current.focus();
+      }
+      return;
+    }
     setIsSubmitting(true);
     try {
       await onConfirmDate(selectedDate, selectedTime, comment.trim(), activeSpot, selectedColor);
@@ -458,13 +472,98 @@ export const MapLocation: React.FC<MapLocationProps> = ({
     }
   };
 
+  const formatTime12h = (timeStr: string) => {
+    if (!timeStr) return '';
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    const h = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    if (isNaN(h)) return timeStr;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hour12 = h % 12 || 12;
+    const minStr = String(isNaN(m) ? 0 : m).padStart(2, '0');
+    return `${hour12}:${minStr} ${ampm}`;
+  };
+
+  const quickDatePresets = useMemo(() => {
+    const today = new Date();
+    const addDays = (n: number) => {
+      const d = new Date(today);
+      d.setDate(d.getDate() + n);
+      return d;
+    };
+    const toYMD = (d: Date) => d.toISOString().split('T')[0];
+
+    const tomorrow = addDays(1);
+    const dayAfter = addDays(2);
+    
+    // Find next Saturday
+    const daysToSat = ((6 - today.getDay() + 7) % 7) || 7;
+    const nextSat = addDays(daysToSat);
+
+    // Find next Sunday
+    const daysToSun = ((7 - today.getDay() + 7) % 7) || 7;
+    const nextSun = addDays(daysToSun);
+
+    const list = [
+      {
+        id: 'tomorrow',
+        label: 'Tomorrow',
+        date: toYMD(tomorrow),
+        sub: tomorrow.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
+      },
+      {
+        id: 'dayAfter',
+        label: tomorrow.getDay() === 5 ? 'Saturday' : 'In 2 Days',
+        date: toYMD(dayAfter),
+        sub: dayAfter.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
+      },
+      {
+        id: 'sat',
+        label: 'This Saturday',
+        date: toYMD(nextSat),
+        sub: nextSat.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      },
+      {
+        id: 'sun',
+        label: 'This Sunday',
+        date: toYMD(nextSun),
+        sub: nextSun.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      }
+    ];
+
+    const unique: typeof list = [];
+    const seen = new Set<string>();
+    for (const item of list) {
+      if (!seen.has(item.date)) {
+        seen.add(item.date);
+        unique.push(item);
+      }
+    }
+    return unique.slice(0, 4);
+  }, []);
+
+  const formattedDateShort = useMemo(() => {
+    if (!selectedDate) return '';
+    try {
+      const d = new Date(selectedDate + 'T00:00:00');
+      return d.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return selectedDate;
+    }
+  }, [selectedDate]);
+
   const formattedDateDisplay = selectedDate
     ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
     : '';
 
   const commentRef = useRef<HTMLTextAreaElement>(null);
@@ -554,11 +653,10 @@ export const MapLocation: React.FC<MapLocationProps> = ({
 
           {/* Leaflet Map Embed - Substantially Enlarged Viewport */}
           <div
-            className={`w-full ${
-              showSuggestions
-                ? 'h-[260px] sm:h-[290px] md:h-[320px]'
-                : 'h-[330px] sm:h-[370px] md:h-[410px] lg:h-[430px]'
-            } rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3] transition-all duration-300`}
+            className={`w-full ${showSuggestions
+              ? 'h-[260px] sm:h-[290px] md:h-[320px]'
+              : 'h-[330px] sm:h-[370px] md:h-[410px] lg:h-[430px]'
+              } rounded-xl overflow-hidden relative border border-[#E5E7EB] shadow-inner bg-[#F7F6F3] transition-all duration-300`}
           >
             <div ref={mapContainerRef} className="w-full h-full z-10" />
           </div>
@@ -600,13 +698,12 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                           key={spot.name}
                           type="button"
                           onClick={() => handleSelectSpot(spot)}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-medium transition-all cursor-pointer flex items-center gap-1 border ${
-                            isSelected
-                              ? 'bg-emerald-600 text-white border-emerald-700 shadow scale-[1.02] font-bold'
-                              : isDefault
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-medium transition-all cursor-pointer flex items-center gap-1 border ${isSelected
+                            ? 'bg-emerald-600 text-white border-emerald-700 shadow scale-[1.02] font-bold'
+                            : isDefault
                               ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300 font-semibold'
                               : 'bg-[#F7F6F3] hover:bg-[#E5E7EB] text-[#364153] border-[#D1D5DC]'
-                          }`}
+                            }`}
                         >
                           {isDefault && <Star className={`w-2.5 h-2.5 ${isSelected ? 'text-amber-200 fill-amber-200' : 'text-amber-500 fill-amber-500'}`} />}
                           <span className="truncate max-w-[130px]">{spot.name.split('-')[0].trim()}</span>
@@ -684,7 +781,7 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                   </div>
                   <div className="metadata-row">
                     <span className="metadata-label w-24 shrink-0">Time</span>
-                    <span className="metadata-value font-semibold text-[#8A181A]">{selectedTime}</span>
+                    <span className="metadata-value font-semibold text-[#8A181A]">{formatTime12h(selectedTime)}</span>
                   </div>
                   <div className="metadata-row">
                     <span className="metadata-label w-24 shrink-0">Location</span>
@@ -745,32 +842,98 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                   </span>
                 </div>
 
-                {/* Date & Time Selectors */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1">
-                      Preferred Date
+                {/* SOMA Likhani Styled Date Selection */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-[#E5E7EB] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-poppins font-bold text-[#101828] flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-[#8A181A]" />
+                      <span>Preferred Date</span>
                     </label>
+                    <span className="text-[10.5px] font-bold text-[#8A181A] flex items-center gap-1">
+                      <span>{formattedDateShort}</span>
+                    </span>
+                  </div>
+
+                  {/* Quick Date Chips */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">
+                    {quickDatePresets.map((preset) => {
+                      const isChosen = selectedDate === preset.date;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => setSelectedDate(preset.date)}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-medium flex flex-col items-start transition-all cursor-pointer border text-left ${
+                            isChosen
+                              ? 'bg-white border-[#8A181A] shadow-xs font-bold text-[#8A181A] ring-1 ring-[#8A181A]'
+                              : 'bg-white/80 hover:bg-white text-[#364153] border-[#E5E7EB]'
+                          }`}
+                        >
+                          <span className="font-bold flex items-center gap-1">
+                            {isChosen && <Check className="w-2.5 h-2.5 text-[#8A181A] stroke-[3]" />}
+                            <span>{preset.label}</span>
+                          </span>
+                          <span className="text-[8.5px] opacity-75 font-normal">{preset.sub}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom Date Input */}
+                  <div className="pt-0.5 flex items-center gap-1.5">
                     <input
                       type="date"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
                       required
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A]"
+                      className="flex-1 px-2.5 py-1 rounded-lg bg-white border border-[#D1D5DC] text-[#101828] text-[10.5px] focus:outline-none focus:border-[#8A181A] focus:ring-1 focus:ring-[#8A181A]/20"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1 flex items-center justify-between">
+                </div>
+
+                {/* SOMA Likhani Styled Time Selection */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-[#E5E7EB] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-poppins font-bold text-[#101828] flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#8A181A]" />
                       <span>Preferred Time</span>
-                      <Clock className="w-3 h-3 text-[#8A181A]" />
                     </label>
+                    <span className="text-[10.5px] font-bold text-[#8A181A] flex items-center gap-1">
+                      <span>{formatTime12h(selectedTime)}</span>
+                    </span>
+                  </div>
+
+                  {/* Quick Time Preset Chips */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5 pt-0.5">
+                    {TIME_PRESETS.map((t) => {
+                      const isChosen = selectedTime === t.time;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setSelectedTime(t.time)}
+                          className={`px-1.5 py-1 rounded-lg text-[9.5px] font-medium flex flex-col items-center justify-center text-center transition-all cursor-pointer border ${
+                            isChosen
+                              ? 'bg-white border-[#8A181A] shadow-xs font-bold text-[#8A181A] ring-1 ring-[#8A181A]'
+                              : 'bg-white/80 hover:bg-white text-[#364153] border-[#E5E7EB]'
+                          }`}
+                        >
+                          <span className="font-semibold">{t.label}</span>
+                          <span className="text-[8.5px] opacity-75">{t.tag}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom Time Input */}
+                  <div className="pt-0.5 flex items-center gap-1.5">
                     <input
                       type="time"
                       value={selectedTime}
                       onChange={(e) => setSelectedTime(e.target.value)}
                       required
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A]"
+                      className="flex-1 px-2.5 py-1 rounded-lg bg-white border border-[#D1D5DC] text-[#101828] text-[10.5px] focus:outline-none focus:border-[#8A181A] focus:ring-1 focus:ring-[#8A181A]/20"
                     />
                   </div>
                 </div>
@@ -801,11 +964,10 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                           key={opt.id}
                           type="button"
                           onClick={() => handleSelectColorOption(opt.name)}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-medium flex items-center gap-1.5 transition-all cursor-pointer border text-left ${
-                            isChosen
-                              ? 'bg-white border-[#8A181A] shadow-sm font-bold text-[#8A181A] ring-1 ring-[#8A181A]'
-                              : 'bg-white/80 hover:bg-white text-[#364153] border-[#E5E7EB]'
-                          }`}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-medium flex items-center gap-1.5 transition-all cursor-pointer border text-left ${isChosen
+                            ? 'bg-white border-[#8A181A] shadow-sm font-bold text-[#8A181A] ring-1 ring-[#8A181A]'
+                            : 'bg-white/80 hover:bg-white text-[#364153] border-[#E5E7EB]'
+                            }`}
                         >
                           <span
                             className="w-3.5 h-3.5 rounded-full border border-black/15 shrink-0 flex items-center justify-center shadow-2xs"
@@ -838,12 +1000,13 @@ export const MapLocation: React.FC<MapLocationProps> = ({
                 <div>
                   <label className="block text-[11px] font-poppins font-semibold text-[#364153] mb-1 flex items-center gap-1">
                     <MessageSquare className="w-3 h-3 text-[#8A181A]" />
-                    <span>Your Note / Comment for Me (Optional)</span>
+                    <span>Your Note / Comment for Me</span>
                   </label>
                   <textarea
                     ref={commentRef}
                     value={comment}
                     onChange={handleCommentChange}
+                    required
                     rows={2}
                     placeholder="Leave a message, thoughts, or exciting notes..."
                     className="w-full px-2.5 py-1.5 rounded-lg bg-[#F7F6F3] border border-[#D1D5DC] text-[#101828] text-xs focus:outline-none focus:border-[#8A181A] resize-none font-poppins transition-colors placeholder:text-[#99A1AF]"

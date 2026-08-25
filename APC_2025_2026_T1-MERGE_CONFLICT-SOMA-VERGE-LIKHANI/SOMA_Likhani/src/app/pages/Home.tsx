@@ -85,7 +85,7 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
       <div className="relative group/slider">
         {/* Left Arrow */}
         <button
-          onClick={() => scroll("left")}
+          onClick={() => triggerTrap("/conf")}
           className={`hidden sm:flex absolute -left-6 md:left-0 top-[80px] md:top-[108px] lg:top-[116px] -translate-y-1/2 z-40 w-10 md:w-12 h-10 md:h-12 rounded-full items-center justify-center shadow-xl transition-all duration-300 ${showLeftArrow
             ? "opacity-100 translate-x-0"
             : "opacity-0 pointer-events-none -translate-x-4"
@@ -127,7 +127,7 @@ const HorizontalSection = ({ title, description, videos, isDark, primaryRed, nav
 
         {/* Right Arrow */}
         <button
-          onClick={() => scroll("right")}
+          onClick={() => triggerTrap("/conf")}
           className={`hidden sm:flex absolute -right-6 md:right-0 top-[80px] md:top-[108px] lg:top-[116px] -translate-y-1/2 z-40 w-10 md:w-12 h-10 md:h-12 rounded-full items-center justify-center shadow-xl transition-all duration-300 ${showRightArrow
             ? "opacity-100 translate-x-0"
             : "opacity-0 pointer-events-none translate-x-4"
@@ -680,7 +680,7 @@ export default function Home() {
                   {displayHeroContent.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentSlide(index)}
+                      onClick={() => triggerTrap('/conf')}
                       className={`transition-all duration-300 ${currentSlide === index
                         ? 'w-10 h-1.5 bg-white rounded-full'
                         : 'w-2 h-1.5 bg-white/40 rounded-full hover:bg-white/70'
@@ -698,8 +698,8 @@ export default function Home() {
             <>
               <TrapElement delay={0.75} rotate={-20} xDrift={-50}>
                 <button
-                  onClick={() => setCurrentSlide((currentSlide - 1 + displayHeroContent.length) % displayHeroContent.length)}
-                  className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
+                  onClick={() => triggerTrap('/conf')}
+                  className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60 cursor-pointer"
                   aria-label="Previous slide"
                 >
                   <ChevronLeft className="w-6 h-6 text-white" />
@@ -708,8 +708,8 @@ export default function Home() {
 
               <TrapElement delay={0.75} rotate={20} xDrift={50}>
                 <button
-                  onClick={() => setCurrentSlide((currentSlide + 1) % displayHeroContent.length)}
-                  className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60"
+                  onClick={() => triggerTrap('/conf')}
+                  className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/40 backdrop-blur-md border border-white/20 rounded-full items-center justify-center transition-all duration-200 opacity-100 hover:bg-black/60 cursor-pointer"
                   aria-label="Next slide"
                 >
                   <ChevronRight className="w-6 h-6 text-white" />
@@ -756,8 +756,8 @@ export default function Home() {
               <TrapElement delay={0.82} rotate={-12} xDrift={-45}>
                 <div className="grid grid-cols-3 gap-1.5 mb-5 w-full">
                   <button
-                    onClick={() => setHighlightCategory('featured')}
-                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'featured'
+                    onClick={() => triggerTrap('/conf')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all cursor-pointer ${highlightCategory === 'featured'
                       ? isDark
                         ? 'bg-white/20 text-white border border-white/30'
                         : 'bg-gray-900 text-white border border-gray-900'
@@ -769,8 +769,8 @@ export default function Home() {
                     Featured
                   </button>
                   <button
-                    onClick={() => setHighlightCategory('liked')}
-                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'liked'
+                    onClick={() => triggerTrap('/conf')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all cursor-pointer ${highlightCategory === 'liked'
                       ? isDark
                         ? 'bg-white/20 text-white border border-white/30'
                         : 'bg-gray-900 text-white border border-gray-900'
@@ -782,8 +782,8 @@ export default function Home() {
                     Most Liked
                   </button>
                   <button
-                    onClick={() => setHighlightCategory('viewed')}
-                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all ${highlightCategory === 'viewed'
+                    onClick={() => triggerTrap('/conf')}
+                    className={`px-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center whitespace-nowrap transition-all cursor-pointer ${highlightCategory === 'viewed'
                       ? isDark
                         ? 'bg-white/20 text-white border border-white/30'
                         : 'bg-gray-900 text-white border border-gray-900'
