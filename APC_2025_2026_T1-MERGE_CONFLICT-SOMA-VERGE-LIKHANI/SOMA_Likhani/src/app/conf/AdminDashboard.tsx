@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { AppConfig, ResponseData, Slide, QuizQuestion } from './types';
 import {
   Lock, Trash2, Save, RefreshCw, Layers, MapPin, MessageSquare, Heart, ArrowLeft, CheckCircle2,
-  XCircle, Plus, Edit3, MoveUp, MoveDown, HelpCircle, Sparkles, BarChart3, Clock, Eye, Users, Activity
+  XCircle, Plus, Edit3, MoveUp, MoveDown, HelpCircle, Sparkles, BarChart3, Clock, Eye, Users, Activity,
+  Smartphone, Monitor, Tablet, ChevronDown, ChevronUp, Search, Filter, Globe, ArrowRight, Laptop, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { computeSessionJourneys, type SessionJourney } from './telemetry';
 
 interface AdminDashboardProps {
   config: AppConfig;
@@ -44,6 +46,149 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [activeTab, setActiveTab] = useState<'RESPONSES' | 'ANALYTICS' | 'QUIZ' | 'SLIDES' | 'CONFIG'>('RESPONSES');
   const [isSaving, setIsSaving] = useState(false);
   const [editableConfig, setEditableConfig] = useState<AppConfig>(config);
+
+  // Telemetry Session Inspector State
+  const [analyticsViewMode, setAnalyticsViewMode] = useState<'JOURNEYS' | 'AVERAGES'>('JOURNEYS');
+  const [expandedSessionIds, setExpandedSessionIds] = useState<Set<string>>(new Set());
+  const [deviceFilter, setDeviceFilter] = useState<'ALL' | 'Mobile' | 'Tablet' | 'Desktop'>('ALL');
+  const [outcomeFilter, setOutcomeFilter] = useState<'ALL' | 'YES' | 'NO' | 'DECISION' | 'BOUNCED'>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const journeys: SessionJourney[] = useMemo(() => {
+    return computeSessionJourneys(sessionLogs || [], responses || []);
+  }, [sessionLogs, responses]);
+
+  const toggleSessionExpand = (id: string) => {
+    setExpandedSessionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const expandAllSessions = () => {
+    setExpandedSessionIds(new Set(journeys.map((j) => j.sessionId)));
+  };
+
+  const collapseAllSessions = () => {
+    setExpandedSessionIds(new Set());
+  };
+
+  const filteredJourneys = useMemo(() => {
+    return journeys.filter((j) => {
+      if (deviceFilter !== 'ALL' && j.deviceType.toLowerCase() !== deviceFilter.toLowerCase()) {
+        return false;
+      }
+      if (outcomeFilter !== 'ALL') {
+        if (outcomeFilter === 'YES' && j.outcomeType !== 'YES') return false;
+        if (outcomeFilter === 'NO' && j.outcomeType !== 'NO') return false;
+        if (outcomeFilter === 'DECISION' && j.outcomeType !== 'DECISION') return false;
+        if (outcomeFilter === 'BOUNCED' && j.outcomeType !== 'BOUNCED') return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchLocation = `${j.city || ''} ${j.region || ''} ${j.country || ''}`.toLowerCase().includes(q);
+        const matchSession = j.sessionId.toLowerCase().includes(q);
+        const matchVisitor = (j.visitorId || '').toLowerCase().includes(q);
+        const matchIp = (j.ip || '').toLowerCase().includes(q);
+        const matchScreen = j.events.some((e) => e.screen.toLowerCase().includes(q));
+        if (!matchLocation && !matchSession && !matchVisitor && !matchIp && !matchScreen) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [journeys, deviceFilter, outcomeFilter, searchQuery]);
+
+  const formatTimeAgo = (dateStr: string) => {
+    try {
+      const then = new Date(dateStr).getTime();
+      const now = Date.now();
+      const diffSec = Math.floor((now - then) / 1000);
+      if (diffSec < 60) return 'Just now';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour}h ago`;
+      const diffDay = Math.floor(diffHour / 24);
+      if (diffDay === 1) return 'Yesterday';
+      return `${diffDay}d ago`;
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const renderDeviceIcon = (deviceType: string) => {
+    switch (deviceType?.toLowerCase()) {
+      case 'mobile':
+        return <Smartphone className="w-3.5 h-3.5 text-blue-600" />;
+      case 'tablet':
+        return <Tablet className="w-3.5 h-3.5 text-purple-600" />;
+      default:
+        return <Monitor className="w-3.5 h-3.5 text-slate-700" />;
+    }
+  };
+
+  const renderOutcomeBadge = (outcome: string, outcomeType: string) => {
+    switch (outcomeType) {
+      case 'YES':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <span>💖</span>
+            <span>Answered YES</span>
+          </span>
+        );
+      case 'NO':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+            <span>💔</span>
+            <span>Answered NO</span>
+          </span>
+        );
+      case 'DECISION':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+            <span>☕</span>
+            <span>Reached Decision</span>
+          </span>
+        );
+      case 'SLIDES':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-300">
+            <span>📑</span>
+            <span>Viewing Slides</span>
+          </span>
+        );
+      case 'QUIZ':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-yellow-100 text-yellow-900 border border-yellow-300">
+            <span>✨</span>
+            <span>On Quiz</span>
+          </span>
+        );
+      case 'BOUNCED':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-gray-100 text-gray-700 border border-gray-300">
+            <span>🚪</span>
+            <span>Bounced on Intro</span>
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-slate-100 text-slate-800 border border-slate-300">
+            <span>👀</span>
+            <span>{outcome}</span>
+          </span>
+        );
+    }
+  };
+
+  const handleConfirmClearAnalytics = () => {
+    if (window.confirm('Are you sure you want to clear all telemetry logs? This cannot be undone.')) {
+      onClearAnalytics?.();
+    }
+  };
 
   const [isAddingResponse, setIsAddingResponse] = useState(false);
   const [editingResponse, setEditingResponse] = useState<ResponseData | null>(null);
@@ -568,11 +713,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* TAB 1.5: VIEW TIME TELEMETRY & ANALYTICS */}
         {activeTab === 'ANALYTICS' && (
           <div className="space-y-6 font-poppins">
-            {/* Key Telemetry Stats */}
+            {/* Top Overview Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="sentimental-card p-5">
                 <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total Visitors / Sessions</p>
-                <p className="text-2xl font-poppins font-bold text-[#101828] mt-1">{analyticsSummary?.uniqueSessions || 0}</p>
+                <p className="text-2xl font-poppins font-bold text-[#101828] mt-1">{analyticsSummary?.uniqueSessions || journeys.length || 0}</p>
               </div>
               <div className="sentimental-card p-5">
                 <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total View Time</p>
@@ -586,17 +731,59 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
               <div className="sentimental-card p-5">
                 <p className="text-xs text-[#6A7282] font-semibold uppercase tracking-wider">Total Telemetry Events</p>
-                <p className="text-2xl font-poppins font-bold text-[#364153] mt-1">{analyticsSummary?.totalLogs || 0}</p>
+                <p className="text-2xl font-poppins font-bold text-[#364153] mt-1">{analyticsSummary?.totalLogs || sessionLogs?.length || 0}</p>
               </div>
             </div>
 
-            {/* Screen & Slide View Duration Breakdown */}
-            <div className="sentimental-card p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-poppins font-bold text-lg text-[#101828]">Average View Duration per Page / Slide</h3>
-                  <p className="text-xs text-[#6A7282]">Real-time telemetry tracking from Loading Intro to Decision & Response</p>
-                </div>
+            {/* View Mode Toggle & Global Control Actions */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-[#E5E7EB]">
+              <div className="flex items-center gap-1.5 p-1 bg-[#F7F6F3] rounded-xl border border-[#E5E7EB] self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setAnalyticsViewMode('JOURNEYS')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    analyticsViewMode === 'JOURNEYS'
+                      ? 'bg-white text-[#8A181A] shadow-xs font-bold border border-[#E5E7EB]'
+                      : 'text-[#6A7282] hover:text-[#101828]'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Grouped by Session ({journeys.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAnalyticsViewMode('AVERAGES')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    analyticsViewMode === 'AVERAGES'
+                      ? 'bg-white text-[#8A181A] shadow-xs font-bold border border-[#E5E7EB]'
+                      : 'text-[#6A7282] hover:text-[#101828]'
+                  }`}
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  <span>Global Averages</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                {analyticsViewMode === 'JOURNEYS' && journeys.length > 0 && (
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#6A7282] mr-1">
+                    <button
+                      type="button"
+                      onClick={expandAllSessions}
+                      className="px-2 py-1 rounded-md hover:bg-[#F3F4F6] text-[#4A5565] font-semibold transition-colors cursor-pointer"
+                    >
+                      Expand All
+                    </button>
+                    <span>&middot;</span>
+                    <button
+                      type="button"
+                      onClick={collapseAllSessions}
+                      className="px-2 py-1 rounded-md hover:bg-[#F3F4F6] text-[#4A5565] font-semibold transition-colors cursor-pointer"
+                    >
+                      Collapse All
+                    </button>
+                  </div>
+                )}
                 {onRefreshAnalytics && (
                   <button
                     onClick={onRefreshAnalytics}
@@ -606,83 +793,357 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <RefreshCw className="w-4 h-4" />
                   </button>
                 )}
-              </div>
-
-              <div className="space-y-3 pt-2">
-                {(!analyticsSummary || !analyticsSummary.screenBreakdown || analyticsSummary.screenBreakdown.length === 0) ? (
-                  <p className="text-xs text-[#6A7282] italic text-center py-6">No telemetry logs recorded yet. Visit the /conf page to generate live view time logs!</p>
-                ) : (
-                  analyticsSummary.screenBreakdown.map((item: any) => {
-                    const maxAvg = Math.max(...analyticsSummary.screenBreakdown.map((s: any) => s.avgSeconds || 1));
-                    const percentage = Math.min(100, Math.round(((item.avgSeconds || 0) / maxAvg) * 100));
-                    const formatKey = item.key.replace('_', ' ');
-                    return (
-                      <div key={item.key} className="space-y-1.5">
-                        <div className="flex items-center justify-between text-xs font-semibold">
-                          <span className="text-[#101828] uppercase tracking-wider font-mono">{formatKey}</span>
-                          <span className="text-[#8A181A]">{item.avgSeconds}s avg ({item.count} visits &middot; {item.totalSeconds}s total)</span>
-                        </div>
-                        <div className="w-full bg-[#E5E7EB] rounded-full h-2.5 overflow-hidden">
-                          <div
-                            className="bg-[#8A181A] h-2.5 rounded-full transition-all duration-500"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* Detailed Telemetry Log Table */}
-            <div className="sentimental-card p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-poppins font-bold text-lg text-[#101828]">Visitor Telemetry Entry Log</h3>
-                  <p className="text-xs text-[#6A7282]">Recorded entry times and durations stored in Convex DB</p>
-                </div>
                 {onClearAnalytics && sessionLogs && sessionLogs.length > 0 && (
                   <button
-                    onClick={onClearAnalytics}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold border border-red-200 transition-colors cursor-pointer"
+                    onClick={handleConfirmClearAnalytics}
+                    className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold border border-red-200 transition-colors cursor-pointer"
                   >
                     Clear Telemetry Logs
                   </button>
                 )}
               </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-[#E5E7EB] text-[#6A7282] uppercase tracking-wider">
-                      <th className="py-2.5 px-3">Session ID</th>
-                      <th className="py-2.5 px-3">Screen / Slide</th>
-                      <th className="py-2.5 px-3">View Duration</th>
-                      <th className="py-2.5 px-3">Start Time</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E5E7EB]">
-                    {(!sessionLogs || sessionLogs.length === 0) ? (
-                      <tr>
-                        <td colSpan={4} className="py-6 text-center text-[#6A7282] italic">No telemetry logs available yet</td>
-                      </tr>
-                    ) : (
-                      sessionLogs.slice(0, 50).map((log: any) => (
-                        <tr key={log._id || log.sessionId + log.startTime} className="hover:bg-[#F9FAFB]">
-                          <td className="py-2.5 px-3 font-mono text-[#364153]">{log.sessionId.slice(0, 16)}...</td>
-                          <td className="py-2.5 px-3 font-semibold text-[#8A181A]">
-                            {log.screen} {log.slideIndex !== undefined ? `(Slide #${log.slideIndex})` : ''}
-                          </td>
-                          <td className="py-2.5 px-3 font-bold text-[#101828]">{log.durationSeconds}s</td>
-                          <td className="py-2.5 px-3 text-[#6A7282]">{new Date(log.startTime).toLocaleTimeString()}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
             </div>
+
+            {/* VIEW MODE 1: VISITOR SESSIONS INSPECTOR (Grouped by Session) */}
+            {analyticsViewMode === 'JOURNEYS' && (
+              <div className="space-y-4">
+                {/* Search & Filters Toolbar */}
+                <div className="sentimental-card p-4 space-y-3">
+                  <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                    {/* Search Bar */}
+                    <div className="relative flex-1">
+                      <Search className="w-4 h-4 text-[#99A1AF] absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search by city, region, country, IP, session ID, or visitor ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#F7F6F3] border border-[#D1D5DC] text-xs text-[#101828] focus:outline-none focus:border-[#8A181A]"
+                      />
+                    </div>
+
+                    {/* Filter Pills: Device */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+                      <span className="text-[11px] font-bold text-[#6A7282] uppercase tracking-wider shrink-0 mr-1">
+                        Device:
+                      </span>
+                      {(['ALL', 'Mobile', 'Tablet', 'Desktop'] as const).map((dev) => (
+                        <button
+                          key={dev}
+                          type="button"
+                          onClick={() => setDeviceFilter(dev)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                            deviceFilter === dev
+                              ? 'bg-[#8A181A] text-white font-bold shadow-xs'
+                              : 'bg-[#F7F6F3] hover:bg-[#E5E7EB] text-[#4A5565]'
+                          }`}
+                        >
+                          {dev === 'ALL' ? 'All Devices' : dev}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Filter Pills: Outcome */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-[#F3F4F6]">
+                    <span className="text-[11px] font-bold text-[#6A7282] uppercase tracking-wider shrink-0 mr-1">
+                      Outcome:
+                    </span>
+                    {[
+                      { id: 'ALL', label: 'All Outcomes' },
+                      { id: 'YES', label: 'Answered YES 💖' },
+                      { id: 'NO', label: 'Answered NO 💔' },
+                      { id: 'DECISION', label: 'Reached Decision ☕' },
+                      { id: 'BOUNCED', label: 'Bounced on Intro 🚪' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setOutcomeFilter(opt.id as any)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                          outcomeFilter === opt.id
+                            ? 'bg-[#101828] text-white font-bold shadow-xs'
+                            : 'bg-[#F7F6F3] hover:bg-[#E5E7EB] text-[#4A5565]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                    <span className="text-xs text-[#99A1AF] ml-auto shrink-0 pl-2">
+                      Showing {filteredJourneys.length} of {journeys.length} session{journeys.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Session Journeys Feed */}
+                {filteredJourneys.length === 0 ? (
+                  <div className="sentimental-card p-10 text-center space-y-2">
+                    <p className="text-sm font-semibold text-[#101828]">No visitor sessions found</p>
+                    <p className="text-xs text-[#6A7282]">
+                      {journeys.length === 0
+                        ? 'No telemetry logs recorded yet. Visit the /conf page to generate live journey entries!'
+                        : 'No session journeys match your search query or filter criteria.'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredJourneys.map((journey) => {
+                      const isExpanded = expandedSessionIds.has(journey.sessionId);
+                      const maxDurationInJourney = Math.max(
+                        ...journey.events.map((e) => e.durationSeconds || 1),
+                        1
+                      );
+
+                      return (
+                        <div
+                          key={journey.sessionId}
+                          className="sentimental-card border border-[#E5E7EB] hover:border-[#D1D5DC] transition-all overflow-hidden"
+                        >
+                          {/* Card Header Summary */}
+                          <div
+                            onClick={() => toggleSessionExpand(journey.sessionId)}
+                            className="p-4 sm:p-5 cursor-pointer hover:bg-[#FAF9F6] transition-colors space-y-3"
+                          >
+                            {/* Header Top Row: Session / Visitor ID, Timestamp & Outcome */}
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-[#101828] bg-[#F3F4F6] px-2.5 py-1 rounded-md border border-[#E5E7EB]">
+                                  {journey.sessionId.slice(0, 18)}...
+                                </span>
+                                {journey.visitorId && (
+                                  <span className="font-mono text-[10.5px] text-[#6A7282] bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title={`Persistent Visitor ID: ${journey.visitorId}`}>
+                                    vis:{journey.visitorId.slice(0, 10)}...
+                                  </span>
+                                )}
+                                <span className="text-xs text-[#6A7282] font-medium flex items-center gap-1">
+                                  <span>&middot;</span>
+                                  <span>{formatTimeAgo(journey.endTime)}</span>
+                                  <span className="text-[#99A1AF]">({new Date(journey.startTime).toLocaleTimeString()})</span>
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                {renderOutcomeBadge(journey.terminalOutcome, journey.outcomeType)}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleSessionExpand(journey.sessionId);
+                                  }}
+                                  className="p-1 rounded-md hover:bg-[#E5E7EB] text-[#6A7282] transition-colors cursor-pointer"
+                                  title={isExpanded ? 'Collapse journey details' : 'Expand journey details'}
+                                >
+                                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Header Bottom Row: Device Info, Passive Location & Total Time */}
+                            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                              {/* Device & OS */}
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F7F6F3] border border-[#E5E7EB] text-[#364153]">
+                                {renderDeviceIcon(journey.deviceType)}
+                                <span className="font-semibold">{journey.deviceType}</span>
+                                <span className="text-[#99A1AF]">&middot;</span>
+                                <span>{journey.os} / {journey.browser}</span>
+                                {journey.screenResolution && (
+                                  <span className="text-[10px] text-[#99A1AF] font-mono">({journey.screenResolution})</span>
+                                )}
+                              </div>
+
+                              {/* Passive Location */}
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800">
+                                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span className="font-semibold">
+                                  {journey.city && journey.city !== 'Unknown'
+                                    ? `${journey.city}${journey.region ? `, ${journey.region}` : ''}${journey.country ? `, ${journey.country}` : ''}`
+                                    : 'Unknown Location'}
+                                </span>
+                                {journey.ip && (
+                                  <span className="text-[10px] text-emerald-700/70 font-mono">[{journey.ip}]</span>
+                                )}
+                              </div>
+
+                              {/* Duration & Step Count */}
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#8A181A]/5 border border-[#8A181A]/20 text-[#8A181A] font-bold ml-auto">
+                                <Clock className="w-3.5 h-3.5 text-[#8A181A]" />
+                                <span>
+                                  {Math.floor(journey.totalDurationSeconds / 60)}m {Math.round(journey.totalDurationSeconds % 60)}s
+                                </span>
+                                <span className="text-[#8A181A]/70 font-normal">({journey.eventCount} steps)</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Expanded Step-by-Step Chronological Audit Log */}
+                          {isExpanded && (
+                            <div className="border-t border-[#E5E7EB] bg-[#FCFBF9] p-4 sm:p-5 space-y-4 animate-fade-in">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-poppins font-bold text-xs text-[#101828] uppercase tracking-wider flex items-center gap-2">
+                                  <Activity className="w-3.5 h-3.5 text-[#8A181A]" />
+                                  <span>Step-by-Step Visitor Journey Timeline</span>
+                                </h4>
+                                <span className="text-[11px] text-[#6A7282]">
+                                  {journey.events.length} step{journey.events.length !== 1 ? 's' : ''} recorded in order
+                                </span>
+                              </div>
+
+                              {/* Chronological Steps Table / Timeline */}
+                              <div className="space-y-2">
+                                {journey.events.map((evt, idx) => {
+                                  const pct = Math.min(100, Math.round(((evt.durationSeconds || 0) / maxDurationInJourney) * 100));
+                                  return (
+                                    <div
+                                      key={evt.id || idx}
+                                      className="p-2.5 rounded-xl bg-white border border-[#E5E7EB] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                                    >
+                                      <div className="flex items-center gap-2.5 min-w-[180px]">
+                                        <span className="w-5 h-5 rounded-full bg-[#8A181A]/10 text-[#8A181A] font-mono font-bold text-[10px] flex items-center justify-center shrink-0">
+                                          {idx + 1}
+                                        </span>
+                                        <span className="font-bold text-[#101828] uppercase tracking-wider font-mono">
+                                          {evt.screen}
+                                          {evt.slideIndex !== undefined ? ` (Slide #${evt.slideIndex})` : ''}
+                                        </span>
+                                      </div>
+
+                                      {/* Duration visual progress bar */}
+                                      <div className="flex-1 sm:max-w-xs flex items-center gap-2">
+                                        <div className="flex-1 bg-[#E5E7EB] h-2 rounded-full overflow-hidden">
+                                          <div
+                                            className="bg-[#8A181A] h-2 rounded-full transition-all duration-300"
+                                            style={{ width: `${Math.max(8, pct)}%` }}
+                                          />
+                                        </div>
+                                        <span className="font-mono font-bold text-[#8A181A] text-xs shrink-0 w-12 text-right">
+                                          {evt.durationSeconds}s
+                                        </span>
+                                      </div>
+
+                                      {/* Timestamp */}
+                                      <div className="text-[11px] text-[#6A7282] font-mono shrink-0 sm:text-right">
+                                        {new Date(evt.startTime).toLocaleTimeString()}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Technical Metadata Bar */}
+                              <div className="pt-2 border-t border-[#E5E7EB] flex flex-wrap items-center gap-3 text-[10.5px] text-[#6A7282] font-mono">
+                                {journey.screenResolution && (
+                                  <span>Screen: <strong className="text-[#364153]">{journey.screenResolution}</strong></span>
+                                )}
+                                {journey.viewport && (
+                                  <span>Viewport: <strong className="text-[#364153]">{journey.viewport}</strong></span>
+                                )}
+                                {journey.ip && (
+                                  <span>IP: <strong className="text-[#364153]">{journey.ip}</strong></span>
+                                )}
+                                {journey.userAgent && (
+                                  <span className="truncate max-w-xs sm:max-w-md" title={journey.userAgent}>
+                                    UA: <span className="text-[#364153]">{journey.userAgent}</span>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW MODE 2: GLOBAL AVERAGES & CONSOLIDATED METRICS */}
+            {analyticsViewMode === 'AVERAGES' && (
+              <div className="space-y-6">
+                {/* Screen & Slide View Duration Breakdown */}
+                <div className="sentimental-card p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-poppins font-bold text-lg text-[#101828]">Average View Duration per Page / Slide</h3>
+                      <p className="text-xs text-[#6A7282]">Real-time telemetry tracking from Loading Intro to Decision & Response</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    {(!analyticsSummary || !analyticsSummary.screenBreakdown || analyticsSummary.screenBreakdown.length === 0) ? (
+                      <p className="text-xs text-[#6A7282] italic text-center py-6">No telemetry logs recorded yet. Visit the /conf page to generate live view time logs!</p>
+                    ) : (
+                      analyticsSummary.screenBreakdown.map((item: any) => {
+                        const maxAvg = Math.max(...analyticsSummary.screenBreakdown.map((s: any) => s.avgSeconds || 1));
+                        const percentage = Math.min(100, Math.round(((item.avgSeconds || 0) / maxAvg) * 100));
+                        const formatKey = item.key.replace('_', ' ');
+                        return (
+                          <div key={item.key} className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-[#101828] uppercase tracking-wider font-mono">{formatKey}</span>
+                              <span className="text-[#8A181A]">{item.avgSeconds}s avg ({item.count} visits &middot; {item.totalSeconds}s total)</span>
+                            </div>
+                            <div className="w-full bg-[#E5E7EB] rounded-full h-2.5 overflow-hidden">
+                              <div
+                                className="bg-[#8A181A] h-2.5 rounded-full transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+
+                {/* Detailed Telemetry Log Table */}
+                <div className="sentimental-card p-6 space-y-4">
+                  <div>
+                    <h3 className="font-poppins font-bold text-lg text-[#101828]">Raw Telemetry Entry Log</h3>
+                    <p className="text-xs text-[#6A7282]">Recorded entry times and durations stored in Convex DB</p>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-[#E5E7EB] text-[#6A7282] uppercase tracking-wider">
+                          <th className="py-2.5 px-3">Session ID</th>
+                          <th className="py-2.5 px-3">Device / Location</th>
+                          <th className="py-2.5 px-3">Screen / Slide</th>
+                          <th className="py-2.5 px-3">View Duration</th>
+                          <th className="py-2.5 px-3">Start Time</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E5E7EB]">
+                        {(!sessionLogs || sessionLogs.length === 0) ? (
+                          <tr>
+                            <td colSpan={5} className="py-6 text-center text-[#6A7282] italic">No telemetry logs available yet</td>
+                          </tr>
+                        ) : (
+                          sessionLogs.slice(0, 50).map((log: any) => (
+                            <tr key={log._id || log.sessionId + log.startTime} className="hover:bg-[#F9FAFB]">
+                              <td className="py-2.5 px-3 font-mono text-[#364153]">
+                                {log.sessionId.slice(0, 14)}...
+                              </td>
+                              <td className="py-2.5 px-3 text-[#4A5565]">
+                                <div>{log.deviceType || 'Desktop'} &middot; {log.os || 'OS'}</div>
+                                {log.city && log.city !== 'Unknown' && (
+                                  <div className="text-[10px] text-emerald-700">{log.city}</div>
+                                )}
+                              </td>
+                              <td className="py-2.5 px-3 font-semibold text-[#8A181A]">
+                                {log.screen} {log.slideIndex !== undefined ? `(Slide #${log.slideIndex})` : ''}
+                              </td>
+                              <td className="py-2.5 px-3 font-bold text-[#101828]">{log.durationSeconds}s</td>
+                              <td className="py-2.5 px-3 text-[#6A7282]">{new Date(log.startTime).toLocaleTimeString()}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

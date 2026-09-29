@@ -8,9 +8,14 @@ import { CongratsScreen } from './CongratsScreen';
 import { SlideViewer } from './SlideViewer';
 import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
-import { MessageForm } from './MessageForm';
-import { saveLocalTelemetryLog } from './telemetry';
-import { useQuery } from 'convex/react';
+import {
+  saveLocalTelemetryLog,
+  getVisitorId,
+  getSessionId,
+  getDeviceInfo,
+  getCachedLocation,
+  getPassiveLocation,
+} from './telemetry';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../convex/_generated/api';
 import './conf.css';
@@ -67,17 +72,14 @@ export const ConfPage: React.FC = () => {
   const [quizIndex, setQuizIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-  // Generate unique session ID per visitor session
-  const [sessionId] = useState<string>(() => {
-    let sid = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('conf_session_id') : null;
-    if (!sid) {
-      sid = 'sess_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('conf_session_id', sid);
-      }
-    }
-    return sid;
-  });
+  // Persistent visitor ID & active session ID
+  const [visitorId] = useState<string>(() => getVisitorId());
+  const [sessionId] = useState<string>(() => getSessionId());
+
+  // Passive, non-intrusive IP location lookup on initial mount (silent failure & cached)
+  useEffect(() => {
+    getPassiveLocation().catch(() => {});
+  }, []);
 
   const screenStartTimeRef = useRef<number>(Date.now());
 
@@ -109,6 +111,36 @@ export const ConfPage: React.FC = () => {
     label: 'INTRO',
   });
 
+  const buildTelemetryPayload = (
+    screenLabel: string,
+    slideIdx?: number,
+    durationSec: number = 0,
+    startIso: string = '',
+    endIso: string = ''
+  ) => {
+    const device = getDeviceInfo();
+    const geo = getCachedLocation();
+
+    return {
+      sessionId,
+      visitorId,
+      screen: screenLabel,
+      slideIndex: slideIdx,
+      durationSeconds: Math.round(durationSec * 10) / 10,
+      startTime: startIso,
+      endTime: endIso,
+      deviceType: device.deviceType,
+      os: device.os,
+      browser: device.browser,
+      screenResolution: device.screenResolution,
+      viewport: device.viewport,
+      city: geo.city,
+      region: geo.region,
+      country: geo.country,
+      ip: geo.ip,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    };
+  };
 
   // Telemetry: Log view duration whenever user transitions screen, slide, or quiz question
   useEffect(() => {
@@ -120,15 +152,13 @@ export const ConfPage: React.FC = () => {
 
     // Log telemetry for the previous screen/slide/question
     if (durationSeconds >= 0.2) {
-      const payload = {
-        sessionId,
-        screen: prev.label,
-        slideIndex: prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
+      const payload = buildTelemetryPayload(
+        prev.label,
+        prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
         durationSeconds,
         startTime,
-        endTime,
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-      };
+        endTime
+      );
 
       // Always save locally immediately
       saveLocalTelemetryLog(payload);
@@ -141,7 +171,7 @@ export const ConfPage: React.FC = () => {
     screenStartTimeRef.current = now;
     const currentLabel = getScreenLabel(currentScreen, slideIndex, quizIndex);
     prevScreenRef.current = { screen: currentScreen, slideIndex, quizIndex, label: currentLabel };
-  }, [currentScreen, slideIndex, quizIndex, sessionId]);
+  }, [currentScreen, slideIndex, quizIndex, sessionId, visitorId]);
 
   // Log final view time on page unload
   useEffect(() => {
@@ -150,15 +180,13 @@ export const ConfPage: React.FC = () => {
       const now = Date.now();
       const durationSeconds = (now - screenStartTimeRef.current) / 1000;
       if (durationSeconds >= 0.2) {
-        const payload = {
-          sessionId,
-          screen: prev.label,
-          slideIndex: prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
+        const payload = buildTelemetryPayload(
+          prev.label,
+          prev.screen === 'SLIDES' ? prev.slideIndex + 1 : undefined,
           durationSeconds,
-          startTime: new Date(screenStartTimeRef.current).toISOString(),
-          endTime: new Date(now).toISOString(),
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-        };
+          new Date(screenStartTimeRef.current).toISOString(),
+          new Date(now).toISOString()
+        );
 
         saveLocalTelemetryLog(payload);
         convex.mutation(api.analytics.logViewTime, payload).catch(() => {});
@@ -167,7 +195,7 @@ export const ConfPage: React.FC = () => {
 
     window.addEventListener('beforeunload', handleUnload);
     return () => window.removeEventListener('beforeunload', handleUnload);
-  }, [sessionId]);
+  }, [sessionId, visitorId]);
 
   const [responses, setResponses] = useState<ResponseData[]>(() => {
     const saved = localStorage.getItem('conf_app_responses');
