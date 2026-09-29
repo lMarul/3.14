@@ -8,6 +8,7 @@ import { CongratsScreen } from './CongratsScreen';
 import { SlideViewer } from './SlideViewer';
 import { DecisionSlide } from './DecisionSlide';
 import { MapLocation } from './MapLocation';
+import { MessageForm } from './MessageForm';
 import {
   saveLocalTelemetryLog,
   getVisitorId,
@@ -16,6 +17,7 @@ import {
   getCachedLocation,
   getPassiveLocation,
 } from './telemetry';
+import { useQuery } from 'convex/react';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../convex/_generated/api';
 import './conf.css';
