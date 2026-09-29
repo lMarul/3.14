@@ -1,6 +1,30 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+const telemetryTable = defineTable({
+  sessionId: v.string(),
+  visitorId: v.optional(v.string()),
+  screen: v.string(),
+  slideIndex: v.optional(v.number()),
+  durationSeconds: v.number(),
+  startTime: v.string(),
+  endTime: v.string(),
+  // Device & Environment
+  deviceType: v.optional(v.string()), // "Mobile" | "Tablet" | "Desktop"
+  os: v.optional(v.string()),
+  browser: v.optional(v.string()),
+  screenResolution: v.optional(v.string()),
+  viewport: v.optional(v.string()),
+  // Location Data
+  city: v.optional(v.string()),
+  region: v.optional(v.string()),
+  country: v.optional(v.string()),
+  ip: v.optional(v.string()),
+  userAgent: v.optional(v.string()),
+})
+  .index("by_session", ["sessionId"])
+  .index("by_visitor", ["visitorId"]);
+
 export default defineSchema({
   responses: defineTable({
     choice: v.string(),
@@ -11,18 +35,11 @@ export default defineSchema({
     userAgent: v.optional(v.string()),
   }),
 
-  viewTimeLogs: defineTable({
-    sessionId: v.string(),
-    screen: v.string(),
-    slideIndex: v.optional(v.number()),
-    durationSeconds: v.number(),
-    startTime: v.string(),
-    endTime: v.string(),
-    userAgent: v.optional(v.string()),
-  }),
+  viewTimeLogs: telemetryTable,
+  analytics: telemetryTable,
 
   appConfig: defineTable({
-    configKey: v.string(),
+    configKey: v.optional(v.string()),
     recipientName: v.string(),
     senderName: v.string(),
     questionText: v.string(),
